@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import Mapping
 
 
 class DimensionStatus(StrEnum):
@@ -104,12 +104,14 @@ def evaluate_dimension_eligibility(
     status_value = _required_string(record, "status", reasons)
     eligibility_value = _required_string(record, "report_eligibility", reasons)
 
+    status: DimensionStatus | None
     try:
         status = DimensionStatus(status_value)
     except ValueError:
         reasons.append(f"unknown dimension status: {status_value!r}")
         status = None
 
+    report_eligibility: ReportEligibility | None
     try:
         report_eligibility = ReportEligibility(eligibility_value)
     except ValueError:
