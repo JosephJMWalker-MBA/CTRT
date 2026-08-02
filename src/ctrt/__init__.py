@@ -62,11 +62,11 @@ from ctrt.eligibility import (
     evaluate_dimension_eligibility,
 )
 from ctrt.execution_session import (
+    VERIFIED_CHECKS,
     ExecutionSessionStage,
     ExecutionSessionStatus,
     GovernedExecutionError,
     GovernedExecutionSession,
-    VERIFIED_CHECKS,
     VerifiedExecutionReceipt,
 )
 from ctrt.experiments import (
