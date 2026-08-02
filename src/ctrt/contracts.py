@@ -8,6 +8,7 @@ from enum import StrEnum
 from typing import Protocol, runtime_checkable
 
 from ctrt.confidence import ConfidenceVector
+from ctrt.measurement import AnalysisTarget, EvidenceSupport, EvidenceSupportStatus
 
 
 class SourceType(StrEnum):
@@ -50,7 +51,7 @@ class ContentItem:
 
 @dataclass(frozen=True, slots=True)
 class EvidenceSpan:
-    """A zero-based half-open text span supporting an analyzer output."""
+    """A zero-based half-open canonical text span supporting an analyzer output."""
 
     start: int
     end: int
@@ -120,6 +121,8 @@ class ModelResult:
     dimension_version: str
     status: ResultStatus
     analyzer: AnalyzerIdentity
+    analysis_target: AnalysisTarget
+    evidence_support: EvidenceSupport
     confidence: ConfidenceVector
     raw_output: Mapping[str, object]
     normalized_scores: tuple[NormalizedScore, ...] = ()
@@ -138,6 +141,15 @@ class ModelResult:
         )
         if any(not value.strip() for value in required):
             raise ValueError("result identity fields must not be empty")
+        if self.content_id != self.analysis_target.content_id:
+            raise ValueError("result content_id must match analysis target content_id")
+        if (
+            self.confidence.extraction_quality.evidence_ref
+            != self.analysis_target.extraction_ref
+        ):
+            raise ValueError(
+                "confidence extraction evidence_ref must match analysis target extraction_ref"
+            )
         if self.duration_ms is not None and self.duration_ms < 0:
             raise ValueError("duration_ms must be non-negative")
         if self.status is ResultStatus.SUCCESS and self.errors:
@@ -159,6 +171,16 @@ class ModelResult:
             and self.status not in {ResultStatus.ABSTAINED, ResultStatus.FAILED}
         ):
             raise ValueError("triggered system abstention requires abstained or failed result")
+
+        if self.evidence_support.status is EvidenceSupportStatus.UNAVAILABLE:
+            if self.evidence_spans:
+                raise ValueError("unavailable evidence may not contain evidence spans")
+        elif not self.evidence_spans:
+            raise ValueError("provided evidence support requires at least one evidence span")
+
+        for span in self.evidence_spans:
+            if span.start < self.analysis_target.start or span.end > self.analysis_target.end:
+                raise ValueError("evidence span must fall within the analysis target")
 
 
 @runtime_checkable
