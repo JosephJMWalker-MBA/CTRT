@@ -77,10 +77,11 @@ class VersionedArtifactRef:
 
 @dataclass(frozen=True, slots=True)
 class InstrumentRevision:
-    """Exact candidate, analyzer, adapter, configuration, and implementation revision."""
+    """Exact candidate, analyzer, dimension, adapter, configuration, and revision."""
 
     candidate_id: str
     analyzer_id: str
+    dimension_id: str
     implementation_revision: str
     adapter_version: str
     configuration_hash: str
@@ -88,6 +89,7 @@ class InstrumentRevision:
     def __post_init__(self) -> None:
         _require_non_empty(self.candidate_id, "candidate_id")
         _require_non_empty(self.analyzer_id, "analyzer_id")
+        _require_non_empty(self.dimension_id, "dimension_id")
         _require_non_empty(self.implementation_revision, "implementation_revision")
         _require_non_empty(self.adapter_version, "adapter_version")
         _require_sha256(self.configuration_hash, "configuration_hash")
@@ -164,11 +166,19 @@ class ExperimentPlan:
         _parse_timestamp(self.created_at, "created_at")
 
         analyzer_ids = tuple(item.analyzer_id for item in self.instrument_revisions)
-        candidate_ids = tuple(item.candidate_id for item in self.instrument_revisions)
         _require_unique(analyzer_ids, "instrument analyzer_ids")
-        _require_unique(candidate_ids, "instrument candidate_ids")
+        instrument_keys = tuple(
+            f"{item.candidate_id}@{item.analyzer_id}@{item.dimension_id}"
+            for item in self.instrument_revisions
+        )
+        _require_unique(instrument_keys, "instrument revisions")
         metric_ids = tuple(f"{item.metric_id}@{item.metric_version}" for item in self.metrics)
         _require_unique(metric_ids, "metrics")
+        undeclared_dimensions = {
+            item.dimension_id for item in self.instrument_revisions
+        } - set(self.dimension_ids)
+        if undeclared_dimensions:
+            raise ValueError("instrument dimensions must be declared by the experiment plan")
 
         if self.status is ExperimentPlanStatus.FROZEN:
             if len(self.instrument_revisions) < 2:
@@ -219,10 +229,11 @@ class ComparisonArtifactRef:
 
 @dataclass(frozen=True, slots=True)
 class ExperimentRunRecord:
-    """Immutable execution record linked to a frozen plan and preserved artifacts."""
+    """Immutable execution record linked to frozen plan, eligibility, and artifacts."""
 
     record_id: str
     experiment_plan_ref: VersionedArtifactRef
+    candidate_eligibility_ref: VersionedArtifactRef
     workbench_run_id: str
     status: ExperimentRunStatus
     environment: ExecutionEnvironment
@@ -241,6 +252,17 @@ class ExperimentRunRecord:
         completed = _parse_timestamp(self.completed_at, "completed_at")
         if completed < started:
             raise ValueError("completed_at may not precede started_at")
+
+        expected_eligibility_id = (
+            f"{self.experiment_plan_ref.artifact_id}:candidate-eligibility"
+        )
+        if self.candidate_eligibility_ref.artifact_id != expected_eligibility_id:
+            raise ValueError("candidate eligibility artifact_id must identify the experiment plan")
+        if (
+            self.candidate_eligibility_ref.artifact_version
+            != self.experiment_plan_ref.artifact_version
+        ):
+            raise ValueError("candidate eligibility version must match the experiment plan")
 
         analyzer_ids = tuple(item.analyzer_id for item in self.instrument_revisions)
         result_analyzer_ids = tuple(item.analyzer_id for item in self.result_artifacts)
@@ -263,6 +285,7 @@ def record_workbench_run(
     *,
     plan: ExperimentPlan,
     plan_ref: VersionedArtifactRef,
+    candidate_eligibility_ref: VersionedArtifactRef,
     environment: ExecutionEnvironment,
     run: WorkbenchRun,
     result_hashes: Mapping[str, str],
@@ -270,7 +293,7 @@ def record_workbench_run(
     started_at: str,
     completed_at: str,
 ) -> ExperimentRunRecord:
-    """Create an immutable run record after result artifacts have been serialized."""
+    """Create a run record after eligibility and artifact serialization complete."""
 
     if plan.status is not ExperimentPlanStatus.FROZEN:
         raise ValueError("only a frozen experiment plan may authorize execution")
@@ -279,12 +302,21 @@ def record_workbench_run(
         or plan_ref.artifact_version != plan.experiment_version
     ):
         raise ValueError("experiment plan reference must identify the frozen plan")
+    expected_eligibility_id = f"{plan.experiment_id}:candidate-eligibility"
+    if (
+        candidate_eligibility_ref.artifact_id != expected_eligibility_id
+        or candidate_eligibility_ref.artifact_version != plan.experiment_version
+    ):
+        raise ValueError("candidate eligibility reference must identify this plan version")
     if run.content_id not in plan.content_ids:
         raise ValueError("workbench run content is not authorized by the experiment plan")
 
     planned_analyzer_ids = tuple(item.analyzer_id for item in plan.instrument_revisions)
     if run.analyzer_ids != planned_analyzer_ids:
         raise ValueError("workbench analyzer order must match the frozen experiment plan")
+    planned_dimensions = {item.dimension_id for item in plan.instrument_revisions}
+    if run.comparison.dimension_id not in planned_dimensions:
+        raise ValueError("workbench comparison dimension is not authorized by the plan")
 
     result_ids = tuple(result.result_id for result in run.results)
     if set(result_hashes) != set(result_ids):
@@ -309,6 +341,7 @@ def record_workbench_run(
     return ExperimentRunRecord(
         record_id=f"{run.run_id}:record",
         experiment_plan_ref=plan_ref,
+        candidate_eligibility_ref=candidate_eligibility_ref,
         workbench_run_id=run.run_id,
         status=ExperimentRunStatus(run.comparison.status.value),
         environment=environment,
