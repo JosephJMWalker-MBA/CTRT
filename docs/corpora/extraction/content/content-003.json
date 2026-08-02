@@ -1,0 +1,10 @@
+{
+  "artifact_id": "extracted-content:content-003:00ab0b9ee700397be6076f333eff1c585bb222efb544211203f9b8ea4ee1007b:fcf257a5d33b49a8c4efb505a1da6ba0aa6eda6df04c372e44ba4b019a2c32c2",
+  "content_id": "content-003",
+  "text": "The report contains no fixture vocabulary.",
+  "content_hash": "sha256:00ab0b9ee700397be6076f333eff1c585bb222efb544211203f9b8ea4ee1007b",
+  "language": "en",
+  "source_type": "raw_text",
+  "source_uri": null,
+  "extraction_ref": "extraction:content-003:80911cb35e9e70113c7f06132f44aba838e9d4cb34d6348a38440e03f2184267"
+}
