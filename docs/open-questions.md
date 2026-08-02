@@ -13,23 +13,28 @@ This register preserves both unresolved questions and resolved questions that sh
 7. **What should “overall confidence” mean?** Resolved by [ADR-0006](adr/0006-structured-confidence-and-abstention.md): Phase 0 defines no overall confidence scalar. Confidence is a vector containing instrument probability, calibration, applicability, extraction quality, agreement, abstention, and ambiguity preservation.
 8. **When must CTRT abstain?** Partially resolved by ADR-0006. Out-of-domain applicability, failed extraction, strong inter-instrument disagreement, and agreement-level abstention independently force system abstention. Thresholds for borderline applicability, degraded extraction, low calibration evidence, and partial disagreement remain open and must be policy-specific.
 
+## Resolved — Measurement contracts
+
+4. **What is the target of a measurement?** Resolved by [ADR-0005](adr/0005-canonical-content-and-segmentation.md) and [ADR-0008](adr/0008-analysis-targets-evidence-and-taxonomy-comparability.md). Every result identifies either the complete content item or one declared segment, including canonical offsets, extraction reference, and segmentation identity when applicable.
+9. **How should incompatible taxonomies be compared?** Resolved structurally by ADR-0008. Every relationship is recorded as identical, compatible mapping, partial overlap, incompatible, or unassessed. Non-equivalent systems remain side by side, mappings are versioned, information loss is explicit, and Phase 0 never permits score combination. Which specific mappings earn a given relationship remains empirical.
+10. **What evidence must each analyzer return?** Resolved structurally by ADR-0008. Every result must declare evidence as native, post-hoc, deterministic, or unavailable. Post-hoc and deterministic methods require identity and version; unavailable evidence cannot contain spans. An analyzer is not required to fabricate local evidence.
+
 ## P1 — Construct definition
 
-4. **What is the target of a measurement?** Whole-item averages may conceal local hostility, quoted threats, or shifts between calm reporting and emotionally charged passages.
 5. **Which constructs require context beyond text?** Sensationalism, manipulation, revenue incentive, irony, and author intent may be invalid as text-only claims.
 6. **What observable evidence distinguishes emotional intensity from urgency, hostility, and valence?** This must be answered before emotional intensity can become eligible.
 
 ## P1 — Confidence and disagreement
 
-9. **How should incompatible taxonomies be compared?** Emotion labels and toxicity categories cannot be merged merely because their values fall between zero and one.
 24. **Which policy-specific noncritical signals should trigger abstention?** Borderline applicability, degraded extraction, partial disagreement, and unvalidated calibration may justify abstention for some uses but not others.
 25. **How should ambiguity-budget status be evaluated consistently?** Phase 0 defines the record and vocabulary but not yet an empirical threshold for `constrained` or `exceeded`.
+26. **Which taxonomy mappings are empirically defensible?** A mapping must be evaluated for domain, directionality, information loss, stability, and intended use before it can be classified as compatible rather than partial or unassessed.
 
 ## P1 — Evidence and explanation
 
-10. **What evidence must each analyzer return?** Some models provide only item-level probabilities; others can support token- or span-level evidence. CTRT must distinguish evidence from post-hoc attribution.
-11. **How will explanation fidelity be tested?** A readable explanation is insufficient if it adds intent, causation, certainty, calibration, or a scalar confidence value not present in the canonical measurements.
+11. **How will explanation fidelity be tested?** A readable explanation is insufficient if it adds intent, causation, certainty, calibration, native-evidence claims, or a scalar confidence value not present in the canonical measurements.
 12. **Can a rule-based explanation cover the initial reports?** If so, the project may defer a generative explanation layer and reduce a source of unsupported synthesis.
+27. **Which attribution methods provide useful post-hoc evidence?** The contract can identify post-hoc evidence without asserting that the method faithfully represents the analyzer's causal behavior. Fidelity tests remain required.
 
 ## P2 — Corpus and annotation
 

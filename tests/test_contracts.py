@@ -22,11 +22,15 @@ from ctrt.contracts import (
     Analyzer,
     AnalyzerIdentity,
     ContentItem,
+    EvidenceSpan,
     ModelResult,
     NormalizedScore,
     ResultStatus,
     SourceType,
 )
+from ctrt.measurement import AnalysisTarget, EvidenceSupport, EvidenceSupportStatus
+
+EXTRACTION_REF = "content-item:content-001"
 
 
 def identity() -> AnalyzerIdentity:
@@ -41,7 +45,11 @@ def identity() -> AnalyzerIdentity:
     )
 
 
-def confidence(*, out_of_domain: bool = False) -> ConfidenceVector:
+def confidence(
+    *,
+    out_of_domain: bool = False,
+    extraction_ref: str = EXTRACTION_REF,
+) -> ConfidenceVector:
     reasons = ("out-of-domain",) if out_of_domain else ()
     return ConfidenceVector(
         instrument_probability=InstrumentProbability(
@@ -62,7 +70,7 @@ def confidence(*, out_of_domain: bool = False) -> ConfidenceVector:
         ),
         extraction_quality=ExtractionQuality(
             status=ExtractionQualityStatus.CLEAN,
-            evidence_ref="content-item:content-001",
+            evidence_ref=extraction_ref,
         ),
         inter_instrument_agreement=InterInstrumentAgreement(
             status=AgreementStatus.SINGLE_INSTRUMENT,
@@ -88,6 +96,19 @@ def content() -> ContentItem:
         content_hash="sha256:synthetic",
         language="en",
     )
+
+
+def target(*, extraction_ref: str = EXTRACTION_REF) -> AnalysisTarget:
+    item = content()
+    return AnalysisTarget.for_content_item(
+        content_id=item.content_id,
+        content_length=len(item.text),
+        extraction_ref=extraction_ref,
+    )
+
+
+def unavailable_evidence() -> EvidenceSupport:
+    return EvidenceSupport(status=EvidenceSupportStatus.UNAVAILABLE)
 
 
 def test_content_item_rejects_empty_text() -> None:
@@ -119,6 +140,8 @@ def test_failed_result_requires_an_error() -> None:
             dimension_version="0.1.0",
             status=ResultStatus.FAILED,
             analyzer=identity(),
+            analysis_target=target(),
+            evidence_support=unavailable_evidence(),
             confidence=confidence(),
             raw_output={},
         )
@@ -133,6 +156,8 @@ def test_abstained_result_cannot_contain_normalized_scores() -> None:
             dimension_version="0.1.0",
             status=ResultStatus.ABSTAINED,
             analyzer=identity(),
+            analysis_target=target(),
+            evidence_support=unavailable_evidence(),
             confidence=confidence(out_of_domain=True),
             raw_output={"reason": "outside evaluated domain"},
             normalized_scores=(
@@ -155,8 +180,62 @@ def test_triggered_abstention_rejects_success_status() -> None:
             dimension_version="0.1.0",
             status=ResultStatus.SUCCESS,
             analyzer=identity(),
+            analysis_target=target(),
+            evidence_support=unavailable_evidence(),
             confidence=confidence(out_of_domain=True),
             raw_output={},
+        )
+
+
+def test_result_requires_matching_extraction_reference() -> None:
+    with pytest.raises(ValueError, match="extraction evidence_ref must match"):
+        ModelResult(
+            result_id="result-001",
+            content_id="content-001",
+            dimension_id="sentiment.valence",
+            dimension_version="0.1.0",
+            status=ResultStatus.SUCCESS,
+            analyzer=identity(),
+            analysis_target=target(extraction_ref="extraction:source-a"),
+            evidence_support=unavailable_evidence(),
+            confidence=confidence(extraction_ref="extraction:source-b"),
+            raw_output={},
+        )
+
+
+def test_unavailable_evidence_rejects_spans() -> None:
+    with pytest.raises(ValueError, match="unavailable evidence"):
+        ModelResult(
+            result_id="result-001",
+            content_id="content-001",
+            dimension_id="sentiment.valence",
+            dimension_version="0.1.0",
+            status=ResultStatus.SUCCESS,
+            analyzer=identity(),
+            analysis_target=target(),
+            evidence_support=unavailable_evidence(),
+            confidence=confidence(),
+            raw_output={},
+            evidence_spans=(EvidenceSpan(start=0, end=1),),
+        )
+
+
+def test_evidence_span_must_fall_within_target() -> None:
+    with pytest.raises(ValueError, match="within the analysis target"):
+        ModelResult(
+            result_id="result-001",
+            content_id="content-001",
+            dimension_id="sentiment.valence",
+            dimension_version="0.1.0",
+            status=ResultStatus.SUCCESS,
+            analyzer=identity(),
+            analysis_target=target(),
+            evidence_support=EvidenceSupport(
+                status=EvidenceSupportStatus.PROVIDED_NATIVE
+            ),
+            confidence=confidence(),
+            raw_output={},
+            evidence_spans=(EvidenceSpan(start=0, end=100),),
         )
 
 
@@ -185,6 +264,12 @@ def test_runtime_protocol_accepts_conforming_analyzer() -> None:
                 dimension_version="0.1.0",
                 status=ResultStatus.SUCCESS,
                 analyzer=self.identity,
+                analysis_target=AnalysisTarget.for_content_item(
+                    content_id=item.content_id,
+                    content_length=len(item.text),
+                    extraction_ref=EXTRACTION_REF,
+                ),
+                evidence_support=unavailable_evidence(),
                 confidence=confidence(),
                 raw_output={"negative": 0.1, "neutral": 0.8, "positive": 0.1},
                 normalized_scores=(

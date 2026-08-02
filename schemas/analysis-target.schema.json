@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ctrt.dev/schemas/analysis-target.schema.json",
+  "title": "CTRT Analysis Target",
+  "description": "Exact canonical content coordinates presented to one analyzer.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "content_id",
+    "start",
+    "end",
+    "extraction_ref",
+    "segmentation_id",
+    "segment_id",
+    "coordinate_system"
+  ],
+  "properties": {
+    "kind": {"type": "string", "enum": ["content-item", "segment"]},
+    "content_id": {"type": "string", "minLength": 1},
+    "start": {"type": "integer", "minimum": 0},
+    "end": {"type": "integer", "minimum": 1},
+    "extraction_ref": {"type": "string", "minLength": 1},
+    "segmentation_id": {"type": ["string", "null"], "minLength": 1},
+    "segment_id": {"type": ["string", "null"], "minLength": 1},
+    "coordinate_system": {"const": "unicode_codepoint_half_open"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"kind": {"const": "content-item"}}, "required": ["kind"]},
+      "then": {
+        "properties": {
+          "segmentation_id": {"type": "null"},
+          "segment_id": {"type": "null"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"kind": {"const": "segment"}}, "required": ["kind"]},
+      "then": {
+        "properties": {
+          "segmentation_id": {"type": "string", "minLength": 1},
+          "segment_id": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  ]
+}

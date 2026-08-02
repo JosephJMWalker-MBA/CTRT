@@ -67,6 +67,28 @@ def confidence_vector() -> dict[str, Any]:
     }
 
 
+def analysis_target() -> dict[str, Any]:
+    return {
+        "kind": "content-item",
+        "content_id": "content-001",
+        "start": 0,
+        "end": 28,
+        "extraction_ref": "content-item:content-001",
+        "segmentation_id": None,
+        "segment_id": None,
+        "coordinate_system": "unicode_codepoint_half_open",
+    }
+
+
+def evidence_support() -> dict[str, Any]:
+    return {
+        "status": "unavailable",
+        "method_id": None,
+        "method_version": None,
+        "notes": "Synthetic analyzer provides item-level output only.",
+    }
+
+
 def model_result() -> dict[str, Any]:
     return {
         "result_id": "result-001",
@@ -83,6 +105,8 @@ def model_result() -> dict[str, Any]:
             "taxonomy_id": "sentiment.three-class",
             "taxonomy_version": "1.0.0",
         },
+        "analysis_target": analysis_target(),
+        "evidence_support": evidence_support(),
         "confidence": confidence_vector(),
         "raw_output": {"negative": 0.1, "neutral": 0.8, "positive": 0.1},
         "normalized_scores": [
@@ -101,6 +125,29 @@ def model_result() -> dict[str, Any]:
     }
 
 
+def taxonomy_comparison() -> dict[str, Any]:
+    return {
+        "comparison_id": "taxonomy-comparison-001",
+        "comparison_version": "0.1.0",
+        "left": {
+            "taxonomy_id": "sentiment.three-class",
+            "taxonomy_version": "1.0.0",
+        },
+        "right": {
+            "taxonomy_id": "sentiment.binary",
+            "taxonomy_version": "1.0.0",
+        },
+        "relation": "partial-overlap",
+        "display_mode": "side-by-side",
+        "score_combination_permitted": False,
+        "mapping_method_id": "mapping.sentiment-taxonomies",
+        "mapping_method_version": "0.1.0",
+        "evidence_ref": "protocol:taxonomy-mapping-001",
+        "information_loss": ["Binary taxonomy has no native neutral class."],
+        "notes": "Comparison preserves both native outputs.",
+    }
+
+
 def test_all_schemas_are_valid_draft_2020_12() -> None:
     for path in sorted(SCHEMA_DIR.glob("*.schema.json")):
         Draft202012Validator.check_schema(
@@ -110,6 +157,30 @@ def test_all_schemas_are_valid_draft_2020_12() -> None:
 
 def test_model_result_requires_structured_confidence() -> None:
     validator("model-result.schema.json").validate(model_result())
+
+
+def test_model_result_requires_analysis_target() -> None:
+    result = model_result()
+    del result["analysis_target"]
+
+    with pytest.raises(ValidationError):
+        validator("model-result.schema.json").validate(result)
+
+
+def test_model_result_requires_evidence_support() -> None:
+    result = model_result()
+    del result["evidence_support"]
+
+    with pytest.raises(ValidationError):
+        validator("model-result.schema.json").validate(result)
+
+
+def test_unavailable_evidence_rejects_spans() -> None:
+    result = model_result()
+    result["evidence_spans"] = [{"start": 0, "end": 5}]
+
+    with pytest.raises(ValidationError):
+        validator("model-result.schema.json").validate(result)
 
 
 def test_per_score_scalar_confidence_is_rejected() -> None:
@@ -132,6 +203,22 @@ def test_out_of_domain_requires_system_abstention() -> None:
         validator("confidence-vector.schema.json").validate(vector)
 
 
+def test_taxonomy_comparison_forbids_score_combination() -> None:
+    comparison = taxonomy_comparison()
+    comparison["score_combination_permitted"] = True
+
+    with pytest.raises(ValidationError):
+        validator("taxonomy-comparison.schema.json").validate(comparison)
+
+
+def test_partial_taxonomy_overlap_requires_information_loss() -> None:
+    comparison = taxonomy_comparison()
+    comparison["information_loss"] = []
+
+    with pytest.raises(ValidationError):
+        validator("taxonomy-comparison.schema.json").validate(comparison)
+
+
 def test_report_surfaces_vector_and_forbids_scalar_explanation() -> None:
     report = {
         "report_id": "report-001",
@@ -148,8 +235,10 @@ def test_report_surfaces_vector_and_forbids_scalar_explanation() -> None:
                 "excluded_results": [],
                 "scores": {"valence": 0.0},
                 "agreement": confidence_vector()["inter_instrument_agreement"],
+                "taxonomy_comparison_ids": ["taxonomy-comparison-001"],
             }
         ],
+        "taxonomy_comparisons": [taxonomy_comparison()],
         "confidence": confidence_vector(),
         "aggregation_policy": {
             "policy_id": "phase-zero.report",

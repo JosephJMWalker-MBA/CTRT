@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ctrt.dev/schemas/evidence-support.schema.json",
+  "title": "CTRT Evidence Support",
+  "description": "Declares whether local evidence was produced natively, attributed later, derived deterministically, or unavailable.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "method_id", "method_version", "notes"],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "provided-native",
+        "provided-post-hoc",
+        "provided-deterministic",
+        "unavailable"
+      ]
+    },
+    "method_id": {"type": ["string", "null"], "minLength": 1},
+    "method_version": {"type": ["string", "null"], "minLength": 1},
+    "notes": {"type": "string"}
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": ["provided-post-hoc", "provided-deterministic"]
+          }
+        },
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "method_id": {"type": "string", "minLength": 1},
+          "method_version": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {"enum": ["provided-native", "unavailable"]}
+        },
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "method_id": {"type": "null"},
+          "method_version": {"type": "null"}
+        }
+      }
+    }
+  ]
+}

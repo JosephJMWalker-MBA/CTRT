@@ -30,9 +30,12 @@ The output of this phase is a research-ready repository, not a working content c
 ### Technical contracts
 
 - define provider-neutral analyzer interfaces;
-- define canonical content, evidence, model-result, and report records;
+- define canonical content, segmentation, analysis-target, evidence, model-result, and report records;
 - preserve raw and normalized outputs;
 - represent model identity, versions, configuration, warnings, errors, applicability, and timing;
+- link downstream extraction quality to an upstream extraction or canonical-input record;
+- distinguish native evidence from post-hoc and deterministic attribution;
+- represent taxonomy relationships without implying equivalence or permitting hidden score combination;
 - create synthetic fixtures and contract tests.
 
 ### Evaluation design
@@ -58,13 +61,13 @@ Phase 0 will not:
 
 ## Relationship to future phases
 
-### Phase 1A — Instrument evaluation
+### Phase 1A — Content Analysis Workbench
 
-Run candidate analyzers against a governed benchmark corpus and compare validity, reliability, calibration, stability, bias, cost, latency, and domain limitations.
+Implement the accepted Workbench-first architecture from ADR-0007. Begin with synthetic analyzers, then run pinned candidate instruments against a governed benchmark corpus. Compare validity, reliability, calibration, stability, bias, evidence support, taxonomy relationships, extraction quality, cost, latency, and domain limitations without producing an overall CTRT score.
 
 ### Phase 1B — Provisional measurement engine
 
-Orchestrate selected analyzers through the provider-neutral contracts and produce dimension-level reports with evidence and explicit uncertainty.
+Orchestrate selected, domain-bounded analyzers through the provider-neutral contracts and produce dimension-level reports with evidence and explicit uncertainty.
 
 ### Phase 1C — Aggregate experiments
 
@@ -80,13 +83,17 @@ Phase 0 is complete when:
 
 1. the Constitution has been reviewed and accepted as the controlling project document;
 2. each proposed Phase 1 dimension has an operational definition or is explicitly deferred;
-3. canonical schemas preserve raw output, normalized output, provenance, model identity, evidence spans, warnings, and uncertainty;
-4. provider-neutral contracts can represent at least two hypothetical analyzers for the same dimension;
-5. disagreement and abstention are first-class states;
-6. the benchmark protocol defines measurable acceptance criteria without presupposing a winning model;
-7. synthetic contract tests pass without any machine-learning dependency;
-8. unresolved questions are recorded openly;
-9. no document claims that an overall CTRT score is validated.
+3. canonical schemas preserve raw output, normalized output, analyzer and taxonomy identity, full confidence vectors, warnings, and errors;
+4. every result identifies its exact whole-item or segment target in canonical content coordinates;
+5. every result links extraction quality to an upstream extraction or canonical-input reference;
+6. every result declares whether local evidence is native, post-hoc, deterministic, or unavailable;
+7. taxonomy-comparison records preserve incompatibility and information loss without permitting hidden score combination;
+8. provider-neutral contracts can represent at least two hypothetical analyzers for the same dimension;
+9. disagreement and abstention are first-class states;
+10. the benchmark protocol defines measurable acceptance criteria without presupposing a winning model;
+11. synthetic contract and schema tests pass without any machine-learning dependency;
+12. unresolved questions are recorded openly;
+13. no document claims that an overall CTRT score is validated.
 
 ## Work-allocation boundary
 
