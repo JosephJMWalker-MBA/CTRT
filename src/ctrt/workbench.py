@@ -243,7 +243,9 @@ class ContentAnalysisWorkbench:
             if result.analysis_target != expected_target:
                 raise ValueError("all analyzers must receive the same canonical target")
             if result.configuration != analyzer.execution_configuration:
-                raise ValueError("analyzer result configuration does not match runtime configuration")
+                raise ValueError(
+                    "analyzer result configuration does not match runtime configuration"
+                )
 
     @staticmethod
     def _compare(
