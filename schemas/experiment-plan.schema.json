@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ctrt.dev/schemas/experiment-plan.schema.json",
+  "title": "CTRT Versioned Experiment Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "experiment_id",
+    "experiment_version",
+    "status",
+    "research_question",
+    "protocol_ref",
+    "candidate_registry_ref",
+    "corpus_ref",
+    "content_ids",
+    "dimension_ids",
+    "instrument_revisions",
+    "metrics",
+    "exclusion_rules",
+    "stopping_rules",
+    "created_at"
+  ],
+  "properties": {
+    "experiment_id": {"type": "string", "minLength": 1},
+    "experiment_version": {"type": "string", "minLength": 1},
+    "status": {"type": "string", "enum": ["draft", "frozen", "superseded"]},
+    "research_question": {"type": "string", "minLength": 1},
+    "protocol_ref": {"$ref": "#/$defs/versionedArtifactRef"},
+    "candidate_registry_ref": {"$ref": "#/$defs/versionedArtifactRef"},
+    "corpus_ref": {"$ref": "#/$defs/versionedArtifactRef"},
+    "content_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "dimension_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "instrument_revisions": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/instrumentRevision"}
+    },
+    "metrics": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/metricDefinition"}
+    },
+    "exclusion_rules": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "stopping_rules": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "created_at": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "versionedArtifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_id", "artifact_version", "artifact_hash"],
+      "properties": {
+        "artifact_id": {"type": "string", "minLength": 1},
+        "artifact_version": {"type": "string", "minLength": 1},
+        "artifact_hash": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "instrumentRevision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_id",
+        "analyzer_id",
+        "implementation_revision",
+        "adapter_version",
+        "configuration_hash"
+      ],
+      "properties": {
+        "candidate_id": {"type": "string", "minLength": 1},
+        "analyzer_id": {"type": "string", "minLength": 1},
+        "implementation_revision": {"type": "string", "minLength": 1},
+        "adapter_version": {"type": "string", "minLength": 1},
+        "configuration_hash": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "metricDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["metric_id", "metric_version"],
+      "properties": {
+        "metric_id": {
+          "type": "string",
+          "minLength": 1,
+          "not": {"enum": ["scalar-confidence", "overall-confidence"]}
+        },
+        "metric_version": {"type": "string", "minLength": 1}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "frozen"}}, "required": ["status"]},
+      "then": {
+        "properties": {
+          "content_ids": {"minItems": 1},
+          "dimension_ids": {"minItems": 1},
+          "instrument_revisions": {"minItems": 2},
+          "metrics": {"minItems": 1},
+          "stopping_rules": {"minItems": 1}
+        }
+      }
+    }
+  ]
+}
