@@ -207,6 +207,10 @@ ELIGIBLE_DISPOSITIONS = {
     CandidateDisposition.EVALUATED,
     CandidateDisposition.SELECTED_FOR_DOMAIN,
 }
+EXECUTABLE_LICENSE_STATES = {
+    LicenseReviewStatus.PROVISIONALLY_VERIFIED,
+    LicenseReviewStatus.VERIFIED,
+}
 
 
 def _candidate_from_document(document: Mapping[str, object]) -> CandidateExecutionRecord:
@@ -251,6 +255,8 @@ def _instrument_reasons(
         reasons.append(f"candidate disposition {candidate.status.value!r} is not executable")
     if candidate.license_status is LicenseReviewStatus.BLOCKED:
         reasons.append("candidate license review is blocked")
+    elif candidate.license_status not in EXECUTABLE_LICENSE_STATES:
+        reasons.append("candidate license review is not provisionally verified")
     if instrument.analyzer_id not in candidate.authorized_analyzer_ids:
         reasons.append("analyzer identity is not explicitly authorized by the candidate record")
     if instrument.dimension_id not in candidate.dimensions:
