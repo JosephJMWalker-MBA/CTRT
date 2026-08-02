@@ -4,7 +4,7 @@ CTRT is an open, explainable framework for measuring characteristics of digital 
 
 ## Current phase
 
-**Phase 0: Constitutional and Research Foundations** has closed its schema-impacting contract gaps. CTRT has begun **Phase 1A: the Content Analysis Workbench** with dependency-free synthetic execution and versioned experiment records.
+**Phase 0: Constitutional and Research Foundations** has closed its schema-impacting contract gaps. CTRT has begun **Phase 1A: the Content Analysis Workbench** with dependency-free synthetic execution, versioned experiment records, exact candidate eligibility, and canonical artifact hashing.
 
 CTRT is not a censorship system and does not determine whether content should exist. It measures content items and reports the instruments, evidence, disagreement, confidence, and limitations behind each result.
 
@@ -66,7 +66,7 @@ A frozen experiment plan identifies:
 - the research question;
 - exact protocol, candidate-registry, and corpus artifact versions and hashes;
 - authorized content and dimensions;
-- ordered candidate, analyzer, implementation, adapter, and configuration revisions;
+- ordered candidate, analyzer, dimension, implementation, adapter, and configuration revisions;
 - declared metrics, exclusion rules, and stopping rules.
 
 Every recorded run preserves its execution environment and references independently serialized result and comparison artifacts by SHA-256 hash. Successful reruns cannot replace prior failures or abstentions. A small append-only ledger rejects replacement of an existing plan version or run record.
@@ -76,7 +76,29 @@ See:
 - [ADR-0009: Versioned experiment plans and run records](docs/adr/0009-versioned-experiment-plans-and-run-records.md)
 - [Phase 1A Versioned Experiments](docs/phase-1a-versioned-experiments.md)
 
-Candidate eligibility resolution against the referenced registry remains the next execution-gate boundary before any real candidate adapter is run.
+## Candidate eligibility and canonical artifacts
+
+A frozen plan may execute only after every instrument passes the exact candidate-registry gate.
+
+CTRT verifies:
+
+- exact registry ID, version, and canonical hash;
+- accepted registry lifecycle;
+- analyzer capability and executable candidate disposition;
+- at least provisional license verification;
+- explicit analyzer-ID authorization;
+- declared dimension compatibility;
+- mandatory revision pinning and exact revision agreement.
+
+Eligibility becomes its own immutable artifact and is referenced by the run record. The canonical artifact pipeline then deterministically serializes and hashes the plan, eligibility report, environment, analyzer results, comparison, and final run record using `ctrt-canonical-json@0.1.0`.
+
+The accepted synthetic registry authorizes only the two first-party fixture analyzers. The initial real-candidate registry remains non-executable until candidates have accepted, pinned, license-reviewed, analyzer-specific records.
+
+See:
+
+- [ADR-0010: Candidate eligibility and canonical artifacts](docs/adr/0010-candidate-eligibility-and-canonical-artifacts.md)
+- [Phase 1A Candidate Eligibility and Canonical Artifacts](docs/phase-1a-candidate-eligibility-and-canonical-artifacts.md)
+- [Accepted synthetic candidate registry](docs/candidates/synthetic-registry.v0.1.0.json)
 
 ## Measurement contract decisions
 
@@ -120,9 +142,9 @@ Out-of-domain analysis, failed extraction, strong disagreement, or agreement-lev
 ## Repository map
 
 ```text
-src/ctrt/          Constitutional contracts, workbench logic, and experiment records
+src/ctrt/          Constitutional contracts, workbench, eligibility, and artifact logic
 schemas/           Canonical JSON Schemas
-tests/             Contract, schema, registry, workbench, and experiment tests
+tests/             Contract, schema, registry, workbench, experiment, and artifact tests
 docs/dimensions/   Versioned dimension eligibility records
 docs/candidates/   Versioned candidate technology registries
 docs/adr/          Architecture and governance decisions
@@ -140,6 +162,8 @@ The present logic and repository work may define:
 - model-evaluation and benchmarking protocols;
 - dependency-free synthetic analyzers and workbench tests;
 - frozen experiment plans and append-only run records;
+- exact candidate eligibility gates;
+- deterministic canonical serialization and artifact hashing;
 - the Phase 1 workbench specification.
 
 This stage will not download or run transformer models, tune aggregate scores, deploy infrastructure, or begin large-scale corpus evaluation.
@@ -163,4 +187,4 @@ python -m pytest -q
 
 ## Status
 
-Phase 1A synthetic Workbench and versioned-experiment implementation. No CTRT score is currently validated or suitable for consequential decision-making.
+Phase 1A synthetic Workbench with governed, eligibility-bound canonical experiment artifacts. No real candidate is executable, and no CTRT score is validated or suitable for consequential decision-making.
