@@ -4,7 +4,7 @@ CTRT is an open, explainable framework for measuring characteristics of digital 
 
 ## Current phase
 
-**Phase 0: Constitutional and Research Foundations** has closed its schema-impacting contract gaps. CTRT has begun **Phase 1A: the Content Analysis Workbench** with dependency-free synthetic execution, versioned experiment records, exact candidate eligibility, canonical artifact hashing, append-only local persistence, fail-closed governed execution sessions, and multi-content experiment completion.
+**Phase 0: Constitutional and Research Foundations** has closed its schema-impacting contract gaps. CTRT has begun **Phase 1A: the Content Analysis Workbench** with dependency-free synthetic execution, versioned experiment records, exact candidate eligibility, canonical artifact hashing, append-only local persistence, fail-closed governed execution sessions, multi-content experiment completion, frozen corpus binding, and storage-backed canonical content reconstruction.
 
 CTRT is not a censorship system and does not determine whether content should exist. It measures content items and reports the instruments, evidence, disagreement, confidence, and limitations behind each result.
 
@@ -165,7 +165,45 @@ See:
 - [Phase 1A Multi-content Experiment Runner](docs/phase-1a-multi-content-experiment-runner.md)
 - [Experiment completion manifest schema](schemas/experiment-completion-manifest.schema.json)
 
-The initial runner is sequential, supports one shared dimension, and intentionally leaves retries, parallel workers, corpus-membership proofs, and aggregate research summaries for later decisions.
+The initial runner is sequential, supports one shared dimension, and intentionally leaves retries, parallel workers, and aggregate research summaries for later decisions.
+
+## Frozen corpus binding
+
+A frozen corpus manifest now binds the experiment to an exact ordered content population before any session executes.
+
+Each manifest entry records the content ID, SHA-256 of the exact UTF-8 text, language, source type, source URI, and extraction identity. The runtime recomputes the text hash and compares every field before publishing the corpus manifest or starting the experiment.
+
+Missing, additional, duplicated, reordered, altered, or metadata-drifted content fails closed. The final corpus-bound completion links the exact stored corpus manifest to the verified multi-content experiment completion without creating an analytical aggregate.
+
+See:
+
+- [ADR-0014: Frozen corpus manifests](docs/adr/0014-frozen-corpus-manifest-binding.md)
+- [Phase 1A Corpus Manifest Binding](docs/phase-1a-corpus-manifest-binding.md)
+- [Corpus manifest schema](schemas/corpus-manifest.schema.json)
+
+The current extraction identity remains limited to `content-item:<content-id>`.
+
+## Canonical content artifacts
+
+The linked corpus can now preserve and reconstruct the actual analyzer inputs from append-only storage.
+
+Every canonical content artifact contains the exact text plus language, source type, source URI, and extraction identity. CTRT keeps two identities distinct:
+
+- `content_hash` identifies the exact UTF-8 text bytes;
+- the canonical artifact hash identifies the full text-and-metadata record.
+
+A new linked synthetic corpus version references each content artifact by exact ID and hash. Ingestion writes the content artifacts first and the corpus manifest last, so partial writes cannot claim that a complete corpus exists.
+
+`StoredContentExperimentRunner` accepts only ordered content IDs and timestamps. It loads, re-hashes, verifies, and reconstructs every `ContentItem` from storage before delegating the existing corpus-bound lifecycle. Its final completion marker links all stored inputs to the verified experiment completion.
+
+See:
+
+- [ADR-0015: Canonical content artifacts](docs/adr/0015-canonical-content-artifacts.md)
+- [Phase 1A Canonical Content Artifacts](docs/phase-1a-canonical-content-artifacts.md)
+- [Canonical content artifact schema](schemas/canonical-content-artifact.schema.json)
+- [Linked synthetic corpus](docs/corpora/synthetic-three-items.v0.2.0.json)
+
+The earlier unlinked corpus version remains unchanged and cannot authorize storage-backed execution.
 
 ## Measurement contract decisions
 
@@ -209,11 +247,12 @@ Out-of-domain analysis, failed extraction, strong disagreement, or agreement-lev
 ## Repository map
 
 ```text
-src/ctrt/          Constitutional contracts, Workbench, eligibility, artifacts, storage, sessions, runners
+src/ctrt/          Contracts, Workbench, governance, artifacts, storage, sessions, runners
 schemas/           Canonical JSON Schemas
-tests/             Contract, schema, registry, Workbench, experiment, artifact, storage, session, runner tests
-docs/dimensions/   Versioned dimension eligibility records
+tests/             Contract, schema, registry, Workbench, artifact, storage, and runner tests
 docs/candidates/   Versioned candidate technology registries
+docs/corpora/      Versioned corpus manifests and synthetic canonical content fixtures
+docs/dimensions/   Versioned dimension eligibility records
 docs/adr/          Architecture and governance decisions
 ```
 
@@ -234,6 +273,8 @@ The present logic and repository work may define:
 - dependency-free append-only local artifact persistence;
 - fail-closed governed synthetic execution sessions;
 - exact-scope multi-content experiment completion;
+- frozen corpus manifests and exact runtime content binding;
+- canonical content artifact persistence and storage-backed input reconstruction;
 - the Phase 1 workbench specification.
 
 This stage will not download or run transformer models, tune aggregate scores, deploy infrastructure, or begin large-scale corpus evaluation.
@@ -257,4 +298,4 @@ python -m pytest -q
 
 ## Status
 
-Phase 1A now has a complete governed synthetic path from frozen plan through exact multi-content scope, runtime authorization, per-content execution, canonical serialization, append-only persistence, independent receipt preservation, and experiment completion re-verification. No real candidate is executable, and no CTRT score is validated or suitable for consequential decision-making.
+Phase 1A now has a complete governed synthetic path from frozen plan and exact stored corpus inputs through runtime authorization, per-content execution, canonical serialization, append-only persistence, independent receipt preservation, and fully linked completion re-verification. No real candidate is executable, and no CTRT score is validated or suitable for consequential decision-making.
