@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Mapping
+from copy import deepcopy
 from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, cast
@@ -22,8 +23,8 @@ from ctrt.canonical_content import (
     load_canonical_corpus,
     persist_canonical_corpus,
 )
-from ctrt.contracts import AnalyzerIdentity, ContentItem, ModelResult, SourceType
-from ctrt.corpus_manifest import CorpusManifestSnapshot
+from ctrt.contracts import AnalyzerIdentity, ContentItem, ModelResult
+from ctrt.corpus_manifest import CorpusBindingError, CorpusManifestSnapshot
 from ctrt.experiments import (
     ExecutionEnvironment,
     ExperimentPlan,
@@ -281,7 +282,6 @@ def execute(
     *,
     store: FileSystemArtifactStore | None = None,
     runtime_registry: AnalyzerRegistry | None = None,
-    execution_windows: tuple[StoredContentExecutionWindow, ...] | None = None,
 ):
     (
         artifact_store,
@@ -290,9 +290,10 @@ def execute(
         plan,
         fixture_analyzers,
     ) = prepare_store(tmp_path, store=store)
-    loaded_registry = runtime_registry or analyzer_registry(*fixture_analyzers)
     runner = StoredContentExperimentRunner(
-        analyzer_registry=loaded_registry,
+        analyzer_registry=(
+            runtime_registry or analyzer_registry(*fixture_analyzers)
+        ),
         artifact_store=artifact_store,
     )
     receipt = runner.run(
@@ -300,7 +301,7 @@ def execute(
         candidate_registry=candidate_registry,
         corpus_manifest=manifest,
         environment=environment(),
-        windows=execution_windows or windows(),
+        windows=windows(),
         experiment_run_id="stored-run-001",
     )
     return receipt, artifact_store
@@ -313,13 +314,9 @@ def test_content_artifacts_validate_and_reconstruct_exact_inputs(tmp_path: Path)
     assert loaded.manifest_ref.artifact_hash == manifest.artifact_hash
     assert loaded.content_refs == manifest.content_artifact_refs
     assert loaded.contents == contents()
-    assert tuple(item.text for item in loaded.contents) == tuple(
-        item.text for item in content_snapshots()
-    )
     assert plan.corpus_ref == manifest.reference()
 
     content_schema = load_document(CONTENT_SCHEMA_PATH)
-    corpus_schema = load_document(CORPUS_SCHEMA_PATH)
     validator = Draft202012Validator(
         content_schema,
         format_checker=FormatChecker(),
@@ -327,7 +324,7 @@ def test_content_artifacts_validate_and_reconstruct_exact_inputs(tmp_path: Path)
     for path in CONTENT_PATHS:
         validator.validate(load_document(path))
     Draft202012Validator(
-        corpus_schema,
+        load_document(CORPUS_SCHEMA_PATH),
         format_checker=FormatChecker(),
     ).validate(load_document(CORPUS_PATH))
 
@@ -371,7 +368,7 @@ def test_ingestion_and_execution_are_idempotent(tmp_path: Path) -> None:
     assert first.completion_manifest_ref == second.completion_manifest_ref
 
 
-def test_legacy_unlinked_manifest_cannot_drive_storage_backed_execution(
+def test_legacy_manifest_is_preserved_but_not_storage_executable(
     tmp_path: Path,
 ) -> None:
     legacy = corpus_snapshot(LEGACY_CORPUS_PATH)
@@ -411,7 +408,7 @@ def test_ingestion_rejects_tampered_text_before_manifest_write(tmp_path: Path) -
     )
     store = FileSystemArtifactStore(tmp_path / "artifacts")
 
-    with pytest.raises(Exception, match="UTF-8 text"):
+    with pytest.raises(CorpusBindingError, match="UTF-8 text"):
         persist_canonical_corpus(
             store,
             plan=plan,
@@ -423,24 +420,14 @@ def test_ingestion_rejects_tampered_text_before_manifest_write(tmp_path: Path) -
         store.get(manifest.corpus_id)
 
 
-def test_content_artifact_reference_drift_prevents_manifest_completion(
-    tmp_path: Path,
-) -> None:
+def test_reference_drift_prevents_linked_manifest_completion(tmp_path: Path) -> None:
+    document = deepcopy(load_document(CORPUS_PATH))
+    contents_value = cast(list[dict[str, Any]], document["contents"])
+    reference = cast(dict[str, Any], contents_value[1]["content_artifact_ref"])
+    reference["artifact_hash"] = "sha256:" + "0" * 64
+    changed_manifest = CorpusManifestSnapshot.from_document(document)
     candidate_registry = registry_snapshot()
-    manifest = corpus_snapshot()
     fixture_analyzers = analyzers()
-    wrong_reference = StoredArtifactRef(
-        artifact_id=manifest.content_artifact_refs[1].artifact_id,
-        artifact_hash="sha256:" + "0" * 64,
-    )
-    changed_entry = replace(
-        manifest.contents[1],
-        content_artifact_ref=wrong_reference,
-    )
-    changed_manifest = replace(
-        manifest,
-        contents=(manifest.contents[0], changed_entry, manifest.contents[2]),
-    )
     plan = experiment_plan(candidate_registry, changed_manifest, fixture_analyzers)
     store = FileSystemArtifactStore(tmp_path / "artifacts")
 
@@ -482,9 +469,7 @@ def test_missing_stored_content_fails_before_experiment_artifacts(tmp_path: Path
         store.get(COMPLETION_ID)
 
 
-def test_underlying_partial_progress_is_preserved_without_stored_completion(
-    tmp_path: Path,
-) -> None:
+def test_partial_progress_survives_without_stored_completion(tmp_path: Path) -> None:
     store, candidate_registry, manifest, plan, fixture_analyzers = prepare_store(tmp_path)
     first, last = fixture_analyzers
     runner = StoredContentExperimentRunner(
@@ -512,7 +497,7 @@ def test_underlying_partial_progress_is_preserved_without_stored_completion(
         store.get(COMPLETION_ID)
 
 
-def test_stored_completion_persistence_failure_returns_no_verified_receipt(
+def test_stored_completion_persistence_failure_returns_no_receipt(
     tmp_path: Path,
 ) -> None:
     root = tmp_path / "artifacts"
@@ -521,10 +506,9 @@ def test_stored_completion_persistence_failure_returns_no_verified_receipt(
         tmp_path,
         store=normal,
     )
-    failing = CompletionAppendFailsStore(root)
     runner = StoredContentExperimentRunner(
         analyzer_registry=analyzer_registry(*fixture_analyzers),
-        artifact_store=failing,
+        artifact_store=CompletionAppendFailsStore(root),
     )
 
     with pytest.raises(StoredContentExperimentError) as caught:
@@ -552,10 +536,9 @@ def test_stored_completion_reverification_failure_returns_no_receipt(
         tmp_path,
         store=normal,
     )
-    failing = SecondCompletionReadFailsStore(root)
     runner = StoredContentExperimentRunner(
         analyzer_registry=analyzer_registry(*fixture_analyzers),
-        artifact_store=failing,
+        artifact_store=SecondCompletionReadFailsStore(root),
     )
 
     with pytest.raises(StoredContentExperimentError) as caught:
