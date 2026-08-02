@@ -11,8 +11,11 @@
     "status",
     "model_results",
     "dimension_summaries",
+    "confidence",
+    "aggregation_policy",
     "disagreement",
     "explanations",
+    "confidence_explanation",
     "limitations",
     "created_at"
   ],
@@ -67,21 +70,13 @@
           },
           "scores": {"type": "object"},
           "agreement": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["status", "method"],
-            "properties": {
-              "status": {
-                "type": "string",
-                "enum": ["not_applicable", "high", "moderate", "low", "conflicting", "unknown"]
-              },
-              "method": {"type": "string", "minLength": 1},
-              "value": {"type": ["number", "null"]}
-            }
+            "$ref": "confidence-vector.schema.json#/$defs/interInstrumentAgreement"
           }
         }
       }
     },
+    "confidence": {"$ref": "confidence-vector.schema.json"},
+    "aggregation_policy": {"$ref": "aggregation-policy.schema.json"},
     "disagreement": {
       "type": "array",
       "items": {
@@ -102,7 +97,7 @@
     },
     "aggregate": {
       "type": ["object", "null"],
-      "description": "Optional and unvalidated until a versioned aggregation method passes the research protocol."
+      "description": "Optional content aggregate. It may not contain a scalar confidence field."
     },
     "explanations": {
       "type": "array",
@@ -125,7 +120,67 @@
         }
       }
     },
+    "confidence_explanation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "method",
+        "method_version",
+        "text",
+        "source_signals",
+        "scalar_confidence_generated"
+      ],
+      "properties": {
+        "method": {"type": "string", "minLength": 1},
+        "method_version": {"type": "string", "minLength": 1},
+        "text": {"type": "string", "minLength": 1},
+        "source_signals": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "aggregation-policy.schema.json#/$defs/confidenceSignal"}
+        },
+        "scalar_confidence_generated": {"const": false}
+      }
+    },
     "limitations": {"type": "array", "items": {"type": "string"}},
     "created_at": {"type": "string", "format": "date-time"}
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"status": {"const": "abstained"}},
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "confidence": {
+            "properties": {
+              "system_abstention": {
+                "properties": {"triggered": {"const": true}}
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "confidence": {
+            "properties": {
+              "system_abstention": {
+                "properties": {"triggered": {"const": true}},
+                "required": ["triggered"]
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "status": {"enum": ["abstained", "failed"]}
+        }
+      }
+    }
+  ]
 }
