@@ -253,6 +253,14 @@ def test_runtime_protocol_accepts_conforming_analyzer() -> None:
             return "sentiment.valence"
 
         @property
+        def implementation_revision(self) -> str:
+            return "synthetic-analyzer@1.0.0"
+
+        @property
+        def execution_configuration(self) -> dict[str, object]:
+            return {"mode": "synthetic"}
+
+        @property
         def identity(self) -> AnalyzerIdentity:
             return identity()
 
@@ -280,6 +288,7 @@ def test_runtime_protocol_accepts_conforming_analyzer() -> None:
                         upper_bound=1.0,
                     ),
                 ),
+                configuration=self.execution_configuration,
             )
 
     analyzer = SyntheticAnalyzer()
