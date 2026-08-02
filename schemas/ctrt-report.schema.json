@@ -11,6 +11,7 @@
     "status",
     "model_results",
     "dimension_summaries",
+    "taxonomy_comparisons",
     "confidence",
     "aggregation_policy",
     "disagreement",
@@ -43,7 +44,8 @@
           "included_result_ids",
           "excluded_results",
           "scores",
-          "agreement"
+          "agreement",
+          "taxonomy_comparison_ids"
         ],
         "properties": {
           "dimension_id": {"type": "string", "minLength": 1},
@@ -71,9 +73,18 @@
           "scores": {"type": "object"},
           "agreement": {
             "$ref": "confidence-vector.schema.json#/$defs/interInstrumentAgreement"
+          },
+          "taxonomy_comparison_ids": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {"type": "string", "minLength": 1}
           }
         }
       }
+    },
+    "taxonomy_comparisons": {
+      "type": "array",
+      "items": {"$ref": "taxonomy-comparison.schema.json"}
     },
     "confidence": {"$ref": "confidence-vector.schema.json"},
     "aggregation_policy": {"$ref": "aggregation-policy.schema.json"},
