@@ -39,11 +39,23 @@ from ctrt.eligibility import (
     ReportEligibility,
     evaluate_dimension_eligibility,
 )
+from ctrt.measurement import (
+    AnalysisTarget,
+    AnalysisTargetKind,
+    EvidenceSupport,
+    EvidenceSupportStatus,
+)
 from ctrt.segmentation import (
     ContentSegment,
     SegmentationKind,
     SegmentationManifest,
     SegmentationMethod,
+)
+from ctrt.taxonomy import (
+    TaxonomyComparison,
+    TaxonomyDisplayMode,
+    TaxonomyRef,
+    TaxonomyRelation,
 )
 
 __all__ = [
@@ -51,6 +63,8 @@ __all__ = [
     "AgreementStatus",
     "AmbiguityBudget",
     "AmbiguityBudgetStatus",
+    "AnalysisTarget",
+    "AnalysisTargetKind",
     "Analyzer",
     "AnalyzerIdentity",
     "Applicability",
@@ -64,6 +78,8 @@ __all__ = [
     "DimensionStatus",
     "EligibilityDecision",
     "EvidenceSpan",
+    "EvidenceSupport",
+    "EvidenceSupportStatus",
     "ExtractionQuality",
     "ExtractionQualityStatus",
     "ForbiddenConfidenceOutput",
@@ -79,6 +95,10 @@ __all__ = [
     "SegmentationMethod",
     "SourceType",
     "SystemAbstention",
+    "TaxonomyComparison",
+    "TaxonomyDisplayMode",
+    "TaxonomyRef",
+    "TaxonomyRelation",
     "evaluate_dimension_eligibility",
     "required_abstention_reasons",
 ]
