@@ -81,6 +81,7 @@
       "required": [
         "candidate_id",
         "analyzer_id",
+        "dimension_id",
         "implementation_revision",
         "adapter_version",
         "configuration_hash"
@@ -88,6 +89,7 @@
       "properties": {
         "candidate_id": {"type": "string", "minLength": 1},
         "analyzer_id": {"type": "string", "minLength": 1},
+        "dimension_id": {"type": "string", "minLength": 1},
         "implementation_revision": {"type": "string", "minLength": 1},
         "adapter_version": {"type": "string", "minLength": 1},
         "configuration_hash": {"$ref": "#/$defs/sha256"}

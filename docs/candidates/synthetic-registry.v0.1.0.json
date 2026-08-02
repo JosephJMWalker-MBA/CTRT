@@ -1,0 +1,90 @@
+{
+  "registry_id": "registry.synthetic-fixtures",
+  "registry_version": "0.1.0",
+  "status": "accepted",
+  "candidates": [
+    {
+      "candidate_id": "fixture.first-signal",
+      "display_name": "Synthetic First-Signal Sentiment Fixture",
+      "capability_type": "analyzer",
+      "technology_type": "deterministic_fixture",
+      "implementation_ref": "ctrt.synthetic:first-signal",
+      "source_uri": "https://github.com/JosephJMWalker-MBA/ctrt/blob/main/src/ctrt/synthetic.py",
+      "status": "eligible_for_evaluation",
+      "intended_tasks": [
+        "dependency-free workbench orchestration validation",
+        "synthetic sentiment disagreement fixture"
+      ],
+      "dimensions": ["sentiment_valence"],
+      "authorized_analyzer_ids": ["synthetic.sentiment.first-signal"],
+      "expected_output": {
+        "kind": "deterministic signed valence",
+        "labels": ["bad", "good"],
+        "notes": "Selects the first exact fixture token and exists only to validate contracts."
+      },
+      "domain_claims": ["English synthetic fixture text containing exact good or bad tokens"],
+      "language_claims": ["en"],
+      "license_review": {
+        "status": "verified",
+        "declared_license": "repository license",
+        "evidence_ref": "repository:LICENSE",
+        "notes": "First-party test fixture distributed with the CTRT repository."
+      },
+      "revision_policy": {
+        "pin_required": true,
+        "pinned_revision": "ctrt-fixture-first@0.1.0",
+        "verification_date": "2026-08-02"
+      },
+      "inclusion_rationale": "Provides a deterministic analyzer identity for proving registry authorization and disagreement preservation without model execution.",
+      "known_risks": [
+        "Fixture behavior is intentionally artificial and is not evidence of sentiment validity."
+      ],
+      "verification_questions": [
+        "Do orchestration and serialization preserve the exact fixture identity and output?"
+      ],
+      "notes": "Eligibility applies only to dependency-free architecture tests."
+    },
+    {
+      "candidate_id": "fixture.last-signal",
+      "display_name": "Synthetic Last-Signal Sentiment Fixture",
+      "capability_type": "analyzer",
+      "technology_type": "deterministic_fixture",
+      "implementation_ref": "ctrt.synthetic:last-signal",
+      "source_uri": "https://github.com/JosephJMWalker-MBA/ctrt/blob/main/src/ctrt/synthetic.py",
+      "status": "eligible_for_evaluation",
+      "intended_tasks": [
+        "dependency-free workbench orchestration validation",
+        "synthetic sentiment disagreement fixture"
+      ],
+      "dimensions": ["sentiment_valence"],
+      "authorized_analyzer_ids": ["synthetic.sentiment.last-signal"],
+      "expected_output": {
+        "kind": "deterministic signed valence",
+        "labels": ["bad", "good"],
+        "notes": "Selects the last exact fixture token and exists only to validate contracts."
+      },
+      "domain_claims": ["English synthetic fixture text containing exact good or bad tokens"],
+      "language_claims": ["en"],
+      "license_review": {
+        "status": "verified",
+        "declared_license": "repository license",
+        "evidence_ref": "repository:LICENSE",
+        "notes": "First-party test fixture distributed with the CTRT repository."
+      },
+      "revision_policy": {
+        "pin_required": true,
+        "pinned_revision": "ctrt-fixture-last@0.1.0",
+        "verification_date": "2026-08-02"
+      },
+      "inclusion_rationale": "Provides a second deterministic analyzer identity whose output can disagree with the first fixture while remaining fully inspectable.",
+      "known_risks": [
+        "Fixture behavior is intentionally artificial and is not evidence of sentiment validity."
+      ],
+      "verification_questions": [
+        "Does comparison-level abstention preserve both successful fixture results?"
+      ],
+      "notes": "Eligibility applies only to dependency-free architecture tests."
+    }
+  ],
+  "created_at": "2026-08-02T21:15:00Z"
+}

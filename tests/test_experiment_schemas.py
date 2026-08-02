@@ -48,6 +48,7 @@ def instrument(candidate_id: str, analyzer_id: str, artifact_hash: str) -> dict[
     return {
         "candidate_id": candidate_id,
         "analyzer_id": analyzer_id,
+        "dimension_id": "sentiment_valence",
         "implementation_revision": "fixture@0.1.0",
         "adapter_version": "0.1.0",
         "configuration_hash": artifact_hash,
@@ -106,6 +107,10 @@ def run_record() -> dict[str, Any]:
     return {
         "record_id": "run-001:record",
         "experiment_plan_ref": artifact(plan["experiment_id"], HASH_C),
+        "candidate_eligibility_ref": artifact(
+            "experiment.synthetic-disagreement:candidate-eligibility",
+            HASH_B,
+        ),
         "workbench_run_id": "run-001",
         "status": "abstained",
         "environment": execution_environment(),
@@ -160,12 +165,28 @@ def test_frozen_plan_requires_two_pinned_instruments() -> None:
         validator("experiment-plan.schema.json").validate(plan)
 
 
+def test_instrument_revision_requires_dimension_identity() -> None:
+    plan = experiment_plan()
+    del plan["instrument_revisions"][0]["dimension_id"]
+
+    with pytest.raises(ValidationError):
+        validator("experiment-plan.schema.json").validate(plan)
+
+
 def test_scalar_confidence_metric_is_rejected() -> None:
     plan = experiment_plan()
     plan["metrics"] = [{"metric_id": "scalar-confidence", "metric_version": "0.1.0"}]
 
     with pytest.raises(ValidationError):
         validator("experiment-plan.schema.json").validate(plan)
+
+
+def test_run_record_requires_candidate_eligibility_reference() -> None:
+    record = run_record()
+    del record["candidate_eligibility_ref"]
+
+    with pytest.raises(ValidationError):
+        validator("experiment-run-record.schema.json").validate(record)
 
 
 def test_run_record_preserves_abstained_result_status() -> None:

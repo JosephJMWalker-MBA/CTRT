@@ -7,6 +7,7 @@
   "required": [
     "record_id",
     "experiment_plan_ref",
+    "candidate_eligibility_ref",
     "workbench_run_id",
     "status",
     "environment",
@@ -20,6 +21,9 @@
   "properties": {
     "record_id": {"type": "string", "minLength": 1},
     "experiment_plan_ref": {
+      "$ref": "experiment-plan.schema.json#/$defs/versionedArtifactRef"
+    },
+    "candidate_eligibility_ref": {
       "$ref": "experiment-plan.schema.json#/$defs/versionedArtifactRef"
     },
     "workbench_run_id": {"type": "string", "minLength": 1},
