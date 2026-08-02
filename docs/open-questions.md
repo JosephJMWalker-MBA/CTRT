@@ -8,6 +8,11 @@ This register preserves both unresolved questions and resolved questions that sh
 2. **Which dimensions are essential to the first useful report?** Resolved provisionally by ADR-0004: sentiment valence, emotion profile, and category-level toxicity indicators are eligible for experimental reporting. Eligibility does not approve any model.
 3. **Should emotional intensity be independently measured or derived?** The design question remains open, but its immediate eligibility question is resolved: emotional intensity is excluded from the first experimental report until independent, derived, or hybrid measurement is explicitly decided and validated.
 
+## Resolved — Confidence and abstention
+
+7. **What should “overall confidence” mean?** Resolved by [ADR-0006](adr/0006-structured-confidence-and-abstention.md): Phase 0 defines no overall confidence scalar. Confidence is a vector containing instrument probability, calibration, applicability, extraction quality, agreement, abstention, and ambiguity preservation.
+8. **When must CTRT abstain?** Partially resolved by ADR-0006. Out-of-domain applicability, failed extraction, strong inter-instrument disagreement, and agreement-level abstention independently force system abstention. Thresholds for borderline applicability, degraded extraction, low calibration evidence, and partial disagreement remain open and must be policy-specific.
+
 ## P1 — Construct definition
 
 4. **What is the target of a measurement?** Whole-item averages may conceal local hostility, quoted threats, or shifts between calm reporting and emotionally charged passages.
@@ -16,14 +21,14 @@ This register preserves both unresolved questions and resolved questions that sh
 
 ## P1 — Confidence and disagreement
 
-7. **What should “overall confidence” mean?** Model probability, calibration, inter-model agreement, domain applicability, extraction quality, and corpus representativeness are distinct.
-8. **When must CTRT abstain?** Thresholds are needed for inadequate extraction, unsupported language, unknown domain, missing context, and material analyzer conflict.
 9. **How should incompatible taxonomies be compared?** Emotion labels and toxicity categories cannot be merged merely because their values fall between zero and one.
+24. **Which policy-specific noncritical signals should trigger abstention?** Borderline applicability, degraded extraction, partial disagreement, and unvalidated calibration may justify abstention for some uses but not others.
+25. **How should ambiguity-budget status be evaluated consistently?** Phase 0 defines the record and vocabulary but not yet an empirical threshold for `constrained` or `exceeded`.
 
 ## P1 — Evidence and explanation
 
 10. **What evidence must each analyzer return?** Some models provide only item-level probabilities; others can support token- or span-level evidence. CTRT must distinguish evidence from post-hoc attribution.
-11. **How will explanation fidelity be tested?** A readable explanation is insufficient if it adds intent, causation, or certainty not present in the canonical measurements.
+11. **How will explanation fidelity be tested?** A readable explanation is insufficient if it adds intent, causation, certainty, calibration, or a scalar confidence value not present in the canonical measurements.
 12. **Can a rule-based explanation cover the initial reports?** If so, the project may defer a generative explanation layer and reduce a source of unsupported synthesis.
 
 ## P2 — Corpus and annotation
