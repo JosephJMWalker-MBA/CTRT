@@ -193,6 +193,16 @@ class Analyzer(Protocol):
         ...
 
     @property
+    def implementation_revision(self) -> str:
+        """Immutable implementation revision loaded for execution."""
+        ...
+
+    @property
+    def execution_configuration(self) -> Mapping[str, object]:
+        """Complete configuration hashed by the frozen experiment plan."""
+        ...
+
+    @property
     def identity(self) -> AnalyzerIdentity:
         """Complete analyzer and taxonomy identity."""
         ...
