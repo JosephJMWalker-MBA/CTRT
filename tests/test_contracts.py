@@ -2,6 +2,22 @@ from dataclasses import FrozenInstanceError
 
 import pytest
 
+from ctrt.confidence import (
+    AgreementStatus,
+    AmbiguityBudget,
+    AmbiguityBudgetStatus,
+    Applicability,
+    ApplicabilityStatus,
+    Calibration,
+    CalibrationStatus,
+    ConfidenceVector,
+    ExtractionQuality,
+    ExtractionQualityStatus,
+    InstrumentProbability,
+    InstrumentProbabilitySource,
+    InterInstrumentAgreement,
+    SystemAbstention,
+)
 from ctrt.contracts import (
     Analyzer,
     AnalyzerIdentity,
@@ -22,6 +38,45 @@ def identity() -> AnalyzerIdentity:
         adapter_version="1.0.0",
         taxonomy_id="sentiment.three-class",
         taxonomy_version="1.0.0",
+    )
+
+
+def confidence(*, out_of_domain: bool = False) -> ConfidenceVector:
+    reasons = ("out-of-domain",) if out_of_domain else ()
+    return ConfidenceVector(
+        instrument_probability=InstrumentProbability(
+            value=0.8,
+            source=InstrumentProbabilitySource.MODEL_REPORTED,
+            notes="Synthetic class probability.",
+        ),
+        calibration=Calibration(status=CalibrationStatus.UNKNOWN),
+        applicability=Applicability(
+            status=(
+                ApplicabilityStatus.OUT_OF_DOMAIN
+                if out_of_domain
+                else ApplicabilityStatus.IN_DOMAIN
+            ),
+            reasons=("Synthetic content is outside the declared domain.",)
+            if out_of_domain
+            else (),
+        ),
+        extraction_quality=ExtractionQuality(
+            status=ExtractionQualityStatus.CLEAN,
+            evidence_ref="content-item:content-001",
+        ),
+        inter_instrument_agreement=InterInstrumentAgreement(
+            status=AgreementStatus.SINGLE_INSTRUMENT,
+            participants=("synthetic.sentiment.a",),
+            notes="Only one instrument has run.",
+        ),
+        system_abstention=SystemAbstention(
+            triggered=out_of_domain,
+            reasons=reasons,
+        ),
+        ambiguity_budget=AmbiguityBudget(
+            status=AmbiguityBudgetStatus.PRESERVED,
+            preserved_uncertainties=("Calibration is unknown.",),
+        ),
     )
 
 
@@ -64,6 +119,7 @@ def test_failed_result_requires_an_error() -> None:
             dimension_version="0.1.0",
             status=ResultStatus.FAILED,
             analyzer=identity(),
+            confidence=confidence(),
             raw_output={},
         )
 
@@ -77,6 +133,7 @@ def test_abstained_result_cannot_contain_normalized_scores() -> None:
             dimension_version="0.1.0",
             status=ResultStatus.ABSTAINED,
             analyzer=identity(),
+            confidence=confidence(out_of_domain=True),
             raw_output={"reason": "outside evaluated domain"},
             normalized_scores=(
                 NormalizedScore(
@@ -86,6 +143,20 @@ def test_abstained_result_cannot_contain_normalized_scores() -> None:
                     upper_bound=1.0,
                 ),
             ),
+        )
+
+
+def test_triggered_abstention_rejects_success_status() -> None:
+    with pytest.raises(ValueError, match="requires abstained or failed"):
+        ModelResult(
+            result_id="result-001",
+            content_id="content-001",
+            dimension_id="sentiment.valence",
+            dimension_version="0.1.0",
+            status=ResultStatus.SUCCESS,
+            analyzer=identity(),
+            confidence=confidence(out_of_domain=True),
+            raw_output={},
         )
 
 
@@ -114,6 +185,7 @@ def test_runtime_protocol_accepts_conforming_analyzer() -> None:
                 dimension_version="0.1.0",
                 status=ResultStatus.SUCCESS,
                 analyzer=self.identity,
+                confidence=confidence(),
                 raw_output={"negative": 0.1, "neutral": 0.8, "positive": 0.1},
                 normalized_scores=(
                     NormalizedScore(
@@ -121,7 +193,6 @@ def test_runtime_protocol_accepts_conforming_analyzer() -> None:
                         value=0.0,
                         lower_bound=-1.0,
                         upper_bound=1.0,
-                        confidence=0.8,
                     ),
                 ),
             )
