@@ -1,0 +1,175 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ctrt.dev/schemas/candidate-registry.schema.json",
+  "title": "CTRT Candidate Technology Registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "registry_id",
+    "registry_version",
+    "status",
+    "candidates",
+    "created_at"
+  ],
+  "properties": {
+    "registry_id": {"type": "string", "minLength": 1},
+    "registry_version": {"type": "string", "minLength": 1},
+    "status": {
+      "type": "string",
+      "enum": ["draft", "accepted", "superseded"]
+    },
+    "candidates": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/candidate"}
+    },
+    "created_at": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_id",
+        "display_name",
+        "capability_type",
+        "technology_type",
+        "implementation_ref",
+        "source_uri",
+        "status",
+        "intended_tasks",
+        "dimensions",
+        "expected_output",
+        "domain_claims",
+        "language_claims",
+        "license_review",
+        "revision_policy",
+        "inclusion_rationale",
+        "known_risks",
+        "verification_questions"
+      ],
+      "properties": {
+        "candidate_id": {"type": "string", "minLength": 1},
+        "display_name": {"type": "string", "minLength": 1},
+        "capability_type": {
+          "type": "string",
+          "enum": ["analyzer", "extractor", "transcript_acquisition"]
+        },
+        "technology_type": {
+          "type": "string",
+          "enum": [
+            "transformer_model",
+            "model_library",
+            "rule_based_library",
+            "extraction_library",
+            "acquisition_library"
+          ]
+        },
+        "implementation_ref": {"type": "string", "minLength": 1},
+        "source_uri": {"type": "string", "format": "uri"},
+        "status": {
+          "type": "string",
+          "enum": [
+            "proposed",
+            "eligible_for_evaluation",
+            "deferred",
+            "rejected_before_execution",
+            "evaluated",
+            "selected_for_domain",
+            "not_selected"
+          ]
+        },
+        "intended_tasks": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "dimensions": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "expected_output": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "labels", "notes"],
+          "properties": {
+            "kind": {"type": "string", "minLength": 1},
+            "labels": {
+              "type": "array",
+              "items": {"type": "string", "minLength": 1}
+            },
+            "notes": {"type": "string"}
+          }
+        },
+        "domain_claims": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "language_claims": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "license_review": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "declared_license", "evidence_ref", "notes"],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["pending", "provisionally_verified", "verified", "blocked"]
+            },
+            "declared_license": {"type": ["string", "null"]},
+            "evidence_ref": {"type": ["string", "null"]},
+            "notes": {"type": "string"}
+          }
+        },
+        "revision_policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["pin_required", "pinned_revision", "verification_date"],
+          "properties": {
+            "pin_required": {"type": "boolean"},
+            "pinned_revision": {"type": ["string", "null"]},
+            "verification_date": {"type": ["string", "null"], "format": "date"}
+          }
+        },
+        "inclusion_rationale": {"type": "string", "minLength": 1},
+        "known_risks": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "verification_questions": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "notes": {"type": "string"}
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"capability_type": {"const": "analyzer"}}
+          },
+          "then": {
+            "properties": {"dimensions": {"minItems": 1}}
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {"enum": ["selected_for_domain", "evaluated"]}
+            }
+          },
+          "then": {
+            "properties": {
+              "revision_policy": {
+                "properties": {
+                  "pinned_revision": {"type": "string", "minLength": 1},
+                  "verification_date": {"type": "string", "format": "date"}
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

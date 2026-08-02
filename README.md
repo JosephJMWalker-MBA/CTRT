@@ -4,7 +4,7 @@ CTRT is an open, explainable framework for measuring characteristics of digital 
 
 ## Current phase
 
-This repository is beginning with **Phase 0: Constitutional and Research Foundations**. The immediate purpose is to define what CTRT measures, how measurements are represented, and what evidence is required before implementing a production scoring engine.
+The merged repository contains **Phase 0: Constitutional and Research Foundations**. The next proposed executable step is **Phase 1A: the Content Analysis Workbench**.
 
 CTRT is not a censorship system and does not determine whether content should exist. It measures content items and reports the instruments, evidence, disagreement, confidence, and limitations behind each result.
 
@@ -23,6 +23,25 @@ CTRT is not a censorship system and does not determine whether content should ex
 - [Open questions and resolution register](docs/open-questions.md)
 - [Architecture Decision Records](docs/adr/)
 
+## Phase 1A proposal: Content Analysis Workbench
+
+The first executable deliverable is not a fixed CTRT scoring product. It is a research workbench that can:
+
+- register candidate models and libraries without preselecting them;
+- run multiple eligible instruments on the same canonical content;
+- compare raw outputs, normalized outputs, taxonomies, evidence, confidence vectors, latency, resource observations, warnings, failures, and abstentions;
+- compare extraction methods separately from downstream semantic analyzers;
+- preserve repeatable experiment and selection records;
+- justify later instrument selection with evidence.
+
+See:
+
+- [Phase 1 Content Analysis Workbench specification](docs/phase-1-content-analysis-workbench.md)
+- [ADR-0007: Workbench first](docs/adr/0007-content-analysis-workbench-first.md)
+- [Candidate technology registry](docs/candidates/)
+
+No candidate is installed or selected merely because it appears in the registry. The initial workbench will not output an overall CTRT score.
+
 ## Current experimental profile decision
 
 The first experimental profile may evaluate:
@@ -31,7 +50,7 @@ The first experimental profile may evaluate:
 - an emotion profile under a declared taxonomy;
 - category-level toxicity indicators under a declared taxonomy.
 
-“Tone” is presently a transparent presentation profile, not a scalar measurement. Emotional intensity remains ineligible until its independent-versus-derived definition is resolved. No overall CTRT rating exists in Phase 0.
+“Tone” is presently a transparent presentation profile, not a scalar measurement. Emotional intensity remains ineligible until its independent-versus-derived definition is resolved. No overall CTRT rating exists in Phase 0 or the initial workbench.
 
 ## Confidence decision
 
@@ -52,27 +71,30 @@ Out-of-domain analysis, failed extraction, strong disagreement, or agreement-lev
 ```text
 src/ctrt/          Dependency-free contracts and constitutional gates
 schemas/           Canonical JSON Schemas
-tests/             Contract, schema, and domain-invariant tests
+tests/             Contract, schema, registry, and domain-invariant tests
 docs/dimensions/   Versioned dimension eligibility records
+docs/candidates/   Versioned candidate technology registries
 docs/adr/          Architecture and governance decisions
 ```
 
 ## Scope boundary
 
-During Phase 0, this repository will contain:
+The present logic and repository work may define:
 
 - the CTRT Constitution;
 - a provisional measurement ontology;
 - versioned schemas and provider-neutral contracts;
 - architecture decision records;
-- a model-evaluation and benchmarking protocol;
-- synthetic fixtures and contract tests.
+- candidate and dimension registries;
+- model-evaluation and benchmarking protocols;
+- synthetic fixtures and contract tests;
+- the Phase 1 workbench specification.
 
-Phase 0 will not download or run transformer models, tune aggregate scores, deploy infrastructure, or begin large-scale corpus evaluation.
+This stage will not download or run transformer models, tune aggregate scores, deploy infrastructure, or begin large-scale corpus evaluation.
 
 ## Development
 
-The Phase 0 package has no runtime dependencies.
+The constitutional package has no production runtime dependencies.
 
 ```bash
 python -m venv .venv
@@ -89,4 +111,4 @@ python -m pytest -q
 
 ## Status
 
-Early constitutional design. No CTRT score is currently validated or suitable for consequential decision-making.
+Early constitutional and workbench design. No CTRT score is currently validated or suitable for consequential decision-making.
