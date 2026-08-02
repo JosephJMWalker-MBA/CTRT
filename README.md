@@ -4,7 +4,7 @@ CTRT is an open, explainable framework for measuring characteristics of digital 
 
 ## Current phase
 
-**Phase 0: Constitutional and Research Foundations** has closed its schema-impacting contract gaps. CTRT has begun **Phase 1A: the Content Analysis Workbench** with dependency-free synthetic execution, versioned experiment records, exact candidate eligibility, and canonical artifact hashing.
+**Phase 0: Constitutional and Research Foundations** has closed its schema-impacting contract gaps. CTRT has begun **Phase 1A: the Content Analysis Workbench** with dependency-free synthetic execution, versioned experiment records, exact candidate eligibility, canonical artifact hashing, and append-only local persistence.
 
 CTRT is not a censorship system and does not determine whether content should exist. It measures content items and reports the instruments, evidence, disagreement, confidence, and limitations behind each result.
 
@@ -100,6 +100,26 @@ See:
 - [Phase 1A Candidate Eligibility and Canonical Artifacts](docs/phase-1a-candidate-eligibility-and-canonical-artifacts.md)
 - [Accepted synthetic candidate registry](docs/candidates/synthetic-registry.v0.1.0.json)
 
+## Append-only artifact storage
+
+Canonical experiment artifacts can now be persisted in a dependency-free local filesystem store.
+
+The store separates:
+
+- content-addressed blobs keyed by canonical SHA-256 hash;
+- immutable artifact-ID indexes that permit exactly one hash per ID.
+
+Identical repeat writes are idempotent. Reusing an existing ID for different bytes is rejected. Every retrieval recomputes the payload hash before returning a `CanonicalArtifact`.
+
+Complete experiment bundles are represented by a canonical manifest written only after the plan, eligibility report, environment, ordered analyzer results, comparison, and run record have been stored. The manifest is a completion marker, not a claim of database transactionality. Bundle verification rereads and re-hashes every referenced member.
+
+See:
+
+- [ADR-0011: Append-only canonical artifact store](docs/adr/0011-append-only-canonical-artifact-store.md)
+- [Phase 1A Append-only Artifact Store](docs/phase-1a-append-only-artifact-store.md)
+
+This local store does not yet provide remote durability, signatures, access control, deletion, backup policy, or distributed consistency.
+
 ## Measurement contract decisions
 
 Every analyzer result must preserve:
@@ -142,9 +162,9 @@ Out-of-domain analysis, failed extraction, strong disagreement, or agreement-lev
 ## Repository map
 
 ```text
-src/ctrt/          Constitutional contracts, workbench, eligibility, and artifact logic
+src/ctrt/          Constitutional contracts, workbench, eligibility, artifacts, and storage
 schemas/           Canonical JSON Schemas
-tests/             Contract, schema, registry, workbench, experiment, and artifact tests
+tests/             Contract, schema, registry, workbench, experiment, artifact, and storage tests
 docs/dimensions/   Versioned dimension eligibility records
 docs/candidates/   Versioned candidate technology registries
 docs/adr/          Architecture and governance decisions
@@ -164,6 +184,7 @@ The present logic and repository work may define:
 - frozen experiment plans and append-only run records;
 - exact candidate eligibility gates;
 - deterministic canonical serialization and artifact hashing;
+- dependency-free append-only local artifact persistence;
 - the Phase 1 workbench specification.
 
 This stage will not download or run transformer models, tune aggregate scores, deploy infrastructure, or begin large-scale corpus evaluation.
@@ -187,4 +208,4 @@ python -m pytest -q
 
 ## Status
 
-Phase 1A synthetic Workbench with governed, eligibility-bound canonical experiment artifacts. No real candidate is executable, and no CTRT score is validated or suitable for consequential decision-making.
+Phase 1A synthetic Workbench with governed, eligibility-bound, canonically serialized, append-only experiment artifacts. No real candidate is executable, and no CTRT score is validated or suitable for consequential decision-making.
