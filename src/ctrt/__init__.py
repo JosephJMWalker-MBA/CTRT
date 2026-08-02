@@ -61,6 +61,14 @@ from ctrt.eligibility import (
     ReportEligibility,
     evaluate_dimension_eligibility,
 )
+from ctrt.execution_session import (
+    ExecutionSessionStage,
+    ExecutionSessionStatus,
+    GovernedExecutionError,
+    GovernedExecutionSession,
+    VERIFIED_CHECKS,
+    VerifiedExecutionReceipt,
+)
 from ctrt.experiments import (
     ComparisonArtifactRef,
     ExecutionEnvironment,
@@ -159,6 +167,8 @@ __all__ = [
     "EvidenceSupport",
     "EvidenceSupportStatus",
     "ExecutionEnvironment",
+    "ExecutionSessionStage",
+    "ExecutionSessionStatus",
     "ExperimentArtifactBundle",
     "ExperimentBundleManifest",
     "ExperimentPlan",
@@ -169,6 +179,8 @@ __all__ = [
     "ExtractionQualityStatus",
     "FileSystemArtifactStore",
     "ForbiddenConfidenceOutput",
+    "GovernedExecutionError",
+    "GovernedExecutionSession",
     "InMemoryExperimentLedger",
     "InstrumentProbability",
     "InstrumentProbabilitySource",
@@ -195,7 +207,9 @@ __all__ = [
     "TaxonomyDisplayMode",
     "TaxonomyRef",
     "TaxonomyRelation",
+    "VERIFIED_CHECKS",
     "VersionedArtifactRef",
+    "VerifiedExecutionReceipt",
     "WorkbenchComparison",
     "WorkbenchReportStatus",
     "WorkbenchRun",
