@@ -8,6 +8,7 @@
   "required": [
     "segmentation_id",
     "content_id",
+    "content_length",
     "coordinate_system",
     "method",
     "allow_overlap",
@@ -19,6 +20,7 @@
   "properties": {
     "segmentation_id": {"type": "string", "minLength": 1},
     "content_id": {"type": "string", "minLength": 1},
+    "content_length": {"type": "integer", "minimum": 1},
     "coordinate_system": {"const": "unicode_codepoint_half_open"},
     "method": {
       "type": "object",
