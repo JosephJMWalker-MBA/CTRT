@@ -2,12 +2,18 @@
 
 from __future__ import annotations
 
+import hashlib
 from collections.abc import Mapping
 from dataclasses import dataclass
 from enum import StrEnum
 
-from ctrt.experiments import ExperimentPlan, InstrumentRevision, VersionedArtifactRef
-from ctrt.serialization import canonical_json_bytes
+from ctrt.experiments import (
+    ExperimentPlan,
+    ExperimentPlanStatus,
+    InstrumentRevision,
+    VersionedArtifactRef,
+)
+from ctrt.serialization import CanonicalArtifact, canonical_json_bytes, serialize_artifact
 
 
 class RegistryLifecycle(StrEnum):
@@ -123,17 +129,13 @@ class CandidateRegistrySnapshot:
         candidate_ids = tuple(candidate.candidate_id for candidate in self.candidates)
         if len(candidate_ids) != len(set(candidate_ids)):
             raise ValueError("registry candidate IDs must be unique")
-        from hashlib import sha256
-
-        expected = f"sha256:{sha256(self.canonical_payload).hexdigest()}"
+        expected = f"sha256:{hashlib.sha256(self.canonical_payload).hexdigest()}"
         if self.artifact_hash != expected:
             raise ValueError("registry artifact_hash must match canonical payload")
 
     @classmethod
     def from_document(cls, document: Mapping[str, object]) -> CandidateRegistrySnapshot:
         """Parse the execution-relevant fields and canonically identify the full document."""
-
-        import hashlib
 
         candidates_value = document.get("candidates")
         if not isinstance(candidates_value, list):
@@ -180,6 +182,24 @@ class CandidateEligibilityReport:
     candidate_registry_ref: VersionedArtifactRef
     authorized_candidate_ids: tuple[str, ...]
     authorized_analyzer_ids: tuple[str, ...]
+
+    def artifact(self) -> CanonicalArtifact:
+        """Serialize the authorization decision as an immutable canonical artifact."""
+
+        return serialize_artifact(
+            f"{self.experiment_id}:candidate-eligibility",
+            self,
+        )
+
+    def reference(self) -> VersionedArtifactRef:
+        """Return the plan-version-specific reference stored by execution records."""
+
+        artifact = self.artifact()
+        return VersionedArtifactRef(
+            artifact_id=artifact.artifact_id,
+            artifact_version=self.experiment_version,
+            artifact_hash=artifact.artifact_hash,
+        )
 
 
 ELIGIBLE_DISPOSITIONS = {
@@ -250,6 +270,8 @@ def validate_candidate_eligibility(
 ) -> CandidateEligibilityReport:
     """Authorize all planned instruments against one exact accepted registry snapshot."""
 
+    if plan.status is not ExperimentPlanStatus.FROZEN:
+        raise CandidateEligibilityError("only a frozen experiment plan may be authorized")
     if plan.candidate_registry_ref != registry.reference():
         raise CandidateEligibilityError(
             "experiment plan candidate_registry_ref does not match the supplied canonical registry"
