@@ -11,6 +11,8 @@
     "dimension_version",
     "status",
     "analyzer",
+    "analysis_target",
+    "evidence_support",
     "confidence",
     "raw_output",
     "normalized_scores",
@@ -50,6 +52,8 @@
         "taxonomy_version": {"type": "string", "minLength": 1}
       }
     },
+    "analysis_target": {"$ref": "analysis-target.schema.json"},
+    "evidence_support": {"$ref": "evidence-support.schema.json"},
     "confidence": {"$ref": "confidence-vector.schema.json"},
     "raw_output": {"type": "object"},
     "normalized_scores": {
@@ -86,6 +90,19 @@
     "configuration": {"type": "object"}
   },
   "allOf": [
+    {
+      "properties": {
+        "confidence": {
+          "properties": {
+            "extraction_quality": {
+              "properties": {
+                "evidence_ref": {"type": "string", "minLength": 1}
+              }
+            }
+          }
+        }
+      }
+    },
     {
       "if": {"properties": {"status": {"const": "success"}}, "required": ["status"]},
       "then": {"properties": {"errors": {"maxItems": 0}}}
@@ -135,6 +152,18 @@
           "status": {"enum": ["abstained", "failed"]}
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "evidence_support": {
+            "properties": {"status": {"const": "unavailable"}},
+            "required": ["status"]
+          }
+        }
+      },
+      "then": {"properties": {"evidence_spans": {"maxItems": 0}}},
+      "else": {"properties": {"evidence_spans": {"minItems": 1}}}
     }
   ]
 }
