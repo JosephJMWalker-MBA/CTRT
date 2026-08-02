@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ctrt.dev/schemas/experiment-bundle-manifest.schema.json",
+  "title": "CTRT Stored Experiment Bundle Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["bundle_id", "run_record_id", "artifacts"],
+  "properties": {
+    "bundle_id": {"type": "string", "minLength": 1},
+    "run_record_id": {"type": "string", "minLength": 1},
+    "artifacts": {
+      "type": "array",
+      "minItems": 7,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/bundleArtifactRef"}
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "storedArtifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "artifact_hash",
+        "canonicalization_version",
+        "media_type"
+      ],
+      "properties": {
+        "artifact_id": {"type": "string", "minLength": 1},
+        "artifact_hash": {"$ref": "#/$defs/sha256"},
+        "canonicalization_version": {"const": "ctrt-canonical-json@0.1.0"},
+        "media_type": {"const": "application/json"}
+      }
+    },
+    "bundleArtifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "artifact"],
+      "properties": {
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(plan|candidate-eligibility|environment|result:[0-9]+|comparison|run-record)$"
+        },
+        "artifact": {"$ref": "#/$defs/storedArtifactRef"}
+      }
+    }
+  }
+}
