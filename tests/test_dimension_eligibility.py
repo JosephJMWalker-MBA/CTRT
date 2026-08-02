@@ -6,7 +6,6 @@ from typing import cast
 
 from ctrt.eligibility import evaluate_dimension_eligibility
 
-
 DIMENSION_DIR = Path(__file__).parents[1] / "docs" / "dimensions"
 
 
