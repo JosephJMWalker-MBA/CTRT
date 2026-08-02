@@ -61,7 +61,8 @@
             "model_library",
             "rule_based_library",
             "extraction_library",
-            "acquisition_library"
+            "acquisition_library",
+            "deterministic_fixture"
           ]
         },
         "implementation_ref": {"type": "string", "minLength": 1},
@@ -85,6 +86,11 @@
         },
         "dimensions": {
           "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "authorized_analyzer_ids": {
+          "type": "array",
+          "uniqueItems": true,
           "items": {"type": "string", "minLength": 1}
         },
         "expected_output": {
