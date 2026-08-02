@@ -39,6 +39,7 @@ class ContentItem:
     content_hash: str
     source_uri: str | None = None
     language: str | None = None
+    extraction_ref: str | None = None
 
     def __post_init__(self) -> None:
         if not self.content_id.strip():
@@ -47,6 +48,14 @@ class ContentItem:
             raise ValueError("text must not be empty")
         if not self.content_hash.strip():
             raise ValueError("content_hash must not be empty")
+        if self.extraction_ref is not None and not self.extraction_ref.strip():
+            raise ValueError("extraction_ref must not be empty when provided")
+
+    @property
+    def canonical_extraction_ref(self) -> str:
+        """Return the exact extraction identity used by downstream targets."""
+
+        return self.extraction_ref or f"content-item:{self.content_id}"
 
 
 @dataclass(frozen=True, slots=True)
