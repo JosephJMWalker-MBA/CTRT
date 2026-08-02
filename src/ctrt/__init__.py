@@ -13,14 +13,24 @@ from ctrt.contracts import (
     ResultStatus,
     SourceType,
 )
+from ctrt.eligibility import (
+    DimensionStatus,
+    EligibilityDecision,
+    ReportEligibility,
+    evaluate_dimension_eligibility,
+)
 
 __all__ = [
     "Analyzer",
     "AnalyzerIdentity",
     "ContentItem",
+    "DimensionStatus",
+    "EligibilityDecision",
     "EvidenceSpan",
     "ModelResult",
     "NormalizedScore",
+    "ReportEligibility",
     "ResultStatus",
     "SourceType",
+    "evaluate_dimension_eligibility",
 ]
