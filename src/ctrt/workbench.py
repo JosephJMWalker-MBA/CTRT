@@ -147,6 +147,11 @@ class AnalyzerRegistry:
             raise ValueError(f"analyzer already registered: {analyzer_id}")
         if not analyzer.dimension_id.strip():
             raise ValueError("registered analyzer dimension_id must not be empty")
+        if not analyzer.implementation_revision.strip():
+            raise ValueError("registered analyzer implementation_revision must not be empty")
+        if analyzer.identity.adapter_version == "":
+            raise ValueError("registered analyzer adapter_version must not be empty")
+        _ = analyzer.execution_configuration
         self._analyzers[analyzer_id] = analyzer
 
     def get(self, analyzer_id: str) -> Analyzer:
@@ -237,6 +242,8 @@ class ContentAnalysisWorkbench:
                 raise ValueError("analyzer result identity does not match registration")
             if result.analysis_target != expected_target:
                 raise ValueError("all analyzers must receive the same canonical target")
+            if result.configuration != analyzer.execution_configuration:
+                raise ValueError("analyzer result configuration does not match runtime configuration")
 
     @staticmethod
     def _compare(
