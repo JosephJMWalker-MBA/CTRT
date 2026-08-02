@@ -1,0 +1,76 @@
+{
+  "record_type": "dimension_eligibility",
+  "dimension_id": "emotional_intensity",
+  "dimension_version": "0.1.0",
+  "name": "Emotional intensity",
+  "status": "proposed",
+  "report_eligibility": "ineligible",
+  "definition": "The apparent strength or activation of emotional expression, independent of whether the expression is positive or negative.",
+  "measurement_units": ["content_item", "segment"],
+  "claim_scope": [
+    "A future intensity construct may describe the strength of expressed emotional language.",
+    "The construct must remain independent of valence and may not be inferred solely from negativity."
+  ],
+  "exclusions": [
+    "Extremism",
+    "Toxicity",
+    "Urgency",
+    "Importance",
+    "Harm",
+    "Volume or typographic emphasis alone",
+    "The creator's internal arousal state"
+  ],
+  "expected_output": {
+    "kind": "undetermined",
+    "required_keys": [],
+    "notes": "No canonical output is approved until CTRT decides whether intensity is independently measured, derived from an emotion profile, or represented by multiple activation features."
+  },
+  "evidence_requirement": "undetermined",
+  "known_confounds": [
+    "Confusing negativity with strength",
+    "Confusing urgency with emotion",
+    "Taxonomy-dependent emotion probabilities",
+    "Long documents with brief intense passages",
+    "Irony and performative exaggeration",
+    "Punctuation and capitalization artifacts"
+  ],
+  "instrument_requirements": [
+    "No analyzer is eligible until the construct and derivation policy are accepted.",
+    "Any proposed method must state whether it is independent, derived, or hybrid.",
+    "A derived method must preserve and identify all source measurements.",
+    "An independent method must demonstrate incremental validity beyond emotion and sentiment outputs."
+  ],
+  "normalization": {
+    "permitted": false,
+    "rule": "No normalized intensity score is permitted before the construct, source signals, and validation criteria are approved."
+  },
+  "validation_requirements": [
+    "Resolve independent-versus-derived measurement design.",
+    "Demonstrate discriminant validity from sentiment, toxicity, urgency, and extremity.",
+    "Test whether human annotators can apply the definition consistently.",
+    "Evaluate segment-level peaks versus whole-item summaries.",
+    "Show that the score adds information not already visible in the emotion distribution."
+  ],
+  "aggregation": {
+    "may_appear_as_profile_component": false,
+    "may_have_within_dimension_summary": false,
+    "may_contribute_to_overall_rating": false,
+    "constraints": [
+      "Intensity must not appear in an experimental CTRT report until a later eligibility record changes this decision.",
+      "No proxy may be silently labeled emotional intensity.",
+      "No overall CTRT rating exists in Phase 0."
+    ]
+  },
+  "explanation_constraints": [
+    "Do not use intensity language in canonical explanations until the dimension becomes eligible.",
+    "Individual analyzer outputs may be recorded for research only if clearly marked non-canonical and outside the CTRT report."
+  ],
+  "open_questions": [
+    "Should emotional intensity be independently measured, derived from emotion outputs, or represented as a multi-feature activation profile?",
+    "What observable evidence distinguishes emotional intensity from urgency and hostility?",
+    "What item-level summary can preserve short, high-intensity segments?"
+  ],
+  "decision_rationale": "The concept is intuitively useful but not yet operationally stable. Admitting a 0-to-1 score now would create false precision and could merely repackage sentiment or emotion probabilities.",
+  "decision_authority": "Phase 0 working decision under ADR-0004",
+  "updated_at": "2026-08-02T17:48:00Z"
+}
