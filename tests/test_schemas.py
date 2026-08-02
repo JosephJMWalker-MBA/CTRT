@@ -2,10 +2,9 @@ import json
 from pathlib import Path
 from typing import Any
 
-from jsonschema import Draft202012Validator, ValidationError
 import pytest
+from jsonschema import Draft202012Validator, ValidationError
 from referencing import Registry, Resource
-
 
 SCHEMA_DIR = Path(__file__).parents[1] / "schemas"
 
