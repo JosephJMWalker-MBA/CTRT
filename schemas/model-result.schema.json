@@ -11,6 +11,7 @@
     "dimension_version",
     "status",
     "analyzer",
+    "confidence",
     "raw_output",
     "normalized_scores",
     "evidence_spans",
@@ -49,6 +50,7 @@
         "taxonomy_version": {"type": "string", "minLength": 1}
       }
     },
+    "confidence": {"$ref": "confidence-vector.schema.json"},
     "raw_output": {"type": "object"},
     "normalized_scores": {
       "type": "array",
@@ -60,8 +62,7 @@
           "key": {"type": "string", "minLength": 1},
           "value": {"type": "number"},
           "lower_bound": {"type": "number"},
-          "upper_bound": {"type": "number"},
-          "confidence": {"type": ["number", "null"], "minimum": 0, "maximum": 1}
+          "upper_bound": {"type": "number"}
         }
       }
     },
@@ -79,7 +80,6 @@
         }
       }
     },
-    "applicability": {"type": ["string", "null"]},
     "warnings": {"type": "array", "items": {"type": "string"}},
     "errors": {"type": "array", "items": {"type": "string"}},
     "duration_ms": {"type": ["number", "null"], "minimum": 0},
@@ -87,16 +87,54 @@
   },
   "allOf": [
     {
-      "if": {"properties": {"status": {"const": "failed"}}},
-      "then": {"properties": {"errors": {"minItems": 1}}}
+      "if": {"properties": {"status": {"const": "success"}}, "required": ["status"]},
+      "then": {"properties": {"errors": {"maxItems": 0}}}
+    },
+    {
+      "if": {"properties": {"status": {"const": "failed"}}, "required": ["status"]},
+      "then": {
+        "properties": {
+          "errors": {"minItems": 1},
+          "normalized_scores": {"maxItems": 0}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"status": {"const": "abstained"}},
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "normalized_scores": {"maxItems": 0},
+          "confidence": {
+            "properties": {
+              "system_abstention": {
+                "properties": {"triggered": {"const": true}}
+              }
+            }
+          }
+        }
+      }
     },
     {
       "if": {
         "properties": {
-          "status": {"enum": ["abstained", "failed"]}
+          "confidence": {
+            "properties": {
+              "system_abstention": {
+                "properties": {"triggered": {"const": true}},
+                "required": ["triggered"]
+              }
+            }
+          }
         }
       },
-      "then": {"properties": {"normalized_scores": {"maxItems": 0}}}
+      "then": {
+        "properties": {
+          "status": {"enum": ["abstained", "failed"]}
+        }
+      }
     }
   ]
 }
