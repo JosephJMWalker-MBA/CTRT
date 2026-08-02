@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ctrt.dev/schemas/execution-environment.schema.json",
+  "title": "CTRT Execution Environment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "environment_id",
+    "environment_version",
+    "python_version",
+    "operating_system",
+    "architecture",
+    "dependency_lock_hash",
+    "runtime_configuration_hash",
+    "hardware_profile"
+  ],
+  "properties": {
+    "environment_id": {"type": "string", "minLength": 1},
+    "environment_version": {"type": "string", "minLength": 1},
+    "python_version": {"type": "string", "minLength": 1},
+    "operating_system": {"type": "string", "minLength": 1},
+    "architecture": {"type": "string", "minLength": 1},
+    "dependency_lock_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "runtime_configuration_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "hardware_profile": {"type": "string", "minLength": 1}
+  }
+}

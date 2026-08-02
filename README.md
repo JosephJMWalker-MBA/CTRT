@@ -4,7 +4,7 @@ CTRT is an open, explainable framework for measuring characteristics of digital 
 
 ## Current phase
 
-**Phase 0: Constitutional and Research Foundations** has closed its schema-impacting contract gaps. CTRT has begun **Phase 1A: the Content Analysis Workbench** with a dependency-free synthetic execution slice.
+**Phase 0: Constitutional and Research Foundations** has closed its schema-impacting contract gaps. CTRT has begun **Phase 1A: the Content Analysis Workbench** with dependency-free synthetic execution and versioned experiment records.
 
 CTRT is not a censorship system and does not determine whether content should exist. It measures content items and reports the instruments, evidence, disagreement, confidence, and limitations behind each result.
 
@@ -57,6 +57,27 @@ See [Phase 1A Synthetic Workbench Slice](docs/phase-1a-synthetic-workbench.md).
 
 This slice validates architecture only. It does not establish accuracy, calibration, model selection, or production readiness.
 
+## Versioned experiments
+
+Workbench execution is governed by immutable experiment records rather than mutable runtime settings.
+
+A frozen experiment plan identifies:
+
+- the research question;
+- exact protocol, candidate-registry, and corpus artifact versions and hashes;
+- authorized content and dimensions;
+- ordered candidate, analyzer, implementation, adapter, and configuration revisions;
+- declared metrics, exclusion rules, and stopping rules.
+
+Every recorded run preserves its execution environment and references independently serialized result and comparison artifacts by SHA-256 hash. Successful reruns cannot replace prior failures or abstentions. A small append-only ledger rejects replacement of an existing plan version or run record.
+
+See:
+
+- [ADR-0009: Versioned experiment plans and run records](docs/adr/0009-versioned-experiment-plans-and-run-records.md)
+- [Phase 1A Versioned Experiments](docs/phase-1a-versioned-experiments.md)
+
+Candidate eligibility resolution against the referenced registry remains the next execution-gate boundary before any real candidate adapter is run.
+
 ## Measurement contract decisions
 
 Every analyzer result must preserve:
@@ -99,9 +120,9 @@ Out-of-domain analysis, failed extraction, strong disagreement, or agreement-lev
 ## Repository map
 
 ```text
-src/ctrt/          Constitutional contracts and dependency-free workbench logic
+src/ctrt/          Constitutional contracts, workbench logic, and experiment records
 schemas/           Canonical JSON Schemas
-tests/             Contract, schema, registry, and workbench tests
+tests/             Contract, schema, registry, workbench, and experiment tests
 docs/dimensions/   Versioned dimension eligibility records
 docs/candidates/   Versioned candidate technology registries
 docs/adr/          Architecture and governance decisions
@@ -118,6 +139,7 @@ The present logic and repository work may define:
 - candidate and dimension registries;
 - model-evaluation and benchmarking protocols;
 - dependency-free synthetic analyzers and workbench tests;
+- frozen experiment plans and append-only run records;
 - the Phase 1 workbench specification.
 
 This stage will not download or run transformer models, tune aggregate scores, deploy infrastructure, or begin large-scale corpus evaluation.
@@ -141,4 +163,4 @@ python -m pytest -q
 
 ## Status
 
-Phase 1A synthetic workbench implementation. No CTRT score is currently validated or suitable for consequential decision-making.
+Phase 1A synthetic Workbench and versioned-experiment implementation. No CTRT score is currently validated or suitable for consequential decision-making.

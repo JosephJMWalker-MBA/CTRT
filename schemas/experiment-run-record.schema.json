@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ctrt.dev/schemas/experiment-run-record.schema.json",
+  "title": "CTRT Experiment Run Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_id",
+    "experiment_plan_ref",
+    "workbench_run_id",
+    "status",
+    "environment",
+    "content_id",
+    "instrument_revisions",
+    "result_artifacts",
+    "comparison_artifact",
+    "started_at",
+    "completed_at"
+  ],
+  "properties": {
+    "record_id": {"type": "string", "minLength": 1},
+    "experiment_plan_ref": {
+      "$ref": "experiment-plan.schema.json#/$defs/versionedArtifactRef"
+    },
+    "workbench_run_id": {"type": "string", "minLength": 1},
+    "status": {
+      "type": "string",
+      "enum": ["complete", "partial", "abstained", "failed"]
+    },
+    "environment": {"$ref": "execution-environment.schema.json"},
+    "content_id": {"type": "string", "minLength": 1},
+    "instrument_revisions": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {"$ref": "experiment-plan.schema.json#/$defs/instrumentRevision"}
+    },
+    "result_artifacts": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/resultArtifactRef"}
+    },
+    "comparison_artifact": {"$ref": "#/$defs/comparisonArtifactRef"},
+    "started_at": {"type": "string", "format": "date-time"},
+    "completed_at": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "resultArtifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["result_id", "analyzer_id", "content_id", "status", "artifact_hash"],
+      "properties": {
+        "result_id": {"type": "string", "minLength": 1},
+        "analyzer_id": {"type": "string", "minLength": 1},
+        "content_id": {"type": "string", "minLength": 1},
+        "status": {
+          "type": "string",
+          "enum": ["success", "partial", "abstained", "failed"]
+        },
+        "artifact_hash": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "comparisonArtifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["comparison_id", "content_id", "status", "result_ids", "artifact_hash"],
+      "properties": {
+        "comparison_id": {"type": "string", "minLength": 1},
+        "content_id": {"type": "string", "minLength": 1},
+        "status": {
+          "type": "string",
+          "enum": ["complete", "partial", "abstained", "failed"]
+        },
+        "result_ids": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "artifact_hash": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  }
+}
