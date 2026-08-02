@@ -4,7 +4,7 @@ CTRT is an open, explainable framework for measuring characteristics of digital 
 
 ## Current phase
 
-**Phase 0: Constitutional and Research Foundations** has closed its schema-impacting contract gaps. CTRT has begun **Phase 1A: the Content Analysis Workbench** with dependency-free synthetic execution, versioned experiment records, exact candidate eligibility, canonical artifact hashing, and append-only local persistence.
+**Phase 0: Constitutional and Research Foundations** has closed its schema-impacting contract gaps. CTRT has begun **Phase 1A: the Content Analysis Workbench** with dependency-free synthetic execution, versioned experiment records, exact candidate eligibility, canonical artifact hashing, append-only local persistence, and fail-closed governed execution sessions.
 
 CTRT is not a censorship system and does not determine whether content should exist. It measures content items and reports the instruments, evidence, disagreement, confidence, and limitations behind each result.
 
@@ -120,6 +120,33 @@ See:
 
 This local store does not yet provide remote durability, signatures, access control, deletion, backup policy, or distributed consistency.
 
+## Governed execution sessions
+
+The first complete synthetic lifecycle is now enforced by `GovernedExecutionSession`.
+
+Before execution, the session verifies:
+
+- frozen-plan and exact candidate-registry eligibility;
+- authorized content identity;
+- one shared comparison dimension;
+- loaded analyzer ID and dimension;
+- loaded adapter and implementation revisions;
+- canonical execution-configuration hash.
+
+The provider-neutral analyzer contract exposes immutable `implementation_revision` and `execution_configuration` values. Every returned result must preserve the same execution configuration.
+
+The session then executes, serializes, persists, and explicitly re-verifies the complete stored bundle. It returns a `VerifiedExecutionReceipt` only after the manifest and every referenced artifact pass read-time hash verification. Failures are identified as `preflight`, `execution`, `serialization`, `persistence`, or `verification` failures and do not produce partial success receipts.
+
+A verified session is not necessarily a successful measurement. Analyzer abstentions, disagreement, and comparison-level abstention remain visible in the receipt and stored artifacts. `verified` means the governed lifecycle and stored evidence completed successfully.
+
+See:
+
+- [ADR-0012: Governed execution sessions](docs/adr/0012-governed-execution-session.md)
+- [Phase 1A Governed Execution Session](docs/phase-1a-governed-execution-session.md)
+- [Verified receipt schema](schemas/governed-execution-receipt.schema.json)
+
+The initial session is intentionally limited to one content item, one shared dimension, the synthetic analyzers, and the local append-only store.
+
 ## Measurement contract decisions
 
 Every analyzer result must preserve:
@@ -162,9 +189,9 @@ Out-of-domain analysis, failed extraction, strong disagreement, or agreement-lev
 ## Repository map
 
 ```text
-src/ctrt/          Constitutional contracts, workbench, eligibility, artifacts, and storage
+src/ctrt/          Constitutional contracts, Workbench, eligibility, artifacts, storage, sessions
 schemas/           Canonical JSON Schemas
-tests/             Contract, schema, registry, workbench, experiment, artifact, and storage tests
+tests/             Contract, schema, registry, Workbench, experiment, artifact, storage, session tests
 docs/dimensions/   Versioned dimension eligibility records
 docs/candidates/   Versioned candidate technology registries
 docs/adr/          Architecture and governance decisions
@@ -185,6 +212,7 @@ The present logic and repository work may define:
 - exact candidate eligibility gates;
 - deterministic canonical serialization and artifact hashing;
 - dependency-free append-only local artifact persistence;
+- fail-closed governed synthetic execution sessions;
 - the Phase 1 workbench specification.
 
 This stage will not download or run transformer models, tune aggregate scores, deploy infrastructure, or begin large-scale corpus evaluation.
@@ -208,4 +236,4 @@ python -m pytest -q
 
 ## Status
 
-Phase 1A synthetic Workbench with governed, eligibility-bound, canonically serialized, append-only experiment artifacts. No real candidate is executable, and no CTRT score is validated or suitable for consequential decision-making.
+Phase 1A now has a complete governed synthetic path from frozen plan through exact runtime authorization, execution, canonical serialization, append-only persistence, and stored-bundle re-verification. No real candidate is executable, and no CTRT score is validated or suitable for consequential decision-making.
