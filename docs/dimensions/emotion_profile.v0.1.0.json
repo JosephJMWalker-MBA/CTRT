@@ -1,0 +1,79 @@
+{
+  "record_type": "dimension_eligibility",
+  "dimension_id": "emotion_profile",
+  "dimension_version": "0.1.0",
+  "name": "Emotion profile",
+  "status": "defined",
+  "report_eligibility": "eligible_experimental",
+  "definition": "The distribution of language patterns associated with the labels of a declared emotion taxonomy.",
+  "measurement_units": ["content_item", "segment"],
+  "claim_scope": [
+    "Reports associations between analyzed language and a declared emotion taxonomy.",
+    "May represent multiple simultaneous emotion labels rather than forcing one dominant label.",
+    "May report neutral or unclassified probability when supported by the instrument."
+  ],
+  "exclusions": [
+    "The creator's actual internal emotional state",
+    "The audience's actual emotional response",
+    "Clinical or psychological diagnosis",
+    "Moral quality",
+    "Emotional intensity unless separately defined"
+  ],
+  "expected_output": {
+    "kind": "distribution",
+    "required_keys": [],
+    "notes": "The exact labels are taxonomy-dependent. Every result must identify the taxonomy ID and version; incompatible taxonomies may not be merged by label name alone."
+  },
+  "evidence_requirement": "span_preferred",
+  "known_confounds": [
+    "Multiple simultaneous emotions",
+    "Rhetorical performance",
+    "Fictional narration",
+    "Quotation and counterspeech",
+    "Cultural variation",
+    "Taxonomy gaps",
+    "Irony and sarcasm"
+  ],
+  "instrument_requirements": [
+    "Declare every output label and its operational meaning.",
+    "Preserve raw scores and taxonomy metadata.",
+    "Do not map taxonomies without a separately versioned crosswalk and validation study.",
+    "Declare supported language, domain, and maximum input constraints.",
+    "Permit abstention when taxonomy coverage or applicability is inadequate."
+  ],
+  "normalization": {
+    "permitted": true,
+    "rule": "Scores may be normalized within one declared taxonomy and analyzer contract. Cross-taxonomy comparison requires an explicit, validated crosswalk and may not be inferred from shared label names."
+  },
+  "validation_requirements": [
+    "Human annotation using the exact declared taxonomy.",
+    "Inter-annotator disagreement analysis by label.",
+    "Multi-label calibration and threshold evaluation.",
+    "Tests covering quotation, fiction, counterspeech, cultural variation, and mixed emotion.",
+    "Domain- and language-specific validation before bounded validity claims."
+  ],
+  "aggregation": {
+    "may_appear_as_profile_component": true,
+    "may_have_within_dimension_summary": true,
+    "may_contribute_to_overall_rating": false,
+    "constraints": [
+      "The full label distribution must remain available.",
+      "A dominant-emotion label may summarize but may not replace the distribution.",
+      "Scores from incompatible taxonomies may not be averaged.",
+      "No overall CTRT rating exists in Phase 0."
+    ]
+  },
+  "explanation_constraints": [
+    "Use language such as 'patterns associated with anger' rather than asserting that the creator is angry.",
+    "Name the taxonomy when its labels materially affect interpretation.",
+    "Do not infer intent, diagnosis, or audience response.",
+    "Report material ambiguity or model disagreement."
+  ],
+  "open_questions": [
+    "Which taxonomy offers the best initial balance of coverage, interpretability, and annotator agreement?",
+    "Should neutral be treated as an emotion label, absence of detected emotion, or a separate applicability state?"
+  ],
+  "decision_rationale": "An emotion profile is eligible for experimental reporting because its claim can be bounded to a declared taxonomy. Eligibility does not imply that any particular taxonomy or model has been selected.",
+  "decision_authority": "Phase 0 working decision under ADR-0004",
+  "updated_at": "2026-08-02T17:48:00Z"
+}

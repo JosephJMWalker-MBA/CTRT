@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ctrt.dev/schemas/segmentation-manifest.schema.json",
+  "title": "CTRT Segmentation Manifest",
+  "description": "A versioned derivative mapping analysis segments to exact offsets in canonical content.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "segmentation_id",
+    "content_id",
+    "content_length",
+    "coordinate_system",
+    "method",
+    "allow_overlap",
+    "complete_coverage",
+    "segments",
+    "warnings",
+    "created_at"
+  ],
+  "properties": {
+    "segmentation_id": {"type": "string", "minLength": 1},
+    "content_id": {"type": "string", "minLength": 1},
+    "content_length": {"type": "integer", "minimum": 1},
+    "coordinate_system": {"const": "unicode_codepoint_half_open"},
+    "method": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method_id", "method_version", "kind", "configuration"],
+      "properties": {
+        "method_id": {"type": "string", "minLength": 1},
+        "method_version": {"type": "string", "minLength": 1},
+        "kind": {
+          "type": "string",
+          "enum": ["sentence", "paragraph", "window", "document_structure", "custom"]
+        },
+        "configuration": {"type": "object"}
+      }
+    },
+    "allow_overlap": {"type": "boolean"},
+    "complete_coverage": {"type": "boolean"},
+    "segments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "segment_id",
+          "sequence_index",
+          "start",
+          "end",
+          "text_hash"
+        ],
+        "properties": {
+          "segment_id": {"type": "string", "minLength": 1},
+          "sequence_index": {"type": "integer", "minimum": 0},
+          "start": {"type": "integer", "minimum": 0},
+          "end": {"type": "integer", "minimum": 1},
+          "text_hash": {"type": "string", "minLength": 1},
+          "label": {"type": ["string", "null"]},
+          "parent_segment_id": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "created_at": {"type": "string", "format": "date-time"}
+  }
+}

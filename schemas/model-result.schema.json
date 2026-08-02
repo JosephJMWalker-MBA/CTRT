@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ctrt.dev/schemas/model-result.schema.json",
+  "title": "CTRT Model Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "result_id",
+    "content_id",
+    "dimension_id",
+    "dimension_version",
+    "status",
+    "analyzer",
+    "raw_output",
+    "normalized_scores",
+    "evidence_spans",
+    "warnings",
+    "errors",
+    "configuration"
+  ],
+  "properties": {
+    "result_id": {"type": "string", "minLength": 1},
+    "content_id": {"type": "string", "minLength": 1},
+    "dimension_id": {"type": "string", "minLength": 1},
+    "dimension_version": {"type": "string", "minLength": 1},
+    "status": {
+      "type": "string",
+      "enum": ["success", "partial", "abstained", "failed"]
+    },
+    "analyzer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "analyzer_id",
+        "provider",
+        "model_id",
+        "model_version",
+        "adapter_version",
+        "taxonomy_id",
+        "taxonomy_version"
+      ],
+      "properties": {
+        "analyzer_id": {"type": "string", "minLength": 1},
+        "provider": {"type": "string", "minLength": 1},
+        "model_id": {"type": "string", "minLength": 1},
+        "model_version": {"type": "string", "minLength": 1},
+        "adapter_version": {"type": "string", "minLength": 1},
+        "taxonomy_id": {"type": "string", "minLength": 1},
+        "taxonomy_version": {"type": "string", "minLength": 1}
+      }
+    },
+    "raw_output": {"type": "object"},
+    "normalized_scores": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["key", "value", "lower_bound", "upper_bound"],
+        "properties": {
+          "key": {"type": "string", "minLength": 1},
+          "value": {"type": "number"},
+          "lower_bound": {"type": "number"},
+          "upper_bound": {"type": "number"},
+          "confidence": {"type": ["number", "null"], "minimum": 0, "maximum": 1}
+        }
+      }
+    },
+    "evidence_spans": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["start", "end"],
+        "properties": {
+          "start": {"type": "integer", "minimum": 0},
+          "end": {"type": "integer", "minimum": 1},
+          "label": {"type": ["string", "null"]},
+          "score": {"type": ["number", "null"], "minimum": 0, "maximum": 1}
+        }
+      }
+    },
+    "applicability": {"type": ["string", "null"]},
+    "warnings": {"type": "array", "items": {"type": "string"}},
+    "errors": {"type": "array", "items": {"type": "string"}},
+    "duration_ms": {"type": ["number", "null"], "minimum": 0},
+    "configuration": {"type": "object"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "failed"}}},
+      "then": {"properties": {"errors": {"minItems": 1}}}
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {"enum": ["abstained", "failed"]}
+        }
+      },
+      "then": {"properties": {"normalized_scores": {"maxItems": 0}}}
+    }
+  ]
+}

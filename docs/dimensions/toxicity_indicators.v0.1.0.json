@@ -1,0 +1,84 @@
+{
+  "record_type": "dimension_eligibility",
+  "dimension_id": "toxicity_indicators",
+  "dimension_version": "0.1.0",
+  "name": "Toxicity indicators",
+  "status": "defined",
+  "report_eligibility": "eligible_experimental",
+  "definition": "Instrument-detected language patterns associated with declared categories such as hostility, insult, threat, harassment, obscenity, or identity attack.",
+  "measurement_units": ["content_item", "segment"],
+  "claim_scope": [
+    "Reports category-level detector outputs under a declared toxicity taxonomy.",
+    "May identify localized spans that materially contribute to a category result when the method supports genuine span evidence.",
+    "May provide a within-dimension summary only while preserving all category-level outputs."
+  ],
+  "exclusions": [
+    "Universal offensiveness",
+    "Platform policy violation",
+    "Illegality",
+    "Factual falsity",
+    "Moral condemnation",
+    "The moral worth of a creator or audience",
+    "Harm caused in a specific context"
+  ],
+  "expected_output": {
+    "kind": "category_vector",
+    "required_keys": [],
+    "notes": "The exact categories are taxonomy-dependent. Category-level scores are canonical; any single toxicity summary is subordinate and may not replace them."
+  },
+  "evidence_requirement": "span_preferred",
+  "known_confounds": [
+    "Identity-term false positives",
+    "Reclaimed language",
+    "Counterspeech",
+    "Quotation",
+    "Academic or journalistic discussion",
+    "Satire",
+    "Dialect variation",
+    "Threats described rather than issued",
+    "Fictional dialogue"
+  ],
+  "instrument_requirements": [
+    "Declare the category taxonomy, thresholds, and label meanings.",
+    "Preserve category-level raw outputs before any summary transformation.",
+    "Declare whether evidence spans are native outputs or post-hoc attributions.",
+    "Support abstention or warnings for unsupported language and domain conditions.",
+    "Expose model and adapter versions needed to reproduce threshold behavior."
+  ],
+  "normalization": {
+    "permitted": true,
+    "rule": "Normalization is permitted only within a declared taxonomy and calibration regime. Identically named categories from different instruments are not presumed equivalent."
+  },
+  "validation_requirements": [
+    "Category-specific precision, recall, and calibration analysis.",
+    "Dedicated false-positive tests for identity terms, dialect, quotation, counterspeech, and reclaimed language.",
+    "Distinguish threats issued from threats reported or quoted.",
+    "Human annotation under category-specific written definitions.",
+    "Domain- and language-specific validation before bounded validity claims."
+  ],
+  "aggregation": {
+    "may_appear_as_profile_component": true,
+    "may_have_within_dimension_summary": true,
+    "may_contribute_to_overall_rating": false,
+    "constraints": [
+      "Category-level outputs must remain visible and canonical.",
+      "A summary score must declare its formula and may not imply policy violation or harm.",
+      "Material segment-level peaks may not be erased by a whole-item average.",
+      "No overall CTRT rating exists in Phase 0."
+    ]
+  },
+  "explanation_constraints": [
+    "Describe detected language indicators, not the identity or moral character of the speaker.",
+    "Do not convert a model category into a legal, policy, safety, or moral conclusion.",
+    "Name material confounds when quoted, reclaimed, identity-related, academic, or fictional language is present.",
+    "Distinguish native evidence from post-hoc explanation methods."
+  ],
+  "open_questions": [
+    "Which category taxonomy should CTRT adopt or map for the first experiment?",
+    "Under what conditions is a single within-dimension toxicity summary useful rather than misleading?",
+    "When must segment-level review override an item-level average?"
+  ],
+  "decision_rationale": "Category-level toxicity indicators are sufficiently bounded for experimental comparison, provided outputs remain descriptive, taxonomy-specific, and explicitly separated from policy or moral judgments.",
+  "decision_authority": "Phase 0 working decision under ADR-0004",
+  "updated_at": "2026-08-02T17:48:00Z"
+}

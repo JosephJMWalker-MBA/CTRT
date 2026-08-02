@@ -1,0 +1,75 @@
+{
+  "record_type": "dimension_eligibility",
+  "dimension_id": "sentiment_valence",
+  "dimension_version": "0.1.0",
+  "name": "Sentiment valence",
+  "status": "defined",
+  "report_eligibility": "eligible_experimental",
+  "definition": "The degree to which expressed language is conventionally associated with positive, neutral, or negative evaluation.",
+  "measurement_units": ["content_item", "segment"],
+  "claim_scope": [
+    "Describes expressed evaluative language in the analyzed text.",
+    "May report positive, neutral, and negative class probabilities under a declared taxonomy.",
+    "May provide a declared normalized valence for comparison within a compatible instrument family."
+  ],
+  "exclusions": [
+    "Moral quality",
+    "Truthfulness or factual accuracy",
+    "Toxicity",
+    "Emotional intensity",
+    "Author intent",
+    "Reader impact"
+  ],
+  "expected_output": {
+    "kind": "distribution",
+    "required_keys": ["positive", "neutral", "negative"],
+    "notes": "Raw class probabilities must be preserved. A normalized valence is optional and must identify its transformation rule."
+  },
+  "evidence_requirement": "span_preferred",
+  "known_confounds": [
+    "Mixed sentiment",
+    "Negation",
+    "Irony and sarcasm",
+    "Quotation",
+    "Target-dependent sentiment",
+    "Domain-specific vocabulary"
+  ],
+  "instrument_requirements": [
+    "Declare the model taxonomy and label mapping.",
+    "Preserve raw probabilities before normalization.",
+    "Declare supported language and known training-domain limits.",
+    "Return abstained or partial status when the input falls outside supported conditions."
+  ],
+  "normalization": {
+    "permitted": true,
+    "rule": "A transformation to the interval [-1, 1] is permitted only when the exact mapping from raw labels and probabilities is versioned and preserved."
+  },
+  "validation_requirements": [
+    "Human annotation agreement under written instructions.",
+    "Calibration analysis for class probabilities.",
+    "Tests covering mixed sentiment, quotation, negation, and irony.",
+    "Domain-shift evaluation before any domain-valid claim."
+  ],
+  "aggregation": {
+    "may_appear_as_profile_component": true,
+    "may_have_within_dimension_summary": true,
+    "may_contribute_to_overall_rating": false,
+    "constraints": [
+      "The class distribution may not be replaced by the normalized valence.",
+      "Segment variation must remain visible when an item-level summary conceals material differences.",
+      "No overall CTRT rating exists in Phase 0."
+    ]
+  },
+  "explanation_constraints": [
+    "Describe language as positive, neutral, negative, mixed, or uncertain; do not describe the creator as such.",
+    "Do not infer truth, virtue, harm, intent, or audience effect.",
+    "Distinguish model probability from calibrated system confidence."
+  ],
+  "open_questions": [
+    "Which normalization, if any, best preserves mixed and neutral outputs?",
+    "When is segment-level analysis mandatory rather than optional?"
+  ],
+  "decision_rationale": "Sentiment valence has a sufficiently bounded provisional definition and a testable output structure to enter experimental reports, while remaining ineligible for an overall rating.",
+  "decision_authority": "Phase 0 working decision under ADR-0004",
+  "updated_at": "2026-08-02T17:48:00Z"
+}
