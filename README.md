@@ -17,17 +17,29 @@ CTRT is not a censorship system and does not determine whether content should ex
 - [CTRT Constitution](CONSTITUTION.md)
 - [Phase 0 scope and exit criteria](docs/scope.md)
 - [Provisional measurement ontology](docs/ontology.md)
+- [Dimension eligibility registry](docs/dimensions/)
 - [Model evaluation research protocol](docs/research-protocol.md)
-- [Open questions](docs/open-questions.md)
+- [Open questions and resolution register](docs/open-questions.md)
 - [Architecture Decision Records](docs/adr/)
+
+## Current experimental profile decision
+
+The first experimental profile may evaluate:
+
+- sentiment valence;
+- an emotion profile under a declared taxonomy;
+- category-level toxicity indicators under a declared taxonomy.
+
+“Tone” is presently a transparent presentation profile, not a scalar measurement. Emotional intensity remains ineligible until its independent-versus-derived definition is resolved. No overall CTRT rating exists in Phase 0.
 
 ## Repository map
 
 ```text
-src/ctrt/          Dependency-free provider-neutral contracts
+src/ctrt/          Dependency-free contracts and constitutional gates
 schemas/           Canonical JSON Schemas
 tests/             Contract and domain-invariant tests
-docs/              Scope, ontology, protocol, questions, and ADRs
+docs/dimensions/   Versioned dimension eligibility records
+docs/adr/          Architecture and governance decisions
 ```
 
 ## Scope boundary
