@@ -1,0 +1,10 @@
+{
+  "artifact_id": "canonical-content:content-003:00ab0b9ee700397be6076f333eff1c585bb222efb544211203f9b8ea4ee1007b",
+  "content_id": "content-003",
+  "text": "The report contains no fixture vocabulary.",
+  "content_hash": "sha256:00ab0b9ee700397be6076f333eff1c585bb222efb544211203f9b8ea4ee1007b",
+  "language": "en",
+  "source_type": "raw_text",
+  "source_uri": null,
+  "extraction_ref": "content-item:content-003"
+}
