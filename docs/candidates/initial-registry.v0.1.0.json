@@ -1,0 +1,418 @@
+{
+  "registry_id": "ctrt.phase1.initial-candidates",
+  "registry_version": "0.1.0",
+  "status": "draft",
+  "candidates": [
+    {
+      "candidate_id": "sentiment.cardiffnlp.twitter-roberta-base-sentiment-latest",
+      "display_name": "Cardiff NLP Twitter RoBERTa Sentiment Latest",
+      "capability_type": "analyzer",
+      "technology_type": "transformer_model",
+      "implementation_ref": "cardiffnlp/twitter-roberta-base-sentiment-latest",
+      "source_uri": "https://huggingface.co/cardiffnlp/twitter-roberta-base-sentiment-latest",
+      "status": "eligible_for_evaluation",
+      "intended_tasks": ["sentiment classification", "sentiment valence normalization"],
+      "dimensions": ["sentiment_valence"],
+      "expected_output": {
+        "kind": "class probability distribution",
+        "labels": ["negative", "neutral", "positive"],
+        "notes": "Raw labels and probabilities must be preserved before any valence mapping."
+      },
+      "domain_claims": ["English social-media text"],
+      "language_claims": ["en"],
+      "license_review": {
+        "status": "pending",
+        "declared_license": null,
+        "evidence_ref": null,
+        "notes": "License and redistribution conditions must be reviewed from the pinned model revision."
+      },
+      "revision_policy": {
+        "pin_required": true,
+        "pinned_revision": null,
+        "verification_date": "2026-08-02"
+      },
+      "inclusion_rationale": "A widely used three-class sentiment candidate whose social-media training domain provides a useful contrast with general-review sentiment models and a rule-based baseline.",
+      "known_risks": [
+        "Training-domain mismatch for articles and formal prose.",
+        "Model-hub latest references can change unless a revision is pinned.",
+        "Three-class output is not directly comparable with binary sentiment models without a declared mapping."
+      ],
+      "verification_questions": [
+        "What exact revision and tokenizer files will be pinned?",
+        "How does performance change across news, opinion, advertising, and long-form prose?",
+        "Does neutral-class behavior remain calibrated outside social-media text?"
+      ],
+      "notes": "Candidate inclusion is not model selection."
+    },
+    {
+      "candidate_id": "sentiment.distilbert.sst2",
+      "display_name": "DistilBERT Base Uncased Fine-Tuned on SST-2",
+      "capability_type": "analyzer",
+      "technology_type": "transformer_model",
+      "implementation_ref": "distilbert/distilbert-base-uncased-finetuned-sst-2-english",
+      "source_uri": "https://huggingface.co/distilbert/distilbert-base-uncased-finetuned-sst-2-english",
+      "status": "eligible_for_evaluation",
+      "intended_tasks": ["binary sentiment classification", "general sentiment baseline"],
+      "dimensions": ["sentiment_valence"],
+      "expected_output": {
+        "kind": "binary class probability distribution",
+        "labels": ["negative", "positive"],
+        "notes": "The model has no native neutral class; CTRT must not invent one silently."
+      },
+      "domain_claims": ["English sentence-level sentiment", "SST-2 movie-review domain"],
+      "language_claims": ["en"],
+      "license_review": {
+        "status": "provisionally_verified",
+        "declared_license": "Apache-2.0",
+        "evidence_ref": "https://huggingface.co/distilbert/distilbert-base-uncased-finetuned-sst-2-english",
+        "notes": "Final verification must use the pinned revision and all distributed artifacts."
+      },
+      "revision_policy": {
+        "pin_required": true,
+        "pinned_revision": null,
+        "verification_date": "2026-08-02"
+      },
+      "inclusion_rationale": "Provides a compact binary transformer baseline with a substantially different training domain and taxonomy from the Cardiff candidate.",
+      "known_risks": [
+        "Binary taxonomy cannot represent neutrality directly.",
+        "Movie-review training data may not generalize to CTRT content domains.",
+        "Published model-card probabilities are not evidence of CTRT-domain calibration."
+      ],
+      "verification_questions": [
+        "Should binary output be displayed without conversion or mapped only in a separate experiment?",
+        "How does sequence-length handling affect long content?",
+        "What bias and domain-shift tests are required before any selection?"
+      ],
+      "notes": "This is a concrete replacement for the underspecified phrase 'DistilBERT sentiment models.'"
+    },
+    {
+      "candidate_id": "sentiment.vader",
+      "display_name": "VADER Sentiment",
+      "capability_type": "analyzer",
+      "technology_type": "rule_based_library",
+      "implementation_ref": "cjhutto/vaderSentiment",
+      "source_uri": "https://github.com/cjhutto/vaderSentiment",
+      "status": "eligible_for_evaluation",
+      "intended_tasks": ["lightweight sentiment baseline", "rule-based valence analysis"],
+      "dimensions": ["sentiment_valence"],
+      "expected_output": {
+        "kind": "rule-based sentiment scores",
+        "labels": ["negative", "neutral", "positive", "compound"],
+        "notes": "The compound score and component proportions must be preserved with the library version."
+      },
+      "domain_claims": ["Social-media-oriented sentiment", "lightweight text analysis"],
+      "language_claims": ["en"],
+      "license_review": {
+        "status": "pending",
+        "declared_license": null,
+        "evidence_ref": "https://github.com/cjhutto/vaderSentiment/blob/master/LICENSE.txt",
+        "notes": "Review the repository license and lexicon redistribution conditions at a pinned commit."
+      },
+      "revision_policy": {
+        "pin_required": true,
+        "pinned_revision": null,
+        "verification_date": "2026-08-02"
+      },
+      "inclusion_rationale": "Provides a transparent, inexpensive non-transformer baseline that helps distinguish model complexity from practical measurement quality.",
+      "known_risks": [
+        "Lexicon and heuristic coverage may fail on context, irony, domain vocabulary, and long-form composition.",
+        "Rule-based scores are not directly equivalent to transformer probabilities.",
+        "English-oriented lexicon limits language applicability."
+      ],
+      "verification_questions": [
+        "Which outputs can be normalized without erasing their rule-based meaning?",
+        "How does performance compare on ordinary low-intensity prose?",
+        "Does VADER provide useful interpretability advantages despite lower contextual sensitivity?"
+      ],
+      "notes": "Baseline status does not imply inferiority or production selection."
+    },
+    {
+      "candidate_id": "emotion.j-hartmann.distilroberta-base",
+      "display_name": "Emotion English DistilRoBERTa Base",
+      "capability_type": "analyzer",
+      "technology_type": "transformer_model",
+      "implementation_ref": "j-hartmann/emotion-english-distilroberta-base",
+      "source_uri": "https://huggingface.co/j-hartmann/emotion-english-distilroberta-base",
+      "status": "eligible_for_evaluation",
+      "intended_tasks": ["emotion classification", "emotion profile construction"],
+      "dimensions": ["emotion_profile"],
+      "expected_output": {
+        "kind": "class probability distribution",
+        "labels": ["anger", "disgust", "fear", "joy", "neutral", "sadness", "surprise"],
+        "notes": "Taxonomy identity and class order must be preserved exactly."
+      },
+      "domain_claims": ["English text emotion classification"],
+      "language_claims": ["en"],
+      "license_review": {
+        "status": "pending",
+        "declared_license": null,
+        "evidence_ref": null,
+        "notes": "Model, dataset, and redistribution conditions require review at a pinned revision."
+      },
+      "revision_policy": {
+        "pin_required": true,
+        "pinned_revision": null,
+        "verification_date": "2026-08-02"
+      },
+      "inclusion_rationale": "Provides the proposed seven-label emotion taxonomy for an initial workbench comparison and exposes the need to distinguish taxonomy coverage from actual creator emotion.",
+      "known_risks": [
+        "Single-label classification may underrepresent mixed emotion.",
+        "Predicted textual emotion is not evidence of a creator's internal state.",
+        "Quotation, fiction, sarcasm, and counterspeech may produce misleading item-level labels."
+      ],
+      "verification_questions": [
+        "Should the workbench request all class scores rather than top-label output?",
+        "How stable are outputs across segments versus whole documents?",
+        "Which corpus strata reveal taxonomy insufficiency?"
+      ],
+      "notes": "Emotion profile eligibility does not validate this specific model."
+    },
+    {
+      "candidate_id": "toxicity.detoxify",
+      "display_name": "Detoxify",
+      "capability_type": "analyzer",
+      "technology_type": "model_library",
+      "implementation_ref": "unitaryai/detoxify",
+      "source_uri": "https://github.com/unitaryai/detoxify",
+      "status": "eligible_for_evaluation",
+      "intended_tasks": ["multi-label toxicity indicator analysis"],
+      "dimensions": ["toxicity_indicators"],
+      "expected_output": {
+        "kind": "multi-label score object",
+        "labels": ["toxicity", "severe_toxicity", "obscene", "threat", "insult", "identity_attack", "sexual_explicit"],
+        "notes": "Available labels vary by Detoxify model variant; exact variant and taxonomy must be declared."
+      },
+      "domain_claims": ["English toxic-comment classification", "Jigsaw challenge-derived domains"],
+      "language_claims": ["en", "multilingual variant requires separate eligibility review"],
+      "license_review": {
+        "status": "provisionally_verified",
+        "declared_license": "Apache-2.0",
+        "evidence_ref": "https://github.com/unitaryai/detoxify/blob/master/pyproject.toml",
+        "notes": "Weights, datasets, variants, and redistribution constraints require final review."
+      },
+      "revision_policy": {
+        "pin_required": true,
+        "pinned_revision": null,
+        "verification_date": "2026-08-02"
+      },
+      "inclusion_rationale": "Provides a packaged toxicity baseline with multiple model variants and category-level outputs aligned with CTRT's requirement not to hide categories behind one number.",
+      "known_risks": [
+        "Identity terms, dialect, quotation, counterspeech, and reclaimed language can trigger false positives.",
+        "Different Detoxify variants expose different taxonomies and training domains.",
+        "Library output may differ from related Hugging Face model usage."
+      ],
+      "verification_questions": [
+        "Which Detoxify variant or variants should be separately registered?",
+        "How will identity-term confounding be tested?",
+        "Can evidence spans be supported, or must outputs be marked item-level only?"
+      ],
+      "notes": "Each library variant must become its own analyzer identity during execution."
+    },
+    {
+      "candidate_id": "toxicity.unitary.toxic-bert",
+      "display_name": "Unitary Toxic BERT",
+      "capability_type": "analyzer",
+      "technology_type": "transformer_model",
+      "implementation_ref": "unitary/toxic-bert",
+      "source_uri": "https://huggingface.co/unitary/toxic-bert",
+      "status": "eligible_for_evaluation",
+      "intended_tasks": ["multi-label toxicity indicator analysis", "direct model-loading comparison"],
+      "dimensions": ["toxicity_indicators"],
+      "expected_output": {
+        "kind": "multi-label score object",
+        "labels": ["toxicity", "severe_toxicity", "obscene", "threat", "insult", "identity_hate"],
+        "notes": "The pinned model configuration defines the authoritative labels; no equivalence with Detoxify output may be assumed."
+      },
+      "domain_claims": ["English toxic-comment classification"],
+      "language_claims": ["en"],
+      "license_review": {
+        "status": "pending",
+        "declared_license": null,
+        "evidence_ref": null,
+        "notes": "Model-card and weight licensing require independent verification."
+      },
+      "revision_policy": {
+        "pin_required": true,
+        "pinned_revision": null,
+        "verification_date": "2026-08-02"
+      },
+      "inclusion_rationale": "Enables direct comparison between a model-hub checkpoint and the Detoxify library, whose own documentation warns that their outputs may differ.",
+      "known_risks": [
+        "Related lineage may create an illusion that this and Detoxify are equivalent instruments.",
+        "Taxonomy naming differs across versions and wrappers.",
+        "The same bias and context confounds affecting toxicity classifiers remain material."
+      ],
+      "verification_questions": [
+        "Which output differences arise from preprocessing, model weights, label mapping, or library behavior?",
+        "Should this be treated as an independent candidate or a wrapper-implementation experiment?",
+        "What pinned revision and tokenizer will be used?"
+      ],
+      "notes": "Do not merge results with Detoxify merely because both originate from Unitary resources."
+    },
+    {
+      "candidate_id": "extraction.readability-lxml",
+      "display_name": "readability-lxml",
+      "capability_type": "extractor",
+      "technology_type": "extraction_library",
+      "implementation_ref": "readability-lxml",
+      "source_uri": "https://pypi.org/project/readability-lxml/",
+      "status": "eligible_for_evaluation",
+      "intended_tasks": ["primary article text extraction", "title extraction"],
+      "dimensions": [],
+      "expected_output": {
+        "kind": "extracted document",
+        "labels": [],
+        "notes": "Output must be converted to a canonical ContentItem with extraction provenance and quality status."
+      },
+      "domain_claims": ["HTML article-body extraction"],
+      "language_claims": [],
+      "license_review": {
+        "status": "provisionally_verified",
+        "declared_license": "Apache-2.0",
+        "evidence_ref": "https://pypi.org/project/readability-lxml/",
+        "notes": "Verify source distribution and transitive dependency obligations for the pinned version."
+      },
+      "revision_policy": {
+        "pin_required": true,
+        "pinned_revision": null,
+        "verification_date": "2026-08-02"
+      },
+      "inclusion_rationale": "A focused article-body extraction candidate suitable for comparison against richer news-oriented extractors.",
+      "known_risks": [
+        "Article-oriented heuristics may fail on non-article pages.",
+        "Menus, captions, sidebars, or comments may be included or primary text omitted.",
+        "Extraction quality must be evaluated before downstream analysis."
+      ],
+      "verification_questions": [
+        "Which page structures produce truncation or boilerplate leakage?",
+        "How will extracted text be compared with human-reviewed references?",
+        "What retrieval and sanitization layer precedes the extractor?"
+      ],
+      "notes": "Extraction failure must propagate into the confidence vector."
+    },
+    {
+      "candidate_id": "extraction.newspaper3k",
+      "display_name": "Newspaper3k",
+      "capability_type": "extractor",
+      "technology_type": "extraction_library",
+      "implementation_ref": "codelucas/newspaper",
+      "source_uri": "https://github.com/codelucas/newspaper",
+      "status": "proposed",
+      "intended_tasks": ["news article text extraction", "article metadata extraction"],
+      "dimensions": [],
+      "expected_output": {
+        "kind": "extracted article and metadata",
+        "labels": [],
+        "notes": "Candidate remains proposed pending maintenance, compatibility, and successor review."
+      },
+      "domain_claims": ["News article extraction"],
+      "language_claims": [],
+      "license_review": {
+        "status": "pending",
+        "declared_license": null,
+        "evidence_ref": null,
+        "notes": "Review repository and dependency licensing only if candidate advances."
+      },
+      "revision_policy": {
+        "pin_required": true,
+        "pinned_revision": null,
+        "verification_date": "2026-08-02"
+      },
+      "inclusion_rationale": "Included because it appeared in the original specification and remains a useful historical comparator for article extraction.",
+      "known_risks": [
+        "Maintenance and modern dependency compatibility require verification.",
+        "A maintained successor may be more suitable for active evaluation.",
+        "News-specific assumptions may not generalize to arbitrary webpages."
+      ],
+      "verification_questions": [
+        "Is the project sufficiently maintained for the Phase 1 environment?",
+        "Should Newspaper4k replace it as the executable candidate while Newspaper3k remains historical?",
+        "What installation or tokenizer conflicts occur under the supported Python version?"
+      ],
+      "notes": "Do not install until eligibility is resolved."
+    },
+    {
+      "candidate_id": "extraction.newspaper4k",
+      "display_name": "Newspaper4k",
+      "capability_type": "extractor",
+      "technology_type": "extraction_library",
+      "implementation_ref": "AndyTheFactory/newspaper4k",
+      "source_uri": "https://github.com/AndyTheFactory/newspaper4k",
+      "status": "eligible_for_evaluation",
+      "intended_tasks": ["news article text extraction", "article metadata extraction"],
+      "dimensions": [],
+      "expected_output": {
+        "kind": "extracted article and metadata",
+        "labels": [],
+        "notes": "Evaluate as a maintained continuation candidate rather than assuming equivalence with Newspaper3k."
+      },
+      "domain_claims": ["News article extraction"],
+      "language_claims": [],
+      "license_review": {
+        "status": "pending",
+        "declared_license": null,
+        "evidence_ref": "https://github.com/AndyTheFactory/newspaper4k",
+        "notes": "Repository reports multiple license files; a complete dependency and distribution review is required."
+      },
+      "revision_policy": {
+        "pin_required": true,
+        "pinned_revision": null,
+        "verification_date": "2026-08-02"
+      },
+      "inclusion_rationale": "A currently maintained continuation of Newspaper3k that should be evaluated alongside readability-lxml for article extraction.",
+      "known_risks": [
+        "Richer dependency surface and metadata features may increase deployment complexity.",
+        "News-centric heuristics may fail on non-news pages.",
+        "Robots, retrieval, and site-specific behavior require explicit policy."
+      ],
+      "verification_questions": [
+        "Which features materially improve extraction fidelity over readability-lxml?",
+        "What resource and dependency costs accompany those gains?",
+        "How does it behave on dynamic, malformed, or paywalled pages?"
+      ],
+      "notes": "Added as a current candidate discovered during initial technology verification."
+    },
+    {
+      "candidate_id": "transcript.youtube-transcript-api",
+      "display_name": "youtube-transcript-api",
+      "capability_type": "transcript_acquisition",
+      "technology_type": "acquisition_library",
+      "implementation_ref": "jdepoix/youtube-transcript-api",
+      "source_uri": "https://github.com/jdepoix/youtube-transcript-api",
+      "status": "deferred",
+      "intended_tasks": ["retrieve existing YouTube transcripts or subtitles"],
+      "dimensions": [],
+      "expected_output": {
+        "kind": "timestamped transcript",
+        "labels": [],
+        "notes": "Transcript provenance, language, generated-versus-authored status, timing, and translation status must be retained."
+      },
+      "domain_claims": ["YouTube videos with available transcripts or subtitles"],
+      "language_claims": ["Dependent on available transcript languages"],
+      "license_review": {
+        "status": "pending",
+        "declared_license": null,
+        "evidence_ref": null,
+        "notes": "Library license and transcript-content rights are separate questions and both require review."
+      },
+      "revision_policy": {
+        "pin_required": true,
+        "pinned_revision": null,
+        "verification_date": "2026-08-02"
+      },
+      "inclusion_rationale": "Supports future transcript acquisition without adding speech recognition, but is deferred until raw-text and webpage workbench flows are stable.",
+      "known_risks": [
+        "The library documents reliance on an undocumented YouTube web-client interface.",
+        "Availability, IP blocking, API changes, and transcript permissions may affect reproducibility.",
+        "Automatically generated captions contain upstream recognition errors that must affect extraction quality."
+      ],
+      "verification_questions": [
+        "What legal and reproducibility constraints govern storing retrieved transcripts?",
+        "How will human-authored and automatically generated transcripts be distinguished?",
+        "What failure and retry policy is appropriate for an undocumented upstream interface?"
+      ],
+      "notes": "Speech recognition remains outside scope."
+    }
+  ],
+  "created_at": "2026-08-02T18:55:00-04:00"
+}
