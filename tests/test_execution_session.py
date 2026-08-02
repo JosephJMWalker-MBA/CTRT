@@ -18,11 +18,11 @@ from ctrt.artifact_store import (
 from ctrt.candidate_eligibility import CandidateRegistrySnapshot
 from ctrt.contracts import AnalyzerIdentity, ContentItem, ModelResult, ResultStatus, SourceType
 from ctrt.execution_session import (
+    VERIFIED_CHECKS,
     ExecutionSessionStage,
     ExecutionSessionStatus,
     GovernedExecutionError,
     GovernedExecutionSession,
-    VERIFIED_CHECKS,
 )
 from ctrt.experiments import (
     ExecutionEnvironment,
