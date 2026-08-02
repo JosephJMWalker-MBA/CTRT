@@ -7,6 +7,8 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Protocol, runtime_checkable
 
+from ctrt.confidence import ConfidenceVector
+
 
 class SourceType(StrEnum):
     """How a canonical content item entered CTRT."""
@@ -98,7 +100,6 @@ class NormalizedScore:
     value: float
     lower_bound: float
     upper_bound: float
-    confidence: float | None = None
 
     def __post_init__(self) -> None:
         if not self.key.strip():
@@ -107,8 +108,6 @@ class NormalizedScore:
             raise ValueError("lower_bound must be less than upper_bound")
         if not self.lower_bound <= self.value <= self.upper_bound:
             raise ValueError("score value must fall within declared bounds")
-        if self.confidence is not None and not 0.0 <= self.confidence <= 1.0:
-            raise ValueError("confidence must be between 0.0 and 1.0")
 
 
 @dataclass(frozen=True, slots=True)
@@ -121,10 +120,10 @@ class ModelResult:
     dimension_version: str
     status: ResultStatus
     analyzer: AnalyzerIdentity
+    confidence: ConfidenceVector
     raw_output: Mapping[str, object]
     normalized_scores: tuple[NormalizedScore, ...] = ()
     evidence_spans: tuple[EvidenceSpan, ...] = ()
-    applicability: str | None = None
     warnings: tuple[str, ...] = ()
     errors: tuple[str, ...] = ()
     duration_ms: float | None = None
@@ -145,8 +144,21 @@ class ModelResult:
             raise ValueError("successful results may not contain errors")
         if self.status is ResultStatus.FAILED and not self.errors:
             raise ValueError("failed results must contain at least one error")
-        if self.status in {ResultStatus.ABSTAINED, ResultStatus.FAILED} and self.normalized_scores:
+        if (
+            self.status in {ResultStatus.ABSTAINED, ResultStatus.FAILED}
+            and self.normalized_scores
+        ):
             raise ValueError("abstained or failed results may not contain normalized scores")
+        if (
+            self.status is ResultStatus.ABSTAINED
+            and not self.confidence.system_abstention.triggered
+        ):
+            raise ValueError("abstained result requires triggered system abstention")
+        if (
+            self.confidence.system_abstention.triggered
+            and self.status not in {ResultStatus.ABSTAINED, ResultStatus.FAILED}
+        ):
+            raise ValueError("triggered system abstention requires abstained or failed result")
 
 
 @runtime_checkable

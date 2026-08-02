@@ -1,0 +1,315 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ctrt.dev/schemas/confidence-vector.schema.json",
+  "title": "CTRT Confidence Vector",
+  "description": "Structured confidence signals that may not be silently collapsed into a scalar.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "instrument_probability",
+    "calibration",
+    "applicability",
+    "extraction_quality",
+    "inter_instrument_agreement",
+    "system_abstention",
+    "ambiguity_budget"
+  ],
+  "properties": {
+    "instrument_probability": {"$ref": "#/$defs/instrumentProbability"},
+    "calibration": {"$ref": "#/$defs/calibration"},
+    "applicability": {"$ref": "#/$defs/applicability"},
+    "extraction_quality": {"$ref": "#/$defs/extractionQuality"},
+    "inter_instrument_agreement": {"$ref": "#/$defs/interInstrumentAgreement"},
+    "system_abstention": {"$ref": "#/$defs/systemAbstention"},
+    "ambiguity_budget": {"$ref": "#/$defs/ambiguityBudget"}
+  },
+  "$defs": {
+    "instrumentProbability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "source", "notes"],
+      "properties": {
+        "value": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "source": {
+          "type": ["string", "null"],
+          "enum": ["model-reported", "derived", null]
+        },
+        "notes": {"type": "string"}
+      },
+      "allOf": [
+        {
+          "if": {"required": ["value"], "properties": {"value": {"type": "number"}}},
+          "then": {"properties": {"source": {"type": "string"}}}
+        },
+        {
+          "if": {"properties": {"source": {"const": "derived"}}, "required": ["source"]},
+          "then": {"properties": {"notes": {"minLength": 1}}}
+        }
+      ]
+    },
+    "calibration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "method", "domain", "evidence_ref"],
+      "properties": {
+        "status": {"type": "string", "enum": ["unknown", "estimated", "validated"]},
+        "method": {"type": ["string", "null"], "minLength": 1},
+        "domain": {"type": ["string", "null"], "minLength": 1},
+        "evidence_ref": {"type": ["string", "null"], "minLength": 1}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"status": {"const": "unknown"}}, "required": ["status"]},
+          "then": {
+            "properties": {
+              "method": {"type": "null"},
+              "domain": {"type": "null"}
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {"status": {"enum": ["estimated", "validated"]}},
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "method": {"type": "string", "minLength": 1},
+              "domain": {"type": "string", "minLength": 1},
+              "evidence_ref": {"type": "string", "minLength": 1}
+            }
+          }
+        }
+      ]
+    },
+    "applicability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reasons", "evidence_ref"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["in-domain", "borderline", "out-of-domain", "unknown"]
+        },
+        "reasons": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "evidence_ref": {"type": ["string", "null"], "minLength": 1}
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"status": {"enum": ["borderline", "out-of-domain", "unknown"]}},
+            "required": ["status"]
+          },
+          "then": {"properties": {"reasons": {"minItems": 1}}}
+        }
+      ]
+    },
+    "extractionQuality": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "issues", "evidence_ref"],
+      "properties": {
+        "status": {"type": "string", "enum": ["clean", "partial", "degraded", "failed"]},
+        "issues": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "evidence_ref": {"type": ["string", "null"], "minLength": 1}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"status": {"const": "clean"}}, "required": ["status"]},
+          "then": {"properties": {"issues": {"maxItems": 0}}}
+        },
+        {
+          "if": {
+            "properties": {"status": {"enum": ["partial", "degraded", "failed"]}},
+            "required": ["status"]
+          },
+          "then": {"properties": {"issues": {"minItems": 1}}}
+        }
+      ]
+    },
+    "interInstrumentAgreement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "participants", "metric", "value", "notes"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "single-instrument",
+            "agreement",
+            "partial-disagreement",
+            "strong-disagreement",
+            "abstain"
+          ]
+        },
+        "participants": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "metric": {"type": ["string", "null"], "minLength": 1},
+        "value": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "notes": {"type": "string"}
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"status": {"const": "single-instrument"}},
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "participants": {"minItems": 1, "maxItems": 1},
+              "metric": {"type": "null"},
+              "value": {"type": "null"}
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": ["agreement", "partial-disagreement", "strong-disagreement", "abstain"]
+              }
+            },
+            "required": ["status"]
+          },
+          "then": {"properties": {"participants": {"minItems": 2}}}
+        }
+      ]
+    },
+    "systemAbstention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["triggered", "reasons"],
+      "properties": {
+        "triggered": {"type": "boolean"},
+        "reasons": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"triggered": {"const": true}}, "required": ["triggered"]},
+          "then": {"properties": {"reasons": {"minItems": 1}}}
+        },
+        {
+          "if": {"properties": {"triggered": {"const": false}}, "required": ["triggered"]},
+          "then": {"properties": {"reasons": {"maxItems": 0}}}
+        }
+      ]
+    },
+    "ambiguityBudget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "preserved_uncertainties", "forced_resolutions", "notes"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["unassessed", "preserved", "constrained", "exceeded"]
+        },
+        "preserved_uncertainties": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "forced_resolutions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "notes": {"type": "string"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"status": {"const": "exceeded"}}, "required": ["status"]},
+          "then": {"properties": {"preserved_uncertainties": {"minItems": 1}}}
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "applicability": {
+            "properties": {"status": {"const": "out-of-domain"}},
+            "required": ["status"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "system_abstention": {
+            "properties": {
+              "triggered": {"const": true},
+              "reasons": {"contains": {"const": "out-of-domain"}}
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "extraction_quality": {
+            "properties": {"status": {"const": "failed"}},
+            "required": ["status"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "system_abstention": {
+            "properties": {
+              "triggered": {"const": true},
+              "reasons": {"contains": {"const": "extraction-failure"}}
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "inter_instrument_agreement": {
+            "properties": {"status": {"const": "strong-disagreement"}},
+            "required": ["status"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "system_abstention": {
+            "properties": {
+              "triggered": {"const": true},
+              "reasons": {"contains": {"const": "strong-disagreement"}}
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "inter_instrument_agreement": {
+            "properties": {"status": {"const": "abstain"}},
+            "required": ["status"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "system_abstention": {
+            "properties": {
+              "triggered": {"const": true},
+              "reasons": {"contains": {"const": "agreement-abstain"}}
+            }
+          }
+        }
+      }
+    }
+  ]
+}

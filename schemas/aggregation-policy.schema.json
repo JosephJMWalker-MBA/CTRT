@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ctrt.dev/schemas/aggregation-policy.schema.json",
+  "title": "CTRT Confidence Aggregation Policy",
+  "description": "Declares which confidence signals an aggregation component may read and which outputs it may not invent.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "policy_id",
+    "policy_version",
+    "allowed_confidence_signals",
+    "abstention_trigger_signals",
+    "forbidden_outputs",
+    "notes"
+  ],
+  "properties": {
+    "policy_id": {"type": "string", "minLength": 1},
+    "policy_version": {"type": "string", "minLength": 1},
+    "allowed_confidence_signals": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/confidenceSignal"}
+    },
+    "abstention_trigger_signals": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/confidenceSignal"}
+    },
+    "forbidden_outputs": {
+      "type": "array",
+      "uniqueItems": true,
+      "contains": {"const": "scalar-confidence"},
+      "items": {
+        "type": "string",
+        "enum": [
+          "scalar-confidence",
+          "invented-calibration",
+          "suppressed-disagreement",
+          "untraceable-confidence-summary"
+        ]
+      }
+    },
+    "notes": {"type": "string"}
+  },
+  "$defs": {
+    "confidenceSignal": {
+      "type": "string",
+      "enum": [
+        "instrument-probability",
+        "calibration",
+        "applicability",
+        "extraction-quality",
+        "inter-instrument-agreement",
+        "system-abstention",
+        "ambiguity-budget"
+      ]
+    }
+  }
+}

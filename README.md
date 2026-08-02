@@ -18,6 +18,7 @@ CTRT is not a censorship system and does not determine whether content should ex
 - [Phase 0 scope and exit criteria](docs/scope.md)
 - [Provisional measurement ontology](docs/ontology.md)
 - [Dimension eligibility registry](docs/dimensions/)
+- [Structured confidence vector](docs/confidence.md)
 - [Model evaluation research protocol](docs/research-protocol.md)
 - [Open questions and resolution register](docs/open-questions.md)
 - [Architecture Decision Records](docs/adr/)
@@ -32,12 +33,26 @@ The first experimental profile may evaluate:
 
 “Tone” is presently a transparent presentation profile, not a scalar measurement. Emotional intensity remains ineligible until its independent-versus-derived definition is resolved. No overall CTRT rating exists in Phase 0.
 
+## Confidence decision
+
+CTRT does not define an overall confidence percentage during Phase 0. Every analyzer result and assembled report carries a structured vector containing:
+
+- instrument probability;
+- calibration state;
+- applicability;
+- extraction quality;
+- inter-instrument agreement;
+- system abstention;
+- a descriptive ambiguity budget.
+
+Out-of-domain analysis, failed extraction, strong disagreement, or agreement-level abstention independently force abstention regardless of instrument probability. Aggregation policies must declare which confidence signals they read and must explicitly forbid `scalar-confidence`.
+
 ## Repository map
 
 ```text
 src/ctrt/          Dependency-free contracts and constitutional gates
 schemas/           Canonical JSON Schemas
-tests/             Contract and domain-invariant tests
+tests/             Contract, schema, and domain-invariant tests
 docs/dimensions/   Versioned dimension eligibility records
 docs/adr/          Architecture and governance decisions
 ```
