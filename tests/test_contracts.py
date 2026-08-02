@@ -28,12 +28,7 @@ from ctrt.contracts import (
     ResultStatus,
     SourceType,
 )
-from ctrt.measurement import (
-    AnalysisTarget,
-    EvidenceSupport,
-    EvidenceSupportStatus,
-)
-
+from ctrt.measurement import AnalysisTarget, EvidenceSupport, EvidenceSupportStatus
 
 EXTRACTION_REF = "content-item:content-001"
 
