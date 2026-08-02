@@ -45,16 +45,49 @@ def _digest(artifact_hash: str) -> str:
     if not artifact_hash.startswith(prefix):
         raise ValueError("artifact hash must use a sha256: prefix")
     digest = artifact_hash[len(prefix) :]
-    if len(digest) != 64 or any(character not in "0123456789abcdef" for character in digest):
-        raise ValueError("artifact hash must contain a lowercase 64-character SHA-256 digest")
+    if len(digest) != 64 or any(
+        character not in "0123456789abcdef" for character in digest
+    ):
+        raise ValueError(
+            "artifact hash must contain a lowercase 64-character SHA-256 digest"
+        )
     return digest
 
 
 def _required_string(document: Mapping[str, object], key: str) -> str:
     value = document.get(key)
     if not isinstance(value, str) or not value.strip():
-        raise ArtifactIntegrityError(f"stored artifact index has invalid {key}")
+        raise ArtifactIntegrityError(f"stored artifact document has invalid {key}")
     return value
+
+
+def _required_mapping(
+    document: Mapping[str, object],
+    key: str,
+) -> Mapping[str, object]:
+    value = document.get(key)
+    if not isinstance(value, Mapping):
+        raise ArtifactIntegrityError(f"stored artifact document has invalid {key}")
+    if any(not isinstance(item, str) for item in value):
+        raise ArtifactIntegrityError(f"stored artifact document has invalid {key} keys")
+    return cast(Mapping[str, object], value)
+
+
+def _required_array(document: Mapping[str, object], key: str) -> list[object]:
+    value = document.get(key)
+    if not isinstance(value, list):
+        raise ArtifactIntegrityError(f"stored artifact document has invalid {key}")
+    return value
+
+
+def _as_mapping(value: object, field_name: str) -> Mapping[str, object]:
+    if not isinstance(value, Mapping):
+        raise ArtifactIntegrityError(f"stored artifact document has invalid {field_name}")
+    if any(not isinstance(item, str) for item in value):
+        raise ArtifactIntegrityError(
+            f"stored artifact document has invalid {field_name} keys"
+        )
+    return cast(Mapping[str, object], value)
 
 
 @dataclass(frozen=True, slots=True)
@@ -101,6 +134,17 @@ class BundleArtifactRef:
         if not self.role.strip():
             raise ValueError("bundle artifact role must not be empty")
 
+    @classmethod
+    def from_document(cls, document: Mapping[str, object]) -> BundleArtifactRef:
+        """Parse one role-bound artifact reference from canonical JSON."""
+
+        return cls(
+            role=_required_string(document, "role"),
+            artifact=StoredArtifactRef.from_document(
+                _required_mapping(document, "artifact")
+            ),
+        )
+
 
 @dataclass(frozen=True, slots=True)
 class ExperimentBundleManifest:
@@ -116,12 +160,37 @@ class ExperimentBundleManifest:
         roles = tuple(item.role for item in self.artifacts)
         if len(roles) != len(set(roles)):
             raise ValueError("bundle artifact roles must be unique")
-        required = {"plan", "candidate-eligibility", "environment", "comparison", "run-record"}
+        required = {
+            "plan",
+            "candidate-eligibility",
+            "environment",
+            "comparison",
+            "run-record",
+        }
         if not required.issubset(roles):
             raise ValueError("bundle manifest is missing a required artifact role")
         result_roles = tuple(role for role in roles if role.startswith("result:"))
         if len(result_roles) < 2:
             raise ValueError("bundle manifest requires at least two result artifacts")
+
+    @classmethod
+    def from_document(
+        cls,
+        document: Mapping[str, object],
+    ) -> ExperimentBundleManifest:
+        """Parse a canonical bundle manifest retrieved from the artifact store."""
+
+        artifacts = tuple(
+            BundleArtifactRef.from_document(
+                _as_mapping(item, "artifacts item")
+            )
+            for item in _required_array(document, "artifacts")
+        )
+        return cls(
+            bundle_id=_required_string(document, "bundle_id"),
+            run_record_id=_required_string(document, "run_record_id"),
+            artifacts=artifacts,
+        )
 
 
 @dataclass(frozen=True, slots=True)
@@ -171,7 +240,10 @@ class FileSystemArtifactStore:
     @staticmethod
     def _read_index(path: Path) -> StoredArtifactRef:
         try:
-            document = cast(dict[str, Any], json.loads(path.read_text(encoding="utf-8")))
+            document = cast(
+                dict[str, Any],
+                json.loads(path.read_text(encoding="utf-8")),
+            )
         except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
             raise ArtifactIntegrityError("stored artifact index is unreadable") from exc
         return StoredArtifactRef.from_document(document)
@@ -209,7 +281,12 @@ class FileSystemArtifactStore:
         self.get(reference.artifact_id, expected_hash=reference.artifact_hash)
         return reference
 
-    def get(self, artifact_id: str, *, expected_hash: str | None = None) -> CanonicalArtifact:
+    def get(
+        self,
+        artifact_id: str,
+        *,
+        expected_hash: str | None = None,
+    ) -> CanonicalArtifact:
         """Retrieve canonical bytes by ID and re-verify their SHA-256 identity."""
 
         index_path = self._index_path(artifact_id)
@@ -217,9 +294,13 @@ class FileSystemArtifactStore:
             raise ArtifactNotFoundError(f"artifact ID is not stored: {artifact_id}")
         reference = self._read_index(index_path)
         if reference.artifact_id != artifact_id:
-            raise ArtifactIntegrityError("artifact ID index does not match the requested ID")
+            raise ArtifactIntegrityError(
+                "artifact ID index does not match the requested ID"
+            )
         if expected_hash is not None and reference.artifact_hash != expected_hash:
-            raise ArtifactIntegrityError("stored artifact hash does not match the expected hash")
+            raise ArtifactIntegrityError(
+                "stored artifact hash does not match the expected hash"
+            )
         payload = self.read_payload(reference.artifact_hash)
         return CanonicalArtifact(
             artifact_id=reference.artifact_id,
@@ -240,7 +321,9 @@ class FileSystemArtifactStore:
         except OSError as exc:
             raise ArtifactIntegrityError("stored artifact blob is unreadable") from exc
         if _sha256_bytes(payload) != artifact_hash:
-            raise ArtifactIntegrityError("stored artifact blob failed SHA-256 verification")
+            raise ArtifactIntegrityError(
+                "stored artifact blob failed SHA-256 verification"
+            )
         return payload
 
     def reference(self, artifact_id: str) -> StoredArtifactRef:
@@ -306,11 +389,43 @@ def verify_experiment_bundle(
         stored.manifest_ref.artifact_id,
         expected_hash=stored.manifest_ref.artifact_hash,
     )
-    expected_manifest = serialize_artifact(stored.manifest.bundle_id, stored.manifest)
+    expected_manifest = serialize_artifact(
+        stored.manifest.bundle_id,
+        stored.manifest,
+    )
     if manifest_artifact.payload != expected_manifest.payload:
-        raise ArtifactIntegrityError("stored bundle manifest differs from the expected manifest")
+        raise ArtifactIntegrityError(
+            "stored bundle manifest differs from the expected manifest"
+        )
     for item in stored.manifest.artifacts:
         store.get(
             item.artifact.artifact_id,
             expected_hash=item.artifact.artifact_hash,
         )
+
+
+def load_experiment_bundle(
+    store: FileSystemArtifactStore,
+    manifest_ref: StoredArtifactRef,
+) -> StoredExperimentBundle:
+    """Load one stored manifest, reconstruct its contract, and verify all members."""
+
+    manifest_artifact = store.get(
+        manifest_ref.artifact_id,
+        expected_hash=manifest_ref.artifact_hash,
+    )
+    try:
+        value = json.loads(manifest_artifact.text)
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ArtifactIntegrityError(
+            "stored bundle manifest is not valid canonical JSON"
+        ) from exc
+    manifest = ExperimentBundleManifest.from_document(
+        _as_mapping(value, "bundle manifest")
+    )
+    stored = StoredExperimentBundle(
+        manifest=manifest,
+        manifest_ref=manifest_ref,
+    )
+    verify_experiment_bundle(store, stored)
+    return stored
