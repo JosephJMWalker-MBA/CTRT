@@ -1,0 +1,30 @@
+{
+  "artifact_id": "extraction:content-002:4f3be7ef337ad765ba54b93473f58a96067238c3b2b3abf17f871aec5f084cd2",
+  "content_id": "content-002",
+  "source_artifact_ref": {
+    "artifact_id": "source-artifact:source.synthetic.content-002:6643e7322a3e5f55edd4baa5db37cdd046e716802631545204c87acad3c7fc17",
+    "artifact_hash": "sha256:4f88fd7444eaf450ecd63a0c6326007a28ec7074246f844ee4e2199dee590b39",
+    "canonicalization_version": "ctrt-canonical-json@0.1.0",
+    "media_type": "application/json"
+  },
+  "method_id": "synthetic.identity-text",
+  "method_revision": "ctrt-synthetic-identity-text@0.1.0",
+  "configuration_hash": "sha256:bc8e485583a873ac9269382749b2ff803b649939b3ec829ec8bf140db6e350c8",
+  "canonical_content_hash": "sha256:6643e7322a3e5f55edd4baa5db37cdd046e716802631545204c87acad3c7fc17",
+  "content_artifact_ref": {
+    "artifact_id": "extracted-content:content-002:6643e7322a3e5f55edd4baa5db37cdd046e716802631545204c87acad3c7fc17:c62e9efefd24420720fef254b84016b44f81297b2b7e0b5fadc2ba4c1ca094b2",
+    "artifact_hash": "sha256:f0527a5ced76abb741926e739d590b12d2a858b0934ff61cf793c2c1c027412e",
+    "canonicalization_version": "ctrt-canonical-json@0.1.0",
+    "media_type": "application/json"
+  },
+  "coordinate_map": [
+    {
+      "source_start": 0,
+      "source_end": 45,
+      "canonical_start": 0,
+      "canonical_end": 45,
+      "kind": "exact"
+    }
+  ],
+  "created_at": "2026-08-02T23:46:00Z"
+}
