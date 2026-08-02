@@ -246,5 +246,6 @@ def validate_corpus_binding(
             )
         if content.canonical_extraction_ref != entry.extraction_ref:
             raise CorpusBindingError(
-                f"content {content.content_id!r} extraction identity differs from the corpus manifest"
+                f"content {content.content_id!r} extraction identity differs "
+                "from the corpus manifest"
             )
