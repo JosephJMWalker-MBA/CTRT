@@ -144,9 +144,15 @@ class ModelResult:
             raise ValueError("successful results may not contain errors")
         if self.status is ResultStatus.FAILED and not self.errors:
             raise ValueError("failed results must contain at least one error")
-        if self.status in {ResultStatus.ABSTAINED, ResultStatus.FAILED} and self.normalized_scores:
+        if (
+            self.status in {ResultStatus.ABSTAINED, ResultStatus.FAILED}
+            and self.normalized_scores
+        ):
             raise ValueError("abstained or failed results may not contain normalized scores")
-        if self.status is ResultStatus.ABSTAINED and not self.confidence.system_abstention.triggered:
+        if (
+            self.status is ResultStatus.ABSTAINED
+            and not self.confidence.system_abstention.triggered
+        ):
             raise ValueError("abstained result requires triggered system abstention")
         if (
             self.confidence.system_abstention.triggered
