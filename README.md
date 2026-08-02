@@ -4,7 +4,7 @@ CTRT is an open, explainable framework for measuring characteristics of digital 
 
 ## Current phase
 
-The merged repository contains **Phase 0: Constitutional and Research Foundations**. The next proposed executable step is **Phase 1A: the Content Analysis Workbench**.
+The repository is closing **Phase 0: Constitutional and Research Foundations**. The accepted first executable step is **Phase 1A: the Content Analysis Workbench**.
 
 CTRT is not a censorship system and does not determine whether content should exist. It measures content items and reports the instruments, evidence, disagreement, confidence, and limitations behind each result.
 
@@ -23,12 +23,12 @@ CTRT is not a censorship system and does not determine whether content should ex
 - [Open questions and resolution register](docs/open-questions.md)
 - [Architecture Decision Records](docs/adr/)
 
-## Phase 1A proposal: Content Analysis Workbench
+## Accepted Phase 1A direction: Content Analysis Workbench
 
 The first executable deliverable is not a fixed CTRT scoring product. It is a research workbench that can:
 
 - register candidate models and libraries without preselecting them;
-- run multiple eligible instruments on the same canonical content;
+- run multiple eligible instruments on the same canonical content target;
 - compare raw outputs, normalized outputs, taxonomies, evidence, confidence vectors, latency, resource observations, warnings, failures, and abstentions;
 - compare extraction methods separately from downstream semantic analyzers;
 - preserve repeatable experiment and selection records;
@@ -41,6 +41,21 @@ See:
 - [Candidate technology registry](docs/candidates/)
 
 No candidate is installed or selected merely because it appears in the registry. The initial workbench will not output an overall CTRT score.
+
+## Measurement contract decisions
+
+Every analyzer result must preserve:
+
+- the exact whole-item or segment target in canonical content coordinates;
+- the upstream extraction or canonical-input reference;
+- the full structured confidence vector;
+- whether local evidence is native, post-hoc, deterministic, or unavailable;
+- evidence spans only when their origin is declared and their coordinates fall inside the target;
+- analyzer and taxonomy identity without implying taxonomy equivalence.
+
+Taxonomies may be displayed side by side even when they are incompatible or unassessed. Any mapping must be versioned and record information loss. Phase 0 taxonomy comparison never permits score combination.
+
+See [ADR-0008](docs/adr/0008-analysis-targets-evidence-and-taxonomy-comparability.md).
 
 ## Current experimental profile decision
 
@@ -111,4 +126,4 @@ python -m pytest -q
 
 ## Status
 
-Early constitutional and workbench design. No CTRT score is currently validated or suitable for consequential decision-making.
+Phase 0 contract closure and Workbench design. No CTRT score is currently validated or suitable for consequential decision-making.
