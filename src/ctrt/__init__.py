@@ -19,11 +19,18 @@ from ctrt.eligibility import (
     ReportEligibility,
     evaluate_dimension_eligibility,
 )
+from ctrt.segmentation import (
+    ContentSegment,
+    SegmentationKind,
+    SegmentationManifest,
+    SegmentationMethod,
+)
 
 __all__ = [
     "Analyzer",
     "AnalyzerIdentity",
     "ContentItem",
+    "ContentSegment",
     "DimensionStatus",
     "EligibilityDecision",
     "EvidenceSpan",
@@ -31,6 +38,9 @@ __all__ = [
     "NormalizedScore",
     "ReportEligibility",
     "ResultStatus",
+    "SegmentationKind",
+    "SegmentationManifest",
+    "SegmentationMethod",
     "SourceType",
     "evaluate_dimension_eligibility",
 ]
