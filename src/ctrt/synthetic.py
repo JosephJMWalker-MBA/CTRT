@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Mapping
 from dataclasses import dataclass
 from enum import StrEnum
 
@@ -51,6 +52,23 @@ class PositionalSentimentFixture:
     def __post_init__(self) -> None:
         if not self.analyzer_id.strip():
             raise ValueError("synthetic analyzer_id must not be empty")
+
+    @property
+    def implementation_revision(self) -> str:
+        """Return the immutable fixture implementation revision."""
+
+        return f"ctrt-fixture-{self.selection.value}@0.1.0"
+
+    @property
+    def execution_configuration(self) -> Mapping[str, object]:
+        """Return the complete deterministic fixture configuration."""
+
+        return {
+            "selection": self.selection.value,
+            "positive_token": "good",
+            "negative_token": "bad",
+            "case_sensitive": False,
+        }
 
     @property
     def identity(self) -> AnalyzerIdentity:
@@ -153,12 +171,7 @@ class PositionalSentimentFixture:
                 "Synthetic fixture ignores all content except exact 'good' and 'bad' tokens.",
             ),
             duration_ms=0.0,
-            configuration={
-                "selection": self.selection.value,
-                "positive_token": "good",
-                "negative_token": "bad",
-                "case_sensitive": False,
-            },
+            configuration=self.execution_configuration,
         )
 
     def _abstained_result(
@@ -192,7 +205,7 @@ class PositionalSentimentFixture:
             raw_output=raw_output,
             warnings=("Synthetic analyzer abstained without inventing a score.",),
             duration_ms=0.0,
-            configuration={"selection": self.selection.value},
+            configuration=self.execution_configuration,
         )
 
     @staticmethod
