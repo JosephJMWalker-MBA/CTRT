@@ -10,7 +10,7 @@ SCHEMA_PATH = (
     / "schemas"
     / "experiment-bundle-manifest.schema.json"
 )
-HASHES = tuple(f"sha256:{character * 64}" for character in "abcdefg")
+HASHES = tuple(f"sha256:{character * 64}" for character in "abcdef0")
 
 
 def _validator() -> Draft202012Validator:
