@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ctrt.dev/schemas/corpus-bound-experiment-completion.schema.json",
+  "title": "CTRT Corpus-Bound Experiment Completion",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "completion_id",
+    "experiment_run_id",
+    "status",
+    "experiment_id",
+    "experiment_version",
+    "corpus_id",
+    "corpus_version",
+    "corpus_manifest_ref",
+    "experiment_completion_ref",
+    "contents",
+    "verified_checks",
+    "completed_at"
+  ],
+  "properties": {
+    "completion_id": {"type": "string", "minLength": 1},
+    "experiment_run_id": {"type": "string", "minLength": 1},
+    "status": {"const": "verified"},
+    "experiment_id": {"type": "string", "minLength": 1},
+    "experiment_version": {"type": "string", "minLength": 1},
+    "corpus_id": {"type": "string", "minLength": 1},
+    "corpus_version": {"type": "string", "minLength": 1},
+    "corpus_manifest_ref": {"$ref": "#/$defs/storedArtifactRef"},
+    "experiment_completion_ref": {"$ref": "#/$defs/storedArtifactRef"},
+    "contents": {
+      "type": "array",
+      "minItems": 2,
+      "items": {"$ref": "#/$defs/boundContent"}
+    },
+    "verified_checks": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "prefixItems": [
+        {"const": "exact-corpus-reference"},
+        {"const": "content-bytes-and-metadata-bound"},
+        {"const": "corpus-manifest-persisted"},
+        {"const": "experiment-completion-reverified"},
+        {"const": "corpus-bound-completion-reverified"}
+      ],
+      "items": false
+    },
+    "completed_at": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "storedArtifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "artifact_hash",
+        "canonicalization_version",
+        "media_type"
+      ],
+      "properties": {
+        "artifact_id": {"type": "string", "minLength": 1},
+        "artifact_hash": {"$ref": "#/$defs/sha256"},
+        "canonicalization_version": {
+          "const": "ctrt-canonical-json@0.1.0"
+        },
+        "media_type": {"const": "application/json"}
+      }
+    },
+    "boundContent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "position",
+        "content_id",
+        "content_hash",
+        "language",
+        "source_type",
+        "extraction_ref"
+      ],
+      "properties": {
+        "position": {"type": "integer", "minimum": 0},
+        "content_id": {"type": "string", "minLength": 1},
+        "content_hash": {"$ref": "#/$defs/sha256"},
+        "language": {"type": "string", "minLength": 1},
+        "source_type": {
+          "enum": ["raw_text", "webpage", "transcript", "other"]
+        },
+        "extraction_ref": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}
