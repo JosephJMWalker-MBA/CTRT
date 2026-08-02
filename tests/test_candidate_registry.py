@@ -6,7 +6,6 @@ from typing import Any, cast
 
 from jsonschema import Draft202012Validator, FormatChecker
 
-
 ROOT = Path(__file__).parents[1]
 SCHEMA_PATH = ROOT / "schemas" / "candidate-registry.schema.json"
 REGISTRY_PATH = ROOT / "docs" / "candidates" / "initial-registry.v0.1.0.json"
