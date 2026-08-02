@@ -8,7 +8,6 @@ import math
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, fields, is_dataclass
 from enum import Enum
-from typing import object
 
 CANONICALIZATION_VERSION = "ctrt-canonical-json@0.1.0"
 JSON_MEDIA_TYPE = "application/json"
