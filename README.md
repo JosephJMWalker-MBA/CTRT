@@ -4,7 +4,7 @@ CTRT is an open, explainable framework for measuring characteristics of digital 
 
 ## Current phase
 
-The repository is closing **Phase 0: Constitutional and Research Foundations**. The accepted first executable step is **Phase 1A: the Content Analysis Workbench**.
+**Phase 0: Constitutional and Research Foundations** has closed its schema-impacting contract gaps. CTRT has begun **Phase 1A: the Content Analysis Workbench** with a dependency-free synthetic execution slice.
 
 CTRT is not a censorship system and does not determine whether content should exist. It measures content items and reports the instruments, evidence, disagreement, confidence, and limitations behind each result.
 
@@ -41,6 +41,21 @@ See:
 - [Candidate technology registry](docs/candidates/)
 
 No candidate is installed or selected merely because it appears in the registry. The initial workbench will not output an overall CTRT score.
+
+## Executable synthetic workbench
+
+The first Phase 1A implementation uses two deterministic fixture analyzers with no machine-learning dependency:
+
+- `synthetic.sentiment.first-signal` selects the first exact `good` or `bad` token;
+- `synthetic.sentiment.last-signal` selects the last exact `good` or `bad` token.
+
+The workbench registers both analyzers, runs them on the same canonical content target, preserves each complete `ModelResult`, records taxonomy identity, and assembles a separate side-by-side comparison.
+
+When the fixtures emit opposite valence signs, their original successful results remain unchanged while the comparison records strong disagreement and abstains. Missing fixture signals and out-of-domain language also produce preserved abstention records rather than invented scores.
+
+See [Phase 1A Synthetic Workbench Slice](docs/phase-1a-synthetic-workbench.md).
+
+This slice validates architecture only. It does not establish accuracy, calibration, model selection, or production readiness.
 
 ## Measurement contract decisions
 
@@ -84,9 +99,9 @@ Out-of-domain analysis, failed extraction, strong disagreement, or agreement-lev
 ## Repository map
 
 ```text
-src/ctrt/          Dependency-free contracts and constitutional gates
+src/ctrt/          Constitutional contracts and dependency-free workbench logic
 schemas/           Canonical JSON Schemas
-tests/             Contract, schema, registry, and domain-invariant tests
+tests/             Contract, schema, registry, and workbench tests
 docs/dimensions/   Versioned dimension eligibility records
 docs/candidates/   Versioned candidate technology registries
 docs/adr/          Architecture and governance decisions
@@ -102,14 +117,14 @@ The present logic and repository work may define:
 - architecture decision records;
 - candidate and dimension registries;
 - model-evaluation and benchmarking protocols;
-- synthetic fixtures and contract tests;
+- dependency-free synthetic analyzers and workbench tests;
 - the Phase 1 workbench specification.
 
 This stage will not download or run transformer models, tune aggregate scores, deploy infrastructure, or begin large-scale corpus evaluation.
 
 ## Development
 
-The constitutional package has no production runtime dependencies.
+The package has no production runtime dependencies.
 
 ```bash
 python -m venv .venv
@@ -126,4 +141,4 @@ python -m pytest -q
 
 ## Status
 
-Phase 0 contract closure and Workbench design. No CTRT score is currently validated or suitable for consequential decision-making.
+Phase 1A synthetic workbench implementation. No CTRT score is currently validated or suitable for consequential decision-making.
