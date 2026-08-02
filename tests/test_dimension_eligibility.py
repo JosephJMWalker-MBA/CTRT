@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any
+from typing import cast
 
 from ctrt.eligibility import evaluate_dimension_eligibility
 
@@ -10,11 +10,12 @@ from ctrt.eligibility import evaluate_dimension_eligibility
 DIMENSION_DIR = Path(__file__).parents[1] / "docs" / "dimensions"
 
 
-def _load_records() -> dict[str, dict[str, Any]]:
-    records: dict[str, dict[str, Any]] = {}
+def _load_records() -> dict[str, dict[str, object]]:
+    records: dict[str, dict[str, object]] = {}
     for path in sorted(DIMENSION_DIR.glob("*.json")):
-        record = json.loads(path.read_text(encoding="utf-8"))
+        record = cast(dict[str, object], json.loads(path.read_text(encoding="utf-8")))
         dimension_id = record["dimension_id"]
+        assert isinstance(dimension_id, str)
         assert dimension_id not in records
         records[dimension_id] = record
     return records
@@ -71,4 +72,6 @@ def test_mismatched_analyzer_cannot_borrow_another_dimensions_record() -> None:
 
 def test_no_phase_zero_dimension_can_feed_an_overall_rating() -> None:
     for record in _load_records().values():
-        assert record["aggregation"]["may_contribute_to_overall_rating"] is False
+        aggregation = record["aggregation"]
+        assert isinstance(aggregation, dict)
+        assert aggregation["may_contribute_to_overall_rating"] is False
