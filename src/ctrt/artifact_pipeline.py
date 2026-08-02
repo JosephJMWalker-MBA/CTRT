@@ -43,7 +43,9 @@ class ExperimentArtifactBundle:
             self.candidate_eligibility.artifact_hash
             != self.run_record.candidate_eligibility_ref.artifact_hash
         ):
-            raise ValueError("run record eligibility hash must match canonical eligibility artifact")
+            raise ValueError(
+                "run record eligibility hash must match canonical eligibility artifact"
+            )
 
 
 def _artifact_reference(
