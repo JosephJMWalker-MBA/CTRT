@@ -1,0 +1,32 @@
+{
+  "corpus_id": "corpus.synthetic-three-items",
+  "corpus_version": "0.1.0",
+  "status": "frozen",
+  "created_at": "2026-08-02T22:40:00Z",
+  "contents": [
+    {
+      "position": 0,
+      "content_id": "content-001",
+      "content_hash": "sha256:b674f70ffe181411a2083b4317584ac9e6c16c767cac91c31b2b7294ff3cc288",
+      "language": "en",
+      "source_type": "raw_text",
+      "extraction_ref": "content-item:content-001"
+    },
+    {
+      "position": 1,
+      "content_id": "content-002",
+      "content_hash": "sha256:6643e7322a3e5f55edd4baa5db37cdd046e716802631545204c87acad3c7fc17",
+      "language": "en",
+      "source_type": "raw_text",
+      "extraction_ref": "content-item:content-002"
+    },
+    {
+      "position": 2,
+      "content_id": "content-003",
+      "content_hash": "sha256:00ab0b9ee700397be6076f333eff1c585bb222efb544211203f9b8ea4ee1007b",
+      "language": "en",
+      "source_type": "raw_text",
+      "extraction_ref": "content-item:content-003"
+    }
+  ]
+}
