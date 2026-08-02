@@ -1,6 +1,6 @@
 # ADR-0007: Build the Content Analysis Workbench Before a CTRT Scoring Product
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-08-02
 - **Decision scope:** Phase 1 architecture and first executable deliverable
 
