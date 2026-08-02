@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ctrt.dev/schemas/experiment-completion-manifest.schema.json",
+  "title": "CTRT Experiment Completion Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "completion_id",
+    "experiment_run_id",
+    "status",
+    "experiment_id",
+    "experiment_version",
+    "plan_ref",
+    "content_ids",
+    "sessions",
+    "verified_checks",
+    "completed_at"
+  ],
+  "properties": {
+    "completion_id": {"type": "string", "minLength": 1},
+    "experiment_run_id": {"type": "string", "minLength": 1},
+    "status": {"const": "verified"},
+    "experiment_id": {"type": "string", "minLength": 1},
+    "experiment_version": {"type": "string", "minLength": 1},
+    "plan_ref": {"$ref": "#/$defs/storedArtifactRef"},
+    "content_ids": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "sessions": {
+      "type": "array",
+      "minItems": 2,
+      "items": {"$ref": "#/$defs/sessionCompletion"}
+    },
+    "verified_checks": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "prefixItems": [
+        {"const": "exact-content-scope"},
+        {"const": "all-session-receipts-persisted"},
+        {"const": "all-session-bundles-reverified"},
+        {"const": "completion-manifest-persisted"},
+        {"const": "completion-manifest-reverified"}
+      ],
+      "items": false
+    },
+    "completed_at": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "storedArtifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "artifact_hash",
+        "canonicalization_version",
+        "media_type"
+      ],
+      "properties": {
+        "artifact_id": {"type": "string", "minLength": 1},
+        "artifact_hash": {"$ref": "#/$defs/sha256"},
+        "canonicalization_version": {
+          "const": "ctrt-canonical-json@0.1.0"
+        },
+        "media_type": {"const": "application/json"}
+      }
+    },
+    "sessionCompletion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "position",
+        "content_id",
+        "run_id",
+        "session_id",
+        "receipt_ref",
+        "bundle_manifest_ref",
+        "result_statuses",
+        "workbench_status"
+      ],
+      "properties": {
+        "position": {"type": "integer", "minimum": 0},
+        "content_id": {"type": "string", "minLength": 1},
+        "run_id": {"type": "string", "minLength": 1},
+        "session_id": {"type": "string", "minLength": 1},
+        "receipt_ref": {"$ref": "#/$defs/storedArtifactRef"},
+        "bundle_manifest_ref": {"$ref": "#/$defs/storedArtifactRef"},
+        "result_statuses": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "enum": ["success", "partial", "abstained", "failed"]
+          }
+        },
+        "workbench_status": {
+          "enum": ["complete", "partial", "abstained", "failed"]
+        }
+      }
+    }
+  }
+}
