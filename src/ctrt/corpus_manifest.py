@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import StrEnum
 
+from ctrt.artifact_store import StoredArtifactRef
 from ctrt.contracts import ContentItem, SourceType
 from ctrt.experiments import ExperimentPlan, VersionedArtifactRef
 from ctrt.serialization import CanonicalArtifact, canonical_json_bytes
@@ -67,6 +68,12 @@ def _string(value: object, field_name: str) -> str:
     return value
 
 
+def _optional_string(value: object, field_name: str) -> str | None:
+    if value is None:
+        return None
+    return _string(value, field_name)
+
+
 def _integer(value: object, field_name: str) -> int:
     if not isinstance(value, int) or isinstance(value, bool):
         raise ValueError(f"{field_name} must be an integer")
@@ -79,6 +86,14 @@ def canonical_content_hash(text: str) -> str:
     return f"sha256:{hashlib.sha256(text.encode('utf-8')).hexdigest()}"
 
 
+def canonical_content_artifact_id(content_id: str, content_hash: str) -> str:
+    """Derive an immutable artifact ID from content identity and exact text hash."""
+
+    _require_non_empty(content_id, "content_id")
+    _require_sha256(content_hash, "content_hash")
+    return f"canonical-content:{content_id}:{content_hash.removeprefix('sha256:')}"
+
+
 @dataclass(frozen=True, slots=True)
 class CorpusContentEntry:
     """One ordered content identity frozen into a corpus manifest."""
@@ -89,6 +104,8 @@ class CorpusContentEntry:
     language: str
     source_type: SourceType
     extraction_ref: str
+    source_uri: str | None = None
+    content_artifact_ref: StoredArtifactRef | None = None
 
     def __post_init__(self) -> None:
         if self.position < 0:
@@ -97,11 +114,30 @@ class CorpusContentEntry:
         _require_sha256(self.content_hash, "content_hash")
         _require_non_empty(self.language, "language")
         _require_non_empty(self.extraction_ref, "extraction_ref")
+        if self.source_uri is not None:
+            _require_non_empty(self.source_uri, "source_uri")
+        if self.content_artifact_ref is not None:
+            expected_id = canonical_content_artifact_id(
+                self.content_id,
+                self.content_hash,
+            )
+            if self.content_artifact_ref.artifact_id != expected_id:
+                raise ValueError(
+                    "content artifact reference ID must derive from content ID and hash"
+                )
 
     @classmethod
     def from_document(cls, document: Mapping[str, object]) -> CorpusContentEntry:
         """Parse one canonical corpus content record."""
 
+        reference_value = document.get("content_artifact_ref")
+        reference = (
+            None
+            if reference_value is None
+            else StoredArtifactRef.from_document(
+                _mapping(reference_value, "content_artifact_ref")
+            )
+        )
         return cls(
             position=_integer(document.get("position"), "position"),
             content_id=_string(document.get("content_id"), "content_id"),
@@ -114,6 +150,8 @@ class CorpusContentEntry:
                 document.get("extraction_ref"),
                 "extraction_ref",
             ),
+            source_uri=_optional_string(document.get("source_uri"), "source_uri"),
+            content_artifact_ref=reference,
         )
 
 
@@ -143,9 +181,12 @@ class CorpusManifestSnapshot:
         content_ids = self.content_ids
         if len(content_ids) != len(set(content_ids)):
             raise ValueError("corpus content IDs must be unique")
-        expected_hash = (
-            f"sha256:{hashlib.sha256(self.canonical_payload).hexdigest()}"
-        )
+        linked = tuple(item.content_artifact_ref is not None for item in self.contents)
+        if any(linked) and not all(linked):
+            raise ValueError(
+                "corpus manifest may not mix linked and unlinked content entries"
+            )
+        expected_hash = f"sha256:{hashlib.sha256(self.canonical_payload).hexdigest()}"
         if self.artifact_hash != expected_hash:
             raise ValueError("corpus artifact_hash must match canonical payload")
 
@@ -154,6 +195,24 @@ class CorpusManifestSnapshot:
         """Return the manifest's exact ordered content population."""
 
         return tuple(item.content_id for item in self.contents)
+
+    @property
+    def has_content_artifacts(self) -> bool:
+        """Return whether every entry links an immutable canonical content artifact."""
+
+        return all(item.content_artifact_ref is not None for item in self.contents)
+
+    @property
+    def content_artifact_refs(self) -> tuple[StoredArtifactRef, ...]:
+        """Return ordered content references or fail for an unlinked legacy manifest."""
+
+        if not self.has_content_artifacts:
+            raise ValueError("corpus manifest does not link canonical content artifacts")
+        return tuple(
+            item.content_artifact_ref
+            for item in self.contents
+            if item.content_artifact_ref is not None
+        )
 
     @classmethod
     def from_document(cls, document: Mapping[str, object]) -> CorpusManifestSnapshot:
@@ -179,9 +238,7 @@ class CorpusManifestSnapshot:
             contents=contents,
             created_at=_string(document.get("created_at"), "created_at"),
             canonical_payload=payload,
-            artifact_hash=(
-                f"sha256:{hashlib.sha256(payload).hexdigest()}"
-            ),
+            artifact_hash=f"sha256:{hashlib.sha256(payload).hexdigest()}",
         )
 
     def reference(self) -> VersionedArtifactRef:
@@ -243,6 +300,10 @@ def validate_corpus_binding(
         if content.source_type is not entry.source_type:
             raise CorpusBindingError(
                 f"content {content.content_id!r} source type differs from the corpus manifest"
+            )
+        if content.source_uri != entry.source_uri:
+            raise CorpusBindingError(
+                f"content {content.content_id!r} source URI differs from the corpus manifest"
             )
         if content.canonical_extraction_ref != entry.extraction_ref:
             raise CorpusBindingError(

@@ -1,0 +1,53 @@
+{
+  "corpus_id": "corpus.synthetic-three-items",
+  "corpus_version": "0.2.0",
+  "status": "frozen",
+  "contents": [
+    {
+      "position": 0,
+      "content_id": "content-001",
+      "content_hash": "sha256:b674f70ffe181411a2083b4317584ac9e6c16c767cac91c31b2b7294ff3cc288",
+      "language": "en",
+      "source_type": "raw_text",
+      "source_uri": null,
+      "extraction_ref": "content-item:content-001",
+      "content_artifact_ref": {
+        "artifact_id": "canonical-content:content-001:b674f70ffe181411a2083b4317584ac9e6c16c767cac91c31b2b7294ff3cc288",
+        "artifact_hash": "sha256:f1e84e5ca8d4716be3b9fae3ab748134a6af683f1024ec64e040d6ad5ad50484",
+        "canonicalization_version": "ctrt-canonical-json@0.1.0",
+        "media_type": "application/json"
+      }
+    },
+    {
+      "position": 1,
+      "content_id": "content-002",
+      "content_hash": "sha256:6643e7322a3e5f55edd4baa5db37cdd046e716802631545204c87acad3c7fc17",
+      "language": "en",
+      "source_type": "raw_text",
+      "source_uri": null,
+      "extraction_ref": "content-item:content-002",
+      "content_artifact_ref": {
+        "artifact_id": "canonical-content:content-002:6643e7322a3e5f55edd4baa5db37cdd046e716802631545204c87acad3c7fc17",
+        "artifact_hash": "sha256:663114b84663fb2fa0bdd6e1d818207f71b3776c83f003cf09385e204e30edeb",
+        "canonicalization_version": "ctrt-canonical-json@0.1.0",
+        "media_type": "application/json"
+      }
+    },
+    {
+      "position": 2,
+      "content_id": "content-003",
+      "content_hash": "sha256:00ab0b9ee700397be6076f333eff1c585bb222efb544211203f9b8ea4ee1007b",
+      "language": "en",
+      "source_type": "raw_text",
+      "source_uri": null,
+      "extraction_ref": "content-item:content-003",
+      "content_artifact_ref": {
+        "artifact_id": "canonical-content:content-003:00ab0b9ee700397be6076f333eff1c585bb222efb544211203f9b8ea4ee1007b",
+        "artifact_hash": "sha256:b9bd94e21390ae1822b1df4b443e605f245b79a2fcc43e8594ccf02a82eb2178",
+        "canonicalization_version": "ctrt-canonical-json@0.1.0",
+        "media_type": "application/json"
+      }
+    }
+  ],
+  "created_at": "2026-08-02T23:16:00Z"
+}
