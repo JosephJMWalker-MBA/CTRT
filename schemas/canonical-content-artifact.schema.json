@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ctrt.dev/schemas/canonical-content-artifact.schema.json",
+  "title": "CTRT Canonical Content Artifact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_id",
+    "content_id",
+    "text",
+    "content_hash",
+    "language",
+    "source_type",
+    "source_uri",
+    "extraction_ref"
+  ],
+  "properties": {
+    "artifact_id": {"type": "string", "minLength": 1},
+    "content_id": {"type": "string", "minLength": 1},
+    "text": {"type": "string", "minLength": 1},
+    "content_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "language": {"type": "string", "minLength": 1},
+    "source_type": {
+      "enum": ["raw_text", "webpage", "transcript", "other"]
+    },
+    "source_uri": {
+      "type": ["string", "null"],
+      "minLength": 1
+    },
+    "extraction_ref": {"type": "string", "minLength": 1}
+  }
+}
