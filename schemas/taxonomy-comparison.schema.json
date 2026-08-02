@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ctrt.dev/schemas/taxonomy-comparison.schema.json",
+  "title": "CTRT Taxonomy Comparison",
+  "description": "Versioned relationship between two analyzer taxonomies without implied equivalence.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "comparison_id",
+    "comparison_version",
+    "left",
+    "right",
+    "relation",
+    "display_mode",
+    "score_combination_permitted",
+    "mapping_method_id",
+    "mapping_method_version",
+    "evidence_ref",
+    "information_loss",
+    "notes"
+  ],
+  "properties": {
+    "comparison_id": {"type": "string", "minLength": 1},
+    "comparison_version": {"type": "string", "minLength": 1},
+    "left": {"$ref": "#/$defs/taxonomyRef"},
+    "right": {"$ref": "#/$defs/taxonomyRef"},
+    "relation": {
+      "type": "string",
+      "enum": [
+        "identical",
+        "compatible-mapping",
+        "partial-overlap",
+        "incompatible",
+        "unassessed"
+      ]
+    },
+    "display_mode": {
+      "type": "string",
+      "enum": ["side-by-side", "mapped-comparison"]
+    },
+    "score_combination_permitted": {"const": false},
+    "mapping_method_id": {"type": ["string", "null"], "minLength": 1},
+    "mapping_method_version": {"type": ["string", "null"], "minLength": 1},
+    "evidence_ref": {"type": ["string", "null"], "minLength": 1},
+    "information_loss": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "notes": {"type": "string"}
+  },
+  "$defs": {
+    "taxonomyRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["taxonomy_id", "taxonomy_version"],
+      "properties": {
+        "taxonomy_id": {"type": "string", "minLength": 1},
+        "taxonomy_version": {"type": "string", "minLength": 1}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "relation": {
+            "enum": ["compatible-mapping", "partial-overlap"]
+          }
+        },
+        "required": ["relation"]
+      },
+      "then": {
+        "properties": {
+          "mapping_method_id": {"type": "string", "minLength": 1},
+          "mapping_method_version": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "relation": {"enum": ["identical", "incompatible", "unassessed"]}
+        },
+        "required": ["relation"]
+      },
+      "then": {
+        "properties": {
+          "mapping_method_id": {"type": "null"},
+          "mapping_method_version": {"type": "null"}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "relation": {"enum": ["partial-overlap", "incompatible", "unassessed"]}
+        },
+        "required": ["relation"]
+      },
+      "then": {"properties": {"display_mode": {"const": "side-by-side"}}}
+    },
+    {
+      "if": {
+        "properties": {"relation": {"const": "partial-overlap"}},
+        "required": ["relation"]
+      },
+      "then": {"properties": {"information_loss": {"minItems": 1}}}
+    },
+    {
+      "if": {
+        "properties": {"relation": {"const": "identical"}},
+        "required": ["relation"]
+      },
+      "then": {"properties": {"display_mode": {"const": "mapped-comparison"}}}
+    }
+  ]
+}
