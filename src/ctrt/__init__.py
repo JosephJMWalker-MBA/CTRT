@@ -1,7 +1,4 @@
-"""CTRT constitutional domain contracts.
-
-This package intentionally contains no machine-learning implementation during Phase 0.
-"""
+"""CTRT constitutional contracts and dependency-free workbench foundations."""
 
 from ctrt.confidence import (
     AggregationPolicy,
@@ -51,11 +48,25 @@ from ctrt.segmentation import (
     SegmentationManifest,
     SegmentationMethod,
 )
+from ctrt.synthetic import (
+    PositionalSentimentFixture,
+    SignalSelection,
+    first_signal_fixture,
+    last_signal_fixture,
+)
 from ctrt.taxonomy import (
     TaxonomyComparison,
     TaxonomyDisplayMode,
     TaxonomyRef,
     TaxonomyRelation,
+)
+from ctrt.workbench import (
+    AnalyzerRegistry,
+    ContentAnalysisWorkbench,
+    DisagreementRecord,
+    WorkbenchComparison,
+    WorkbenchReportStatus,
+    WorkbenchRun,
 )
 
 __all__ = [
@@ -67,15 +78,18 @@ __all__ = [
     "AnalysisTargetKind",
     "Analyzer",
     "AnalyzerIdentity",
+    "AnalyzerRegistry",
     "Applicability",
     "ApplicabilityStatus",
     "Calibration",
     "CalibrationStatus",
     "ConfidenceSignal",
     "ConfidenceVector",
+    "ContentAnalysisWorkbench",
     "ContentItem",
     "ContentSegment",
     "DimensionStatus",
+    "DisagreementRecord",
     "EligibilityDecision",
     "EvidenceSpan",
     "EvidenceSupport",
@@ -88,17 +102,24 @@ __all__ = [
     "InterInstrumentAgreement",
     "ModelResult",
     "NormalizedScore",
+    "PositionalSentimentFixture",
     "ReportEligibility",
     "ResultStatus",
     "SegmentationKind",
     "SegmentationManifest",
     "SegmentationMethod",
+    "SignalSelection",
     "SourceType",
     "SystemAbstention",
     "TaxonomyComparison",
     "TaxonomyDisplayMode",
     "TaxonomyRef",
     "TaxonomyRelation",
+    "WorkbenchComparison",
+    "WorkbenchReportStatus",
+    "WorkbenchRun",
     "evaluate_dimension_eligibility",
+    "first_signal_fixture",
+    "last_signal_fixture",
     "required_abstention_reasons",
 ]
