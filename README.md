@@ -4,7 +4,7 @@ CTRT is an open, explainable framework for measuring characteristics of digital 
 
 ## Current phase
 
-**Phase 0: Constitutional and Research Foundations** has closed its schema-impacting contract gaps. CTRT has begun **Phase 1A: the Content Analysis Workbench** with dependency-free synthetic execution, versioned experiment records, exact candidate eligibility, canonical artifact hashing, append-only local persistence, and fail-closed governed execution sessions.
+**Phase 0: Constitutional and Research Foundations** has closed its schema-impacting contract gaps. CTRT has begun **Phase 1A: the Content Analysis Workbench** with dependency-free synthetic execution, versioned experiment records, exact candidate eligibility, canonical artifact hashing, append-only local persistence, fail-closed governed execution sessions, and multi-content experiment completion.
 
 CTRT is not a censorship system and does not determine whether content should exist. It measures content items and reports the instruments, evidence, disagreement, confidence, and limitations behind each result.
 
@@ -145,7 +145,27 @@ See:
 - [Phase 1A Governed Execution Session](docs/phase-1a-governed-execution-session.md)
 - [Verified receipt schema](schemas/governed-execution-receipt.schema.json)
 
-The initial session is intentionally limited to one content item, one shared dimension, the synthetic analyzers, and the local append-only store.
+Each governed session remains intentionally limited to one content item and one shared dimension. Experiment-level orchestration composes these unchanged sessions rather than weakening their boundary.
+
+## Multi-content experiment completion
+
+`MultiContentExperimentRunner` executes the complete ordered content scope declared by a frozen plan.
+
+Before the first session, execution requests must match `ExperimentPlan.content_ids` exactly and in order. One explicit experiment-run ID deterministically derives every per-content run ID, so runtime ordering cannot silently redefine the experiment population.
+
+After each governed session verifies, its `VerifiedExecutionReceipt` is canonically stored as an independent append-only artifact. If a later content item fails, earlier verified receipts remain preserved as partial progress, but no experiment completion manifest is written.
+
+After all sessions return, the runner re-reads every receipt, reconstructs every stored bundle manifest, and re-verifies every referenced artifact. Only then does it append an `ExperimentCompletionManifest`, re-read the manifest and all session evidence, and return a `VerifiedExperimentReceipt`.
+
+The completion manifest preserves each session's analyzer-result and Workbench statuses without deriving an experiment-wide score, confidence percentage, or analytical outcome. `verified` means the exact declared content set completed with intact evidence; it does not mean every analyzer succeeded or agreed.
+
+See:
+
+- [ADR-0013: Multi-content experiment completion](docs/adr/0013-multi-content-experiment-completion.md)
+- [Phase 1A Multi-content Experiment Runner](docs/phase-1a-multi-content-experiment-runner.md)
+- [Experiment completion manifest schema](schemas/experiment-completion-manifest.schema.json)
+
+The initial runner is sequential, supports one shared dimension, and intentionally leaves retries, parallel workers, corpus-membership proofs, and aggregate research summaries for later decisions.
 
 ## Measurement contract decisions
 
@@ -189,9 +209,9 @@ Out-of-domain analysis, failed extraction, strong disagreement, or agreement-lev
 ## Repository map
 
 ```text
-src/ctrt/          Constitutional contracts, Workbench, eligibility, artifacts, storage, sessions
+src/ctrt/          Constitutional contracts, Workbench, eligibility, artifacts, storage, sessions, runners
 schemas/           Canonical JSON Schemas
-tests/             Contract, schema, registry, Workbench, experiment, artifact, storage, session tests
+tests/             Contract, schema, registry, Workbench, experiment, artifact, storage, session, runner tests
 docs/dimensions/   Versioned dimension eligibility records
 docs/candidates/   Versioned candidate technology registries
 docs/adr/          Architecture and governance decisions
@@ -213,6 +233,7 @@ The present logic and repository work may define:
 - deterministic canonical serialization and artifact hashing;
 - dependency-free append-only local artifact persistence;
 - fail-closed governed synthetic execution sessions;
+- exact-scope multi-content experiment completion;
 - the Phase 1 workbench specification.
 
 This stage will not download or run transformer models, tune aggregate scores, deploy infrastructure, or begin large-scale corpus evaluation.
@@ -236,4 +257,4 @@ python -m pytest -q
 
 ## Status
 
-Phase 1A now has a complete governed synthetic path from frozen plan through exact runtime authorization, execution, canonical serialization, append-only persistence, and stored-bundle re-verification. No real candidate is executable, and no CTRT score is validated or suitable for consequential decision-making.
+Phase 1A now has a complete governed synthetic path from frozen plan through exact multi-content scope, runtime authorization, per-content execution, canonical serialization, append-only persistence, independent receipt preservation, and experiment completion re-verification. No real candidate is executable, and no CTRT score is validated or suitable for consequential decision-making.
