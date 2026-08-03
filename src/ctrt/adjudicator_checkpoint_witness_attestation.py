@@ -61,7 +61,8 @@ def _versioned_ref(value: object, field_name: str) -> VersionedArtifactRef:
         raise AdjudicatorCheckpointWitnessError(
             f"{field_name} is missing {exc.args[0]}"
         ) from exc
-    if not all(isinstance(item, str) and item.strip() for item in (artifact_id, artifact_version, artifact_hash)):
+    values = (artifact_id, artifact_version, artifact_hash)
+    if not all(isinstance(item, str) and item.strip() for item in values):
         raise AdjudicatorCheckpointWitnessError(
             f"{field_name} fields must be non-empty strings"
         )
