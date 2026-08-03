@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any, cast
 
 import pytest
+from jsonschema import ValidationError
 
 from ctrt.adjudicator_checkpoint_witness_attestation import (
     AdjudicatorCheckpointWitnessError,
@@ -455,7 +456,7 @@ def test_closed_schemas_reject_vote_score_and_private_identity_fields() -> None:
     ):
         document = deepcopy(load_document(path))
         document[field] = 3
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             validate_schema(schema, document)
 
 
