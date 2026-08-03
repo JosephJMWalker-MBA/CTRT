@@ -6,7 +6,7 @@ on:
   pull_request:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   validate:
@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -33,8 +35,15 @@ jobs:
       - name: Test
         run: python -m pytest -q
 
-      - name: Upload generated adjudication corpus
-        uses: actions/upload-artifact@v4
-        with:
-          name: adjudicator-checkpoint-witness-adjudication-corpus
-          path: generated-artifacts/synthetic-corpus.v1.4.0.json
+      - name: Publish generated adjudication corpus
+        if: ${{ github.head_ref == 'phase1/adjudicator-checkpoint-witness-conflict-adjudication' }}
+        run: |
+          target=docs/corpora/extraction/synthetic-corpus.v1.4.0.json
+          if [ ! -f "$target" ]; then
+            cp generated-artifacts/synthetic-corpus.v1.4.0.json "$target"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add "$target"
+            git commit -m "Publish adjudicator checkpoint witness adjudication corpus"
+            git push origin HEAD:${GITHUB_HEAD_REF}
+          fi
