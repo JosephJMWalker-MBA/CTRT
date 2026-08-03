@@ -48,11 +48,7 @@ from test_credential_revocation_checkpoints import (
     validate_schema,
 )
 from test_credential_revocation_ledger import policy as reviewer_revocation_policy
-from test_extraction_review_adjudication import (
-    analyzer_registry,
-    environment,
-    windows,
-)
+from test_extraction_review_adjudication import analyzer_registry, environment, windows
 from test_witness_conflict_adjudication import (
     adjudication_policy,
     adjudicator_registry,
@@ -61,60 +57,35 @@ from test_witness_conflict_adjudication import (
 )
 
 ROOT = Path(__file__).parents[1]
-POLICY_PATH = (
-    ROOT
-    / "docs"
-    / "candidates"
-    / "synthetic-witness-conflict-adjudicator-revocation-checkpoint-policy.v0.1.0.json"
+POLICY_PATH = ROOT / "docs" / "candidates" / (
+    "synthetic-witness-conflict-adjudicator-revocation-checkpoint-policy.v0.1.0.json"
 )
-CHECKPOINT_PATH = (
-    ROOT
-    / "docs"
-    / "corpora"
-    / "extraction"
-    / "revocations"
-    / "witnesses"
-    / "checkpoints"
-    / "adjudicator-revocation-genesis-checkpoint.json"
+CHECKPOINT_PATH = ROOT / "docs" / "corpora" / "extraction" / "revocations" / (
+    "witnesses/checkpoints/adjudicator-revocation-genesis-checkpoint.json"
 )
-LOG_PATH = (
-    ROOT
-    / "docs"
-    / "corpora"
-    / "extraction"
-    / "revocations"
-    / "witnesses"
-    / "checkpoints"
-    / "adjudicator-revocation-checkpoint-log.v0.1.0.json"
+LOG_PATH = ROOT / "docs" / "corpora" / "extraction" / "revocations" / (
+    "witnesses/checkpoints/adjudicator-revocation-checkpoint-log.v0.1.0.json"
 )
-CORPUS_PATH = (
-    ROOT / "docs" / "corpora" / "extraction" / "synthetic-corpus.v1.2.0.json"
+CORPUS_PATH = ROOT / "docs" / "corpora" / "extraction" / (
+    "synthetic-corpus.v1.2.0.json"
 )
-POLICY_SCHEMA = (
-    ROOT
-    / "schemas"
-    / "adjudicator-credential-revocation-checkpoint-policy.schema.json"
+POLICY_SCHEMA = ROOT / "schemas" / (
+    "adjudicator-credential-revocation-checkpoint-policy.schema.json"
 )
-CHECKPOINT_SCHEMA = (
-    ROOT
-    / "schemas"
-    / "adjudicator-credential-revocation-ledger-checkpoint.schema.json"
+CHECKPOINT_SCHEMA = ROOT / "schemas" / (
+    "adjudicator-credential-revocation-ledger-checkpoint.schema.json"
 )
-LOG_SCHEMA = (
-    ROOT
-    / "schemas"
-    / "adjudicator-credential-revocation-checkpoint-log.schema.json"
+LOG_SCHEMA = ROOT / "schemas" / (
+    "adjudicator-credential-revocation-checkpoint-log.schema.json"
 )
-CORPUS_SCHEMA = (
-    ROOT / "schemas" / "adjudicator-revocation-checkpoint-bound-corpus.schema.json"
+CORPUS_SCHEMA = ROOT / "schemas" / (
+    "adjudicator-revocation-checkpoint-bound-corpus.schema.json"
 )
-REPORT_SCHEMA = (
-    ROOT
-    / "schemas"
-    / "adjudicator-credential-revocation-checkpoint-verification.schema.json"
+REPORT_SCHEMA = ROOT / "schemas" / (
+    "adjudicator-credential-revocation-checkpoint-verification.schema.json"
 )
-FINAL_SCHEMA = (
-    ROOT / "schemas" / "adjudicator-checkpoint-gated-revocation-final.schema.json"
+FINAL_SCHEMA = ROOT / "schemas" / (
+    "adjudicator-checkpoint-gated-revocation-final.schema.json"
 )
 
 
@@ -159,8 +130,41 @@ def stored_ref_document(reference: Any) -> dict[str, str]:
     }
 
 
+def versioned_ref_document(reference: Any) -> dict[str, str]:
+    return {
+        "artifact_id": reference.artifact_id,
+        "artifact_version": reference.artifact_version,
+        "artifact_hash": reference.artifact_hash,
+    }
+
+
 def event_population_hash(refs: list[dict[str, str]]) -> str:
     return canonical_sha256({"event_refs": refs})
+
+
+def corpus_for_log(
+    log: AdjudicatorCredentialRevocationCheckpointLogSnapshot,
+    *,
+    suffix: str = "mutated-log",
+) -> CheckpointBoundAdjudicatorRevocationCorpusSnapshot:
+    document = load_document(CORPUS_PATH)
+    document.update(
+        {
+            "corpus_id": (
+                "corpus.synthetic-three-items.adjudicator-revocation-"
+                f"checkpoint-bound.{suffix}"
+            ),
+            "corpus_version": f"1.2.1-test-{suffix}",
+            "created_at": "2026-08-03T14:55:00Z",
+            "adjudicator_credential_revocation_checkpoint_log_ref": (
+                versioned_ref_document(log.reference())
+            ),
+            "adjudicator_credential_revocation_checkpoint_head_ref": (
+                stored_ref_document(log.head_checkpoint_ref)
+            ),
+        }
+    )
+    return checkpoint_corpus(document)
 
 
 def verify(
@@ -174,12 +178,15 @@ def verify(
     ] | None = None,
     verified_at: str = "2026-08-03T14:54:00Z",
 ):
-    corpus = bound_corpus or checkpoint_corpus()
+    bound_log = log or checkpoint_log()
+    corpus = bound_corpus or (
+        corpus_for_log(bound_log) if log is not None else checkpoint_corpus()
+    )
     return validate_adjudicator_credential_revocation_checkpoints(
         plan=plan_for(corpus.corpus),
         corpus=corpus,
         policy=policy or checkpoint_policy(),
-        log=log or checkpoint_log(),
+        log=bound_log,
         ledger=ledger or revocation_ledger(),
         checkpoints=checkpoints if checkpoints is not None else (checkpoint(),),
         verified_at=verified_at,
@@ -190,11 +197,7 @@ def prepare_checkpoint_store(tmp_path: Path) -> tuple[Any, ...]:
     prepared = prepare_revocation_store(tmp_path)
     store = cast(FileSystemArtifactStore, prepared[0])
     corpus = checkpoint_corpus()
-    plan = replace(
-        prepared[9],
-        corpus_ref=corpus.reference(),
-        content_ids=corpus.content_ids,
-    )
+    plan = replace(prepared[9], corpus_ref=corpus.reference(), content_ids=corpus.content_ids)
     persist_checkpoint_bound_adjudicator_revocation_corpus(
         store,
         plan=plan,
@@ -285,13 +288,49 @@ def execute_checkpoint(
     return receipt, store
 
 
+def log_for(*checkpoints: AdjudicatorCredentialRevocationLedgerCheckpointSnapshot):
+    document = load_document(LOG_PATH)
+    document.update(
+        {
+            "checkpoint_refs": [
+                stored_ref_document(item.reference()) for item in checkpoints
+            ],
+            "head_checkpoint_ref": stored_ref_document(checkpoints[-1].reference()),
+            "created_at": "2026-08-03T14:53:00Z",
+        }
+    )
+    return checkpoint_log(document)
+
+
+def second_checkpoint(
+    *,
+    predecessor: Any,
+    published_at: str,
+) -> AdjudicatorCredentialRevocationLedgerCheckpointSnapshot:
+    document = load_document(CHECKPOINT_PATH)
+    document.update(
+        {
+            "artifact_id": (
+                "adjudicator-credential-revocation-checkpoint:"
+                "checkpoint.synthetic.witness-conflict-adjudicator-revocations.0001"
+            ),
+            "checkpoint_id": (
+                "checkpoint.synthetic.witness-conflict-adjudicator-revocations.0001"
+            ),
+            "sequence_number": 1,
+            "predecessor_checkpoint_ref": predecessor,
+            "published_at": published_at,
+        }
+    )
+    return checkpoint(document)
+
+
 def test_fixed_checkpoint_graph_and_schemas() -> None:
     report = verify()
     assert report.checkpoint_count == 1
     assert report.head_sequence_number == 0
     assert report.head_event_count == 1
     assert report.head_checkpoint_ref == checkpoint().reference()
-
     validate_schema(POLICY_SCHEMA, load_document(POLICY_PATH))
     validate_schema(CHECKPOINT_SCHEMA, load_document(CHECKPOINT_PATH))
     validate_schema(LOG_SCHEMA, load_document(LOG_PATH))
@@ -309,22 +348,17 @@ def test_pre_effective_execution_preserves_checkpoint_report(tmp_path: Path) -> 
     assert receipt.adjudicator_credential_outcome is CredentialDecisionOutcome.EXECUTE
     assert receipt.terminal_outcome is ReviewDecisionOutcome.EXECUTE
     assert receipt.verified_checks == ADJUDICATOR_CHECKPOINT_GATED_VERIFIED_CHECKS
-
-    report = cast(
-        dict[str, Any],
-        json.loads(store.get(receipt.checkpoint_verification_ref.artifact_id).text),
-    )
+    report = cast(dict[str, Any], json.loads(
+        store.get(receipt.checkpoint_verification_ref.artifact_id).text
+    ))
     validate_schema(REPORT_SCHEMA, report)
-    final = cast(
-        dict[str, Any],
-        json.loads(store.get(receipt.final_manifest_ref.artifact_id).text),
-    )
+    final = cast(dict[str, Any], json.loads(
+        store.get(receipt.final_manifest_ref.artifact_id).text
+    ))
     validate_schema(FINAL_SCHEMA, final)
 
 
-def test_post_effective_abstention_still_preserves_checkpoint_report(
-    tmp_path: Path,
-) -> None:
+def test_post_effective_abstention_preserves_checkpoint_report(tmp_path: Path) -> None:
     receipt, store = execute_checkpoint(
         tmp_path,
         revocation_evaluated_at="2027-01-01T00:00:00Z",
@@ -341,31 +375,17 @@ def test_non_contiguous_sequence_is_rejected() -> None:
     document = load_document(CHECKPOINT_PATH)
     document["sequence_number"] = 1
     changed = checkpoint(document)
-    log_document = load_document(LOG_PATH)
-    log_document["checkpoint_refs"] = [stored_ref_document(changed.reference())]
-    log_document["head_checkpoint_ref"] = stored_ref_document(changed.reference())
-    changed_log = checkpoint_log(log_document)
-    with pytest.raises(
-        AdjudicatorCredentialRevocationCheckpointError,
-        match="contiguous",
-    ):
+    changed_log = log_for(changed)
+    with pytest.raises(AdjudicatorCredentialRevocationCheckpointError, match="contiguous"):
         verify(log=changed_log, checkpoints=(changed,))
 
 
 def test_genesis_predecessor_is_rejected() -> None:
     document = load_document(CHECKPOINT_PATH)
-    document["predecessor_checkpoint_ref"] = stored_ref_document(
-        checkpoint().reference()
-    )
+    document["predecessor_checkpoint_ref"] = stored_ref_document(checkpoint().reference())
     changed = checkpoint(document)
-    log_document = load_document(LOG_PATH)
-    log_document["checkpoint_refs"] = [stored_ref_document(changed.reference())]
-    log_document["head_checkpoint_ref"] = stored_ref_document(changed.reference())
-    changed_log = checkpoint_log(log_document)
-    with pytest.raises(
-        AdjudicatorCredentialRevocationCheckpointError,
-        match="Genesis|genesis",
-    ):
+    changed_log = log_for(changed)
+    with pytest.raises(AdjudicatorCredentialRevocationCheckpointError, match="genesis"):
         verify(log=changed_log, checkpoints=(changed,))
 
 
@@ -375,10 +395,7 @@ def test_checkpoint_omission_is_rejected() -> None:
     document["event_count"] = 0
     document["event_population_hash"] = event_population_hash([])
     changed = checkpoint(document)
-    log_document = load_document(LOG_PATH)
-    log_document["checkpoint_refs"] = [stored_ref_document(changed.reference())]
-    log_document["head_checkpoint_ref"] = stored_ref_document(changed.reference())
-    changed_log = checkpoint_log(log_document)
+    changed_log = log_for(changed)
     with pytest.raises(
         AdjudicatorCredentialRevocationCheckpointError,
         match="event order|event count",
@@ -390,10 +407,7 @@ def test_stale_ledger_reference_is_rejected() -> None:
     document = load_document(CHECKPOINT_PATH)
     document["revocation_ledger_ref"]["artifact_hash"] = "sha256:" + "0" * 64
     changed = checkpoint(document)
-    log_document = load_document(LOG_PATH)
-    log_document["checkpoint_refs"] = [stored_ref_document(changed.reference())]
-    log_document["head_checkpoint_ref"] = stored_ref_document(changed.reference())
-    changed_log = checkpoint_log(log_document)
+    changed_log = log_for(changed)
     with pytest.raises(
         AdjudicatorCredentialRevocationCheckpointError,
         match="ledger reference",
@@ -410,30 +424,8 @@ def test_future_checkpoint_verification_is_rejected() -> None:
 
 
 def test_two_checkpoint_chain_requires_immediate_predecessor() -> None:
-    second_document = load_document(CHECKPOINT_PATH)
-    second_document.update(
-        {
-            "artifact_id": (
-                "adjudicator-credential-revocation-checkpoint:"
-                "checkpoint.synthetic.witness-conflict-adjudicator-revocations.0001"
-            ),
-            "checkpoint_id": (
-                "checkpoint.synthetic.witness-conflict-adjudicator-revocations.0001"
-            ),
-            "sequence_number": 1,
-            "predecessor_checkpoint_ref": None,
-            "published_at": "2026-08-03T14:52:00Z",
-        }
-    )
-    second = checkpoint(second_document)
-    log_document = load_document(LOG_PATH)
-    log_document["checkpoint_refs"] = [
-        stored_ref_document(checkpoint().reference()),
-        stored_ref_document(second.reference()),
-    ]
-    log_document["head_checkpoint_ref"] = stored_ref_document(second.reference())
-    log_document["created_at"] = "2026-08-03T14:53:00Z"
-    changed_log = checkpoint_log(log_document)
+    second = second_checkpoint(predecessor=None, published_at="2026-08-03T14:52:00Z")
+    changed_log = log_for(checkpoint(), second)
     with pytest.raises(
         AdjudicatorCredentialRevocationCheckpointError,
         match="immediate predecessor",
@@ -442,32 +434,11 @@ def test_two_checkpoint_chain_requires_immediate_predecessor() -> None:
 
 
 def test_non_increasing_publication_time_is_rejected() -> None:
-    second_document = load_document(CHECKPOINT_PATH)
-    second_document.update(
-        {
-            "artifact_id": (
-                "adjudicator-credential-revocation-checkpoint:"
-                "checkpoint.synthetic.witness-conflict-adjudicator-revocations.0001"
-            ),
-            "checkpoint_id": (
-                "checkpoint.synthetic.witness-conflict-adjudicator-revocations.0001"
-            ),
-            "sequence_number": 1,
-            "predecessor_checkpoint_ref": stored_ref_document(
-                checkpoint().reference()
-            ),
-            "published_at": "2026-08-03T14:51:00Z",
-        }
+    second = second_checkpoint(
+        predecessor=stored_ref_document(checkpoint().reference()),
+        published_at="2026-08-03T14:51:00Z",
     )
-    second = checkpoint(second_document)
-    log_document = load_document(LOG_PATH)
-    log_document["checkpoint_refs"] = [
-        stored_ref_document(checkpoint().reference()),
-        stored_ref_document(second.reference()),
-    ]
-    log_document["head_checkpoint_ref"] = stored_ref_document(second.reference())
-    log_document["created_at"] = "2026-08-03T14:53:00Z"
-    changed_log = checkpoint_log(log_document)
+    changed_log = log_for(checkpoint(), second)
     with pytest.raises(
         AdjudicatorCredentialRevocationCheckpointError,
         match="publication time",
@@ -512,18 +483,11 @@ def test_closed_contracts_reject_score_or_consensus_fields() -> None:
     for field in ("trust_score", "vote_count", "consensus_percentage"):
         policy_document = deepcopy(load_document(POLICY_PATH))
         policy_document[field] = 1
-        with pytest.raises(
-            AdjudicatorCredentialRevocationCheckpointError,
-            match="unsupported",
-        ):
+        with pytest.raises(AdjudicatorCredentialRevocationCheckpointError, match="unsupported"):
             checkpoint_policy(policy_document)
-
         checkpoint_document = deepcopy(load_document(CHECKPOINT_PATH))
         checkpoint_document[field] = 1
-        with pytest.raises(
-            AdjudicatorCredentialRevocationCheckpointError,
-            match="unsupported",
-        ):
+        with pytest.raises(AdjudicatorCredentialRevocationCheckpointError, match="unsupported"):
             checkpoint(checkpoint_document)
 
 
