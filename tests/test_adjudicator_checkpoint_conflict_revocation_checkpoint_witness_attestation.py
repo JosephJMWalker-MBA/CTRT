@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import replace
+from importlib import import_module
 from pathlib import Path
 from typing import Any, cast
 
@@ -16,9 +17,6 @@ from test_adjudicator_checkpoint_conflict_credential_revocation_checkpoints impo
 from test_adjudicator_checkpoint_witness_conflict_adjudication import load_document
 from test_credential_revocation_checkpoints import validate_schema
 
-from ctrt import (
-    adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_attestation as witness_contracts,
-)
 from ctrt.artifact_store import FileSystemArtifactStore
 from ctrt.checkpoint_witness_attestation import (
     CheckpointWitnessAttestationSnapshot,
@@ -28,6 +26,10 @@ from ctrt.checkpoint_witness_attestation import (
     CheckpointWitnessRegistrySnapshot,
 )
 
+witness_contracts = import_module(
+    "ctrt.adjudicator_checkpoint_conflict_credential_"
+    "revocation_checkpoint_witness_attestation"
+)
 AdjudicatorCheckpointWitnessError = witness_contracts.AdjudicatorCheckpointWitnessError
 WitnessCorpus = (
     witness_contracts.WitnessBoundAdjudicatorCheckpointConflictCredentialRevocationCheckpointCorpusSnapshot
@@ -102,14 +104,14 @@ def witness_corpus(
     document: dict[str, Any] | None = None,
     *,
     predecessor: Any | None = None,
-) -> WitnessCorpus:
+) -> Any:
     return WitnessCorpus.from_document(
         document or load_document(CORPUS_PATH),
         predecessor=predecessor or checkpoint_corpus(),
     )
 
 
-def witness_plan(selected: WitnessCorpus | None = None):
+def witness_plan(selected: Any | None = None):
     corpus = selected or witness_corpus()
     return replace(
         frozen_plan(),
@@ -129,7 +131,7 @@ def stored_ref_document(reference: Any) -> dict[str, str]:
 
 def validate(
     *,
-    selected_corpus: WitnessCorpus | None = None,
+    selected_corpus: Any | None = None,
     attestations: tuple[CheckpointWitnessAttestationSnapshot, ...] | None = None,
     evaluated_at: str = "2026-08-03T19:53:30Z",
 ):
@@ -241,7 +243,7 @@ def test_observation_before_checkpoint_publication_is_rejected() -> None:
 def test_manifest_last_persistence_and_reconstruction(tmp_path: Path) -> None:
     prepared = prepare_witness_store(tmp_path)
     store = cast(FileSystemArtifactStore, prepared[0])
-    selected = cast(WitnessCorpus, prepared[-1])
+    selected = prepared[-1]
     first = load_witness_evidence(
         store,
         corpus=selected,
