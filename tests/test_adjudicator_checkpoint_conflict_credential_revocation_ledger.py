@@ -36,7 +36,8 @@ from ctrt.adjudicator_checkpoint_conflict_credential_revocation_ledger import (
     persist_adjudicator_checkpoint_conflict_credential_revocation_bound_corpus,
     validate_adjudicator_checkpoint_conflict_credential_revocation_ledger,
 )
-from ctrt.artifact_store import FileSystemArtifactStore
+from ctrt.artifact_store import FileSystemArtifactStore, StoredArtifactRef
+from ctrt.experiments import VersionedArtifactRef
 from ctrt.reviewer_credential_attestation import CredentialDecisionOutcome
 
 ROOT = Path(__file__).parents[1]
@@ -121,6 +122,23 @@ def revocation_plan():
     )
 
 
+def stored_ref_document(reference: StoredArtifactRef) -> dict[str, str]:
+    return {
+        "artifact_id": reference.artifact_id,
+        "artifact_hash": reference.artifact_hash,
+        "canonicalization_version": reference.canonicalization_version,
+        "media_type": reference.media_type,
+    }
+
+
+def versioned_ref_document(reference: VersionedArtifactRef) -> dict[str, str]:
+    return {
+        "artifact_id": reference.artifact_id,
+        "artifact_version": reference.artifact_version,
+        "artifact_hash": reference.artifact_hash,
+    }
+
+
 def validate(*, evaluated_at: str = "2026-08-03T18:23:00Z"):
     return validate_adjudicator_checkpoint_conflict_credential_revocation_ledger(
         plan=revocation_plan(),
@@ -177,21 +195,39 @@ def test_manifest_content_order_drift_is_rejected() -> None:
 
 
 def test_event_issuer_drift_is_structural_failure() -> None:
-    document = deepcopy(load_document(EVENT_PATH))
-    document["issuer_revision"] = "synthetic-issuer@9.9.9"
-    altered = suspension_event(document)
+    event_document = deepcopy(load_document(EVENT_PATH))
+    event_document["issuer_revision"] = "synthetic-issuer@9.9.9"
+    altered_event = suspension_event(event_document)
+
+    ledger_document = deepcopy(load_document(LEDGER_PATH))
+    ledger_document["event_refs"] = [
+        stored_ref_document(altered_event.reference())
+    ]
+    altered_ledger = revocation_ledger(ledger_document)
+
+    corpus_document = deepcopy(load_document(CORPUS_PATH))
+    corpus_document[
+        "adjudicator_checkpoint_conflict_adjudicator_credential_revocation_ledger_ref"
+    ] = versioned_ref_document(altered_ledger.reference())
+    altered_corpus = revocation_corpus(corpus_document)
+    altered_plan = replace(
+        revocation_plan(),
+        corpus_ref=altered_corpus.reference(),
+        content_ids=altered_corpus.content_ids,
+    )
+
     with pytest.raises(AdjudicatorCredentialRevocationError, match="issuer"):
         validate_adjudicator_checkpoint_conflict_credential_revocation_ledger(
-            plan=revocation_plan(),
-            corpus=revocation_corpus(),
+            plan=altered_plan,
+            corpus=altered_corpus,
             adjudicator_registry=conflict_adjudicator_registry(),
             issuer_registry=issuer_registry(),
             credential_policy=credential_policy(),
             revocation_policy=revocation_policy(),
-            ledger=revocation_ledger(),
+            ledger=altered_ledger,
             attestations=(credential(),),
             adjudication=conflict_adjudication(),
-            events=(altered,),
+            events=(altered_event,),
             evaluated_at="2026-08-03T18:23:00Z",
         )
 
