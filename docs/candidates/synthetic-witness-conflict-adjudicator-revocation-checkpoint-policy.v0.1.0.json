@@ -1,0 +1,10 @@
+{
+  "policy_id": "policy.synthetic-witness-conflict-adjudicator-revocation-checkpoints",
+  "policy_version": "0.1.0",
+  "status": "accepted",
+  "require_exact_event_order": true,
+  "require_prefix_extension": true,
+  "require_contiguous_sequence": true,
+  "require_monotonic_publication_time": true,
+  "created_at": "2026-08-03T14:50:00Z"
+}
