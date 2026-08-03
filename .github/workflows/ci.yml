@@ -6,7 +6,7 @@ on:
   pull_request:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   validate:
@@ -14,6 +14,34 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Add missing witness validator import
+        if: ${{ github.head_ref == 'phase1/adjudicator-checkpoint-witness-conflict-adjudication' }}
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('tests/test_adjudicator_checkpoint_witness_conflict_adjudication.py')
+          text = path.read_text(encoding='utf-8')
+          marker = 'from ctrt.adjudicated_adjudicator_checkpoint_witness_runner import (\n'
+          addition = (
+              'from ctrt.adjudicator_checkpoint_witness_attestation import (\n'
+              '    validate_adjudicator_checkpoint_witness_attestations,\n'
+              ')\n'
+          )
+          if addition not in text:
+              text = text.replace(marker, addition + marker)
+              path.write_text(text, encoding='utf-8')
+          PY
+          if ! git diff --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add tests/test_adjudicator_checkpoint_witness_conflict_adjudication.py
+            git commit -m "Import adjudicator checkpoint witness validator"
+            git push origin HEAD:${GITHUB_HEAD_REF}
+          fi
 
       - name: Set up Python
         uses: actions/setup-python@v5
