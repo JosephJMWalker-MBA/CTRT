@@ -10,6 +10,9 @@ from typing import Any, cast
 import pytest
 from jsonschema import ValidationError
 
+from ctrt.adjudicator_checkpoint_witness_attestation import (
+    validate_adjudicator_checkpoint_witness_attestations,
+)
 from ctrt.adjudicated_adjudicator_checkpoint_witness_runner import (
     ADJUDICATED_ADJUDICATOR_CHECKPOINT_WITNESS_VERIFIED_CHECKS,
     AdjudicatedAdjudicatorCheckpointWitnessExperimentRunner,
