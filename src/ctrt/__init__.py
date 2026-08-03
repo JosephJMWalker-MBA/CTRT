@@ -2,6 +2,15 @@
 
 from ctrt import _public_api_base
 from ctrt._public_api_base import *  # noqa: F403
+from ctrt.adjudicated_adjudicator_checkpoint_witness_runner import (
+    ADJUDICATED_ADJUDICATOR_CHECKPOINT_WITNESS_VERIFIED_CHECKS,
+    AdjudicatedAdjudicatorCheckpointWitnessExperimentError,
+    AdjudicatedAdjudicatorCheckpointWitnessExperimentRunner,
+    AdjudicatedAdjudicatorCheckpointWitnessFinalManifest,
+    AdjudicatedAdjudicatorCheckpointWitnessRunnerStage,
+    AdjudicatedAdjudicatorCheckpointWitnessRunnerStatus,
+    VerifiedAdjudicatedAdjudicatorCheckpointWitnessReceipt,
+)
 from ctrt.adjudicator_checkpoint_witness_attestation import (
     AdjudicatorCheckpointWitnessDecisionReport,
     AdjudicatorCheckpointWitnessError,
@@ -11,6 +20,15 @@ from ctrt.adjudicator_checkpoint_witness_attestation import (
     load_adjudicator_checkpoint_witness_evidence,
     persist_witness_bound_adjudicator_checkpoint_corpus,
     validate_adjudicator_checkpoint_witness_attestations,
+)
+from ctrt.adjudicator_checkpoint_witness_conflict_adjudication import (
+    AdjudicationBoundAdjudicatorCheckpointWitnessCorpusSnapshot,
+    AdjudicatorCheckpointWitnessConflictAdjudicationDecisionReport,
+    AdjudicatorCheckpointWitnessConflictAdjudicationError,
+    StoredAdjudicatorCheckpointWitnessConflictAdjudicationEvidence,
+    load_adjudicator_checkpoint_witness_conflict_adjudication_evidence,
+    persist_adjudication_bound_adjudicator_checkpoint_witness_corpus,
+    validate_adjudicator_checkpoint_witness_conflict_adjudication,
 )
 from ctrt.adjudicator_checkpoint_witness_runner import (
     ADJUDICATOR_CHECKPOINT_WITNESS_VERIFIED_CHECKS,
@@ -93,6 +111,20 @@ from ctrt.revocation_gated_adjudicated_witness_runner import (
 
 __all__ = [
     *_public_api_base.__all__,
+    "ADJUDICATED_ADJUDICATOR_CHECKPOINT_WITNESS_VERIFIED_CHECKS",
+    "AdjudicatedAdjudicatorCheckpointWitnessExperimentError",
+    "AdjudicatedAdjudicatorCheckpointWitnessExperimentRunner",
+    "AdjudicatedAdjudicatorCheckpointWitnessFinalManifest",
+    "AdjudicatedAdjudicatorCheckpointWitnessRunnerStage",
+    "AdjudicatedAdjudicatorCheckpointWitnessRunnerStatus",
+    "AdjudicationBoundAdjudicatorCheckpointWitnessCorpusSnapshot",
+    "AdjudicatorCheckpointWitnessConflictAdjudicationDecisionReport",
+    "AdjudicatorCheckpointWitnessConflictAdjudicationError",
+    "StoredAdjudicatorCheckpointWitnessConflictAdjudicationEvidence",
+    "VerifiedAdjudicatedAdjudicatorCheckpointWitnessReceipt",
+    "load_adjudicator_checkpoint_witness_conflict_adjudication_evidence",
+    "persist_adjudication_bound_adjudicator_checkpoint_witness_corpus",
+    "validate_adjudicator_checkpoint_witness_conflict_adjudication",
     "ADJUDICATOR_CHECKPOINT_GATED_VERIFIED_CHECKS",
     "ADJUDICATOR_CHECKPOINT_WITNESS_VERIFIED_CHECKS",
     "ADJUDICATOR_REVOCATION_GATED_VERIFIED_CHECKS",
