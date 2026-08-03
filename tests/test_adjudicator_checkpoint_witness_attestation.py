@@ -410,6 +410,7 @@ def test_expected_head_drift_is_rejected() -> None:
     records = list(attestations())
     document = load_document(ATTESTATION_DIR / "beta-attestation.json")
     document["expected_head_ref"]["artifact_hash"] = "sha256:" + "1" * 64
+    document["observed_head_ref"]["artifact_hash"] = "sha256:" + "1" * 64
     records[1] = attestation("beta", document)
     bound_document = load_document(CORPUS_PATH)
     bound_document["corpus_id"] += ".head-drift"
