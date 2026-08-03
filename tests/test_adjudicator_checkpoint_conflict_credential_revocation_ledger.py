@@ -6,6 +6,22 @@ from pathlib import Path
 from typing import Any, cast
 
 import pytest
+from test_adjudicator_checkpoint_conflict_credential_attestation import (
+    corpus as credential_corpus,
+)
+from test_adjudicator_checkpoint_conflict_credential_attestation import (
+    credential,
+    credential_policy,
+    frozen_plan,
+    issuer_registry,
+    prepare_credential_store,
+)
+from test_adjudicator_checkpoint_witness_conflict_adjudication import (
+    conflict_adjudication,
+    conflict_adjudicator_registry,
+    load_document,
+)
+from test_credential_revocation_checkpoints import validate_schema
 
 from ctrt.adjudicator_checkpoint_conflict_credential_attestation import (
     CredentialBoundAdjudicatorCheckpointConflictCorpusSnapshot,
@@ -22,20 +38,6 @@ from ctrt.adjudicator_checkpoint_conflict_credential_revocation_ledger import (
 )
 from ctrt.artifact_store import FileSystemArtifactStore
 from ctrt.reviewer_credential_attestation import CredentialDecisionOutcome
-from test_adjudicator_checkpoint_conflict_credential_attestation import (
-    corpus as credential_corpus,
-    credential,
-    credential_policy,
-    frozen_plan,
-    issuer_registry,
-    prepare_credential_store,
-)
-from test_adjudicator_checkpoint_witness_conflict_adjudication import (
-    conflict_adjudication,
-    conflict_adjudicator_registry,
-    load_document,
-)
-from test_credential_revocation_checkpoints import validate_schema
 
 ROOT = Path(__file__).parents[1]
 POLICY_PATH = ROOT / "docs" / "candidates" / (
