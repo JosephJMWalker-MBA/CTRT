@@ -7,7 +7,6 @@ from datetime import datetime
 from enum import StrEnum
 
 from ctrt.adjudicator_checkpoint_witness_attestation import (
-    AdjudicatorCheckpointWitnessDecisionReport,
     validate_adjudicator_checkpoint_witness_attestations,
 )
 from ctrt.adjudicator_checkpoint_witness_conflict_adjudication import (

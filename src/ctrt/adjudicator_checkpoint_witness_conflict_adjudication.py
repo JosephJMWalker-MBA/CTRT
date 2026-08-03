@@ -33,7 +33,6 @@ from ctrt.experiments import ExperimentPlan, ExperimentPlanStatus, VersionedArti
 from ctrt.serialization import CanonicalArtifact
 from ctrt.witness_conflict_adjudication import (
     PreservedWitnessDissent,
-    WitnessConflictAdjudicationError,
     WitnessConflictAdjudicationOutcome,
     WitnessConflictAdjudicationPolicyLifecycle,
     WitnessConflictAdjudicationPolicySnapshot,
