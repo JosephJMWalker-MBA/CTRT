@@ -23,4 +23,4 @@ def test_probe_v050_canonical_hash() -> None:
     expected = (
         "sha256:0000000000000000000000000000000000000000000000000000000000000000"
     )
-    assert corpus.artifact_hash == expected
+    assert corpus.reference().artifact_hash == expected
