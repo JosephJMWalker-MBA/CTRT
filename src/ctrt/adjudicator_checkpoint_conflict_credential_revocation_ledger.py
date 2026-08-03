@@ -41,6 +41,19 @@ from ctrt.witness_conflict_adjudication import (
     WitnessConflictAdjudicatorRegistrySnapshot,
 )
 
+__all__ = (
+    "AdjudicatorCredentialRevocationDecisionReport",
+    "AdjudicatorCredentialRevocationError",
+    "AdjudicatorCredentialRevocationEventSnapshot",
+    "AdjudicatorCredentialRevocationLedgerSnapshot",
+    "AdjudicatorCredentialRevocationPolicySnapshot",
+    "RevocationBoundAdjudicatorCheckpointConflictCredentialCorpusSnapshot",
+    "StoredAdjudicatorCredentialRevocationEvidence",
+    "load_adjudicator_checkpoint_conflict_credential_revocation_evidence",
+    "persist_adjudicator_checkpoint_conflict_credential_revocation_bound_corpus",
+    "validate_adjudicator_checkpoint_conflict_credential_revocation_ledger",
+)
+
 
 def _mapping(value: object, field_name: str) -> Mapping[str, object]:
     if not isinstance(value, Mapping):
