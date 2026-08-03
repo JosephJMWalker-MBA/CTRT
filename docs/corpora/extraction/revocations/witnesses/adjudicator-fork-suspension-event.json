@@ -1,0 +1,18 @@
+{
+  "artifact_id": "adjudicator-credential-revocation-event:event.synthetic.fork.suspension.v0.1.0",
+  "event_id": "event.synthetic.fork.suspension.v0.1.0",
+  "credential_attestation_ref": {
+    "artifact_id": "adjudicator-credential:credential.synthetic.fork.v0.1.0",
+    "artifact_hash": "sha256:9a43f573db89ac729e68dd62d1d369af545221804875583e5298de58041327df",
+    "canonicalization_version": "ctrt-canonical-json@0.1.0",
+    "media_type": "application/json"
+  },
+  "adjudicator_id": "adjudicator.synthetic.fork",
+  "issuer_id": "issuer.synthetic.witness-conflict-governance",
+  "issuer_revision": "synthetic-witness-conflict-governance@0.1.0",
+  "effect": "suspended",
+  "effective_at": "2027-01-01T00:00:00Z",
+  "recorded_at": "2026-08-03T13:47:30Z",
+  "reason": "Synthetic future-effective suspension for deterministic as-of evaluation.",
+  "supersedes_event_id": null
+}
