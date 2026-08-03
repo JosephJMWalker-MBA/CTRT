@@ -1,0 +1,32 @@
+{
+  "registry_id": "registry.synthetic-extraction-reviewers",
+  "registry_version": "0.1.0",
+  "status": "accepted",
+  "reviewers": [
+    {
+      "reviewer_id": "reviewer.synthetic.primary",
+      "identity_revision": "synthetic-reviewer@0.1.0",
+      "roles": [
+        "primary_reviewer"
+      ],
+      "active": true
+    },
+    {
+      "reviewer_id": "reviewer.synthetic.secondary",
+      "identity_revision": "synthetic-reviewer@0.1.0",
+      "roles": [
+        "secondary_reviewer"
+      ],
+      "active": true
+    },
+    {
+      "reviewer_id": "reviewer.synthetic.adjudicator",
+      "identity_revision": "synthetic-reviewer@0.1.0",
+      "roles": [
+        "adjudicator"
+      ],
+      "active": true
+    }
+  ],
+  "created_at": "2026-08-03T00:49:00Z"
+}

@@ -1,0 +1,18 @@
+{
+  "policy_id": "policy.synthetic-extraction-review-adjudication",
+  "policy_version": "0.1.0",
+  "status": "accepted",
+  "minimum_distinct_reviewers": 2,
+  "required_roles": [
+    "primary_reviewer",
+    "secondary_reviewer"
+  ],
+  "adjudicator_role": "adjudicator",
+  "abstain_on_statuses": [
+    "pending",
+    "unresolved"
+  ],
+  "preserve_dissent": true,
+  "majority_vote_forbidden": true,
+  "created_at": "2026-08-03T00:49:30Z"
+}

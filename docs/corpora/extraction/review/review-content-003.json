@@ -1,0 +1,60 @@
+{
+  "artifact_id": "review-adjudication:review.synthetic.content-003.v0.1.0",
+  "adjudication_id": "review.synthetic.content-003.v0.1.0",
+  "content_id": "content-003",
+  "quality_assessment_ref": {
+    "artifact_id": "extraction-quality:quality.synthetic.content-003.v0.1.0",
+    "artifact_hash": "sha256:f2ca7f0ac964e7611d8d5743ffe82075041b137487ad89e72af3821e488bf3c7",
+    "canonicalization_version": "ctrt-canonical-json@0.1.0",
+    "media_type": "application/json"
+  },
+  "reviewer_registry_ref": {
+    "artifact_id": "registry.synthetic-extraction-reviewers",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:a271ebb00c2e02c9f053d86af7b0c2855a95d4320852a65ffaa06b893f725b28"
+  },
+  "review_policy_ref": {
+    "artifact_id": "policy.synthetic-extraction-review-adjudication",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:a042eb2d2b3995d0272ee366257b42db738568cf0a4e524d0340abba456cb89f"
+  },
+  "observations": [
+    {
+      "observation_id": "review-observation:content-003:primary",
+      "reviewer_id": "reviewer.synthetic.primary",
+      "reviewer_role": "primary_reviewer",
+      "review_question_id": "canonical-text-fidelity",
+      "finding": "confirmed",
+      "notes": "The canonical text matches the synthetic source under the exact mapping.",
+      "evidence_refs": [
+        "source-artifact:source.synthetic.content-003:00ab0b9ee700397be6076f333eff1c585bb222efb544211203f9b8ea4ee1007b",
+        "extracted-content:content-003:00ab0b9ee700397be6076f333eff1c585bb222efb544211203f9b8ea4ee1007b:fcf257a5d33b49a8c4efb505a1da6ba0aa6eda6df04c372e44ba4b019a2c32c2"
+      ],
+      "observed_at": "2026-08-03T00:50:03Z"
+    },
+    {
+      "observation_id": "review-observation:content-003:secondary",
+      "reviewer_id": "reviewer.synthetic.secondary",
+      "reviewer_role": "secondary_reviewer",
+      "review_question_id": "canonical-text-fidelity",
+      "finding": "confirmed",
+      "notes": "Independent review confirms complete identical-text preservation.",
+      "evidence_refs": [
+        "extraction:content-003:80911cb35e9e70113c7f06132f44aba838e9d4cb34d6348a38440e03f2184267",
+        "extraction-quality:quality.synthetic.content-003.v0.1.0"
+      ],
+      "observed_at": "2026-08-03T00:50:13Z"
+    }
+  ],
+  "conflicts": [],
+  "adjudication_status": "not_required",
+  "adjudicator_id": null,
+  "resolution_notes": null,
+  "dissent": [],
+  "unresolved_conflict_ids": [],
+  "abstention": {
+    "triggered": false,
+    "reasons": []
+  },
+  "adjudicated_at": "2026-08-03T00:50:23Z"
+}

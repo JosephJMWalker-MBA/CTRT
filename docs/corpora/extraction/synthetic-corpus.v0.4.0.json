@@ -1,0 +1,142 @@
+{
+  "corpus_id": "corpus.synthetic-three-items.extraction-bound",
+  "corpus_version": "0.4.0",
+  "status": "frozen",
+  "method_registry_ref": {
+    "artifact_id": "registry.synthetic-extraction-methods",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:4dc3f0a1a3fd22177bf227c7dff61388943935d6927369211474ae7574f2c565"
+  },
+  "quality_policy_ref": {
+    "artifact_id": "policy.synthetic-extraction-quality",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:9e6d086f739584665941a76c6f25bff7070bafbfde4ce229d371a4cde566b870"
+  },
+  "reviewer_registry_ref": {
+    "artifact_id": "registry.synthetic-extraction-reviewers",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:a271ebb00c2e02c9f053d86af7b0c2855a95d4320852a65ffaa06b893f725b28"
+  },
+  "review_adjudication_policy_ref": {
+    "artifact_id": "policy.synthetic-extraction-review-adjudication",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:a042eb2d2b3995d0272ee366257b42db738568cf0a4e524d0340abba456cb89f"
+  },
+  "contents": [
+    {
+      "position": 0,
+      "content_id": "content-001",
+      "content_hash": "sha256:b674f70ffe181411a2083b4317584ac9e6c16c767cac91c31b2b7294ff3cc288",
+      "language": "en",
+      "source_type": "raw_text",
+      "source_uri": null,
+      "source_artifact_ref": {
+        "artifact_id": "source-artifact:source.synthetic.content-001:b674f70ffe181411a2083b4317584ac9e6c16c767cac91c31b2b7294ff3cc288",
+        "artifact_hash": "sha256:4986538a9f7e231ca6ed8c9c2052f41d9c7d2eecd8b8d858cce7bc6dd8e0bc21",
+        "canonicalization_version": "ctrt-canonical-json@0.1.0",
+        "media_type": "application/json"
+      },
+      "extraction_artifact_ref": {
+        "artifact_id": "extraction:content-001:bdaec2fb31fff0739c9d5ee6f3328c623663bcba72aa28fd250513c33db60bc3",
+        "artifact_hash": "sha256:b988361e4c6f805bae5e9e6586de4e260fc88d362d6788b55254f94b0804e1c2",
+        "canonicalization_version": "ctrt-canonical-json@0.1.0",
+        "media_type": "application/json"
+      },
+      "content_artifact_ref": {
+        "artifact_id": "extracted-content:content-001:b674f70ffe181411a2083b4317584ac9e6c16c767cac91c31b2b7294ff3cc288:dd8e36bf159e197c4e34244da0985c3c3cb14d41d1db3511b97e7bf079712be5",
+        "artifact_hash": "sha256:e5d594d07c8a0e78b9b81c1d9776659d8b94aa409ff28eeb1babd876f4733a4b",
+        "canonicalization_version": "ctrt-canonical-json@0.1.0",
+        "media_type": "application/json"
+      },
+      "quality_assessment_ref": {
+        "artifact_id": "extraction-quality:quality.synthetic.content-001.v0.1.0",
+        "artifact_hash": "sha256:35353bc976023030f7814c1e5daa544f820e70d9a5560627a94ee612304d59f8",
+        "canonicalization_version": "ctrt-canonical-json@0.1.0",
+        "media_type": "application/json"
+      },
+      "review_adjudication_ref": {
+        "artifact_id": "review-adjudication:review.synthetic.content-001.v0.1.0",
+        "artifact_hash": "sha256:1620ec1a9c7ae3ad4fe82d95399ec65e668800bea004a2f059ff7adf4a693aeb",
+        "canonicalization_version": "ctrt-canonical-json@0.1.0",
+        "media_type": "application/json"
+      }
+    },
+    {
+      "position": 1,
+      "content_id": "content-002",
+      "content_hash": "sha256:6643e7322a3e5f55edd4baa5db37cdd046e716802631545204c87acad3c7fc17",
+      "language": "en",
+      "source_type": "raw_text",
+      "source_uri": null,
+      "source_artifact_ref": {
+        "artifact_id": "source-artifact:source.synthetic.content-002:6643e7322a3e5f55edd4baa5db37cdd046e716802631545204c87acad3c7fc17",
+        "artifact_hash": "sha256:4f88fd7444eaf450ecd63a0c6326007a28ec7074246f844ee4e2199dee590b39",
+        "canonicalization_version": "ctrt-canonical-json@0.1.0",
+        "media_type": "application/json"
+      },
+      "extraction_artifact_ref": {
+        "artifact_id": "extraction:content-002:4f3be7ef337ad765ba54b93473f58a96067238c3b2b3abf17f871aec5f084cd2",
+        "artifact_hash": "sha256:94e1717849b102d856529bb02988360b2a593f52e7140f5e5d260f2b865955b3",
+        "canonicalization_version": "ctrt-canonical-json@0.1.0",
+        "media_type": "application/json"
+      },
+      "content_artifact_ref": {
+        "artifact_id": "extracted-content:content-002:6643e7322a3e5f55edd4baa5db37cdd046e716802631545204c87acad3c7fc17:c62e9efefd24420720fef254b84016b44f81297b2b7e0b5fadc2ba4c1ca094b2",
+        "artifact_hash": "sha256:f0527a5ced76abb741926e739d590b12d2a858b0934ff61cf793c2c1c027412e",
+        "canonicalization_version": "ctrt-canonical-json@0.1.0",
+        "media_type": "application/json"
+      },
+      "quality_assessment_ref": {
+        "artifact_id": "extraction-quality:quality.synthetic.content-002.v0.1.0",
+        "artifact_hash": "sha256:a907876fa344b70d7a0f7717680ec0f3c100b121ef5f2a083a703a082a75592b",
+        "canonicalization_version": "ctrt-canonical-json@0.1.0",
+        "media_type": "application/json"
+      },
+      "review_adjudication_ref": {
+        "artifact_id": "review-adjudication:review.synthetic.content-002.v0.1.0",
+        "artifact_hash": "sha256:99455bb129d700a0ead003826607a33b7da4e17d7a9e2261ae80b1a188c9cf2d",
+        "canonicalization_version": "ctrt-canonical-json@0.1.0",
+        "media_type": "application/json"
+      }
+    },
+    {
+      "position": 2,
+      "content_id": "content-003",
+      "content_hash": "sha256:00ab0b9ee700397be6076f333eff1c585bb222efb544211203f9b8ea4ee1007b",
+      "language": "en",
+      "source_type": "raw_text",
+      "source_uri": null,
+      "source_artifact_ref": {
+        "artifact_id": "source-artifact:source.synthetic.content-003:00ab0b9ee700397be6076f333eff1c585bb222efb544211203f9b8ea4ee1007b",
+        "artifact_hash": "sha256:e50145e2e5c76a04b8637f151cf0b216781996fe858a8c9a445212f0f1287aaa",
+        "canonicalization_version": "ctrt-canonical-json@0.1.0",
+        "media_type": "application/json"
+      },
+      "extraction_artifact_ref": {
+        "artifact_id": "extraction:content-003:80911cb35e9e70113c7f06132f44aba838e9d4cb34d6348a38440e03f2184267",
+        "artifact_hash": "sha256:5ac87ed955c2346a4b3fd65aa696f2da539ae75d9f73f171ac414d2b31decfec",
+        "canonicalization_version": "ctrt-canonical-json@0.1.0",
+        "media_type": "application/json"
+      },
+      "content_artifact_ref": {
+        "artifact_id": "extracted-content:content-003:00ab0b9ee700397be6076f333eff1c585bb222efb544211203f9b8ea4ee1007b:fcf257a5d33b49a8c4efb505a1da6ba0aa6eda6df04c372e44ba4b019a2c32c2",
+        "artifact_hash": "sha256:9ee4d44c7ae2fae3940546e686ea0aecea54a537376210a06cc697cff51603ff",
+        "canonicalization_version": "ctrt-canonical-json@0.1.0",
+        "media_type": "application/json"
+      },
+      "quality_assessment_ref": {
+        "artifact_id": "extraction-quality:quality.synthetic.content-003.v0.1.0",
+        "artifact_hash": "sha256:f2ca7f0ac964e7611d8d5743ffe82075041b137487ad89e72af3821e488bf3c7",
+        "canonicalization_version": "ctrt-canonical-json@0.1.0",
+        "media_type": "application/json"
+      },
+      "review_adjudication_ref": {
+        "artifact_id": "review-adjudication:review.synthetic.content-003.v0.1.0",
+        "artifact_hash": "sha256:15f44fcfabba1a262cb3828a4ff07b1596fa17075faa807f58cc0932ba071414",
+        "canonicalization_version": "ctrt-canonical-json@0.1.0",
+        "media_type": "application/json"
+      }
+    }
+  ],
+  "created_at": "2026-08-03T00:51:00Z"
+}
