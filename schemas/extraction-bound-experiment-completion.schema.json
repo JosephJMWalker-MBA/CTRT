@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ctrt.dev/schemas/extraction-bound-experiment-completion.schema.json",
+  "title": "CTRT Extraction-Bound Experiment Completion",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "completion_id",
+    "experiment_run_id",
+    "status",
+    "experiment_id",
+    "experiment_version",
+    "corpus_manifest_ref",
+    "experiment_completion_ref",
+    "content_ids",
+    "source_artifact_refs",
+    "extraction_artifact_refs",
+    "content_artifact_refs",
+    "verified_checks",
+    "completed_at"
+  ],
+  "properties": {
+    "completion_id": {"type": "string", "minLength": 1},
+    "experiment_run_id": {"type": "string", "minLength": 1},
+    "status": {"const": "verified"},
+    "experiment_id": {"type": "string", "minLength": 1},
+    "experiment_version": {"type": "string", "minLength": 1},
+    "corpus_manifest_ref": {"$ref": "#/$defs/storedArtifactRef"},
+    "experiment_completion_ref": {"$ref": "#/$defs/storedArtifactRef"},
+    "content_ids": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "source_artifact_refs": {
+      "type": "array",
+      "minItems": 2,
+      "items": {"$ref": "#/$defs/storedArtifactRef"}
+    },
+    "extraction_artifact_refs": {
+      "type": "array",
+      "minItems": 2,
+      "items": {"$ref": "#/$defs/storedArtifactRef"}
+    },
+    "content_artifact_refs": {
+      "type": "array",
+      "minItems": 2,
+      "items": {"$ref": "#/$defs/storedArtifactRef"}
+    },
+    "verified_checks": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "prefixItems": [
+        {"const": "source-artifacts-reverified"},
+        {"const": "extraction-method-and-revision-bound"},
+        {"const": "coordinate-maps-reverified"},
+        {"const": "canonical-content-reconstructed"},
+        {"const": "experiment-completion-reverified"},
+        {"const": "extraction-bound-completion-reverified"}
+      ],
+      "items": false
+    },
+    "completed_at": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "storedArtifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "artifact_hash",
+        "canonicalization_version",
+        "media_type"
+      ],
+      "properties": {
+        "artifact_id": {"type": "string", "minLength": 1},
+        "artifact_hash": {"$ref": "#/$defs/sha256"},
+        "canonicalization_version": {
+          "const": "ctrt-canonical-json@0.1.0"
+        },
+        "media_type": {"const": "application/json"}
+      }
+    }
+  }
+}

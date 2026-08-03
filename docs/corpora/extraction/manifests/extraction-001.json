@@ -1,0 +1,30 @@
+{
+  "artifact_id": "extraction:content-001:bdaec2fb31fff0739c9d5ee6f3328c623663bcba72aa28fd250513c33db60bc3",
+  "content_id": "content-001",
+  "source_artifact_ref": {
+    "artifact_id": "source-artifact:source.synthetic.content-001:b674f70ffe181411a2083b4317584ac9e6c16c767cac91c31b2b7294ff3cc288",
+    "artifact_hash": "sha256:4986538a9f7e231ca6ed8c9c2052f41d9c7d2eecd8b8d858cce7bc6dd8e0bc21",
+    "canonicalization_version": "ctrt-canonical-json@0.1.0",
+    "media_type": "application/json"
+  },
+  "method_id": "synthetic.identity-text",
+  "method_revision": "ctrt-synthetic-identity-text@0.1.0",
+  "configuration_hash": "sha256:bc8e485583a873ac9269382749b2ff803b649939b3ec829ec8bf140db6e350c8",
+  "canonical_content_hash": "sha256:b674f70ffe181411a2083b4317584ac9e6c16c767cac91c31b2b7294ff3cc288",
+  "content_artifact_ref": {
+    "artifact_id": "extracted-content:content-001:b674f70ffe181411a2083b4317584ac9e6c16c767cac91c31b2b7294ff3cc288:dd8e36bf159e197c4e34244da0985c3c3cb14d41d1db3511b97e7bf079712be5",
+    "artifact_hash": "sha256:e5d594d07c8a0e78b9b81c1d9776659d8b94aa409ff28eeb1babd876f4733a4b",
+    "canonicalization_version": "ctrt-canonical-json@0.1.0",
+    "media_type": "application/json"
+  },
+  "coordinate_map": [
+    {
+      "source_start": 0,
+      "source_end": 45,
+      "canonical_start": 0,
+      "canonical_end": 45,
+      "kind": "exact"
+    }
+  ],
+  "created_at": "2026-08-02T23:46:00Z"
+}

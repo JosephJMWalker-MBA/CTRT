@@ -1,0 +1,10 @@
+{
+  "artifact_id": "extracted-content:content-001:b674f70ffe181411a2083b4317584ac9e6c16c767cac91c31b2b7294ff3cc288:dd8e36bf159e197c4e34244da0985c3c3cb14d41d1db3511b97e7bf079712be5",
+  "content_id": "content-001",
+  "text": "The launch was good, but the support was bad.",
+  "content_hash": "sha256:b674f70ffe181411a2083b4317584ac9e6c16c767cac91c31b2b7294ff3cc288",
+  "language": "en",
+  "source_type": "raw_text",
+  "source_uri": null,
+  "extraction_ref": "extraction:content-001:bdaec2fb31fff0739c9d5ee6f3328c623663bcba72aa28fd250513c33db60bc3"
+}
