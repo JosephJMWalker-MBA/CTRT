@@ -1,0 +1,27 @@
+{
+  "artifact_id": "credential-revocation-checkpoint:checkpoint.synthetic.revocation-ledger.0000",
+  "checkpoint_id": "checkpoint.synthetic.revocation-ledger.0000",
+  "sequence_number": 0,
+  "revocation_corpus_ref": {
+    "artifact_id": "corpus.synthetic-three-items.revocation-bound",
+    "artifact_version": "0.6.0",
+    "artifact_hash": "sha256:55c8f58948492a104291a8d9e1f7f55820b9ccacaae08cee53d586efcea7f1d3"
+  },
+  "revocation_ledger_ref": {
+    "artifact_id": "ledger.synthetic-reviewer-credential-revocations",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:77c3d75ebccf4e586b51f9baad0c28d20a1df9c5cc601421c515b188fc154780"
+  },
+  "event_refs": [
+    {
+      "artifact_id": "credential-revocation-event:event.synthetic.secondary.suspension-2027",
+      "artifact_hash": "sha256:bb10f22ff3cada3a74a12bfef3c70f24058be06d996c40547190713f2c3bb09a",
+      "canonicalization_version": "ctrt-canonical-json@0.1.0",
+      "media_type": "application/json"
+    }
+  ],
+  "event_count": 1,
+  "event_population_hash": "sha256:750c16bccacd8a4922f946b80d5e26cb4a0f291ea0fff379d25375832f6f2ef4",
+  "predecessor_checkpoint_ref": null,
+  "published_at": "2026-08-03T02:32:00Z"
+}
