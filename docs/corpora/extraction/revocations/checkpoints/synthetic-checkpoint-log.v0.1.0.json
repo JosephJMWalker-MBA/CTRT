@@ -1,0 +1,25 @@
+{
+  "log_id": "log.synthetic-credential-revocation-checkpoints",
+  "log_version": "0.1.0",
+  "status": "frozen",
+  "checkpoint_policy_ref": {
+    "artifact_id": "policy.synthetic-credential-revocation-checkpoints",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:5a0e0e4716b58f89f01a2645e4ee19718c6a744918bb21a35cd6097c324d7055"
+  },
+  "checkpoint_refs": [
+    {
+      "artifact_id": "credential-revocation-checkpoint:checkpoint.synthetic.revocation-ledger.0000",
+      "artifact_hash": "sha256:23826850793563e4998687ff0382b288b6d34a6b6b07d6a06bcc03512a652a81",
+      "canonicalization_version": "ctrt-canonical-json@0.1.0",
+      "media_type": "application/json"
+    }
+  ],
+  "head_checkpoint_ref": {
+    "artifact_id": "credential-revocation-checkpoint:checkpoint.synthetic.revocation-ledger.0000",
+    "artifact_hash": "sha256:23826850793563e4998687ff0382b288b6d34a6b6b07d6a06bcc03512a652a81",
+    "canonicalization_version": "ctrt-canonical-json@0.1.0",
+    "media_type": "application/json"
+  },
+  "created_at": "2026-08-03T02:33:00Z"
+}
