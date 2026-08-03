@@ -1,0 +1,27 @@
+{
+  "artifact_id": "adjudicator-credential-revocation-checkpoint:checkpoint.synthetic.witness-conflict-adjudicator-revocations.0000",
+  "checkpoint_id": "checkpoint.synthetic.witness-conflict-adjudicator-revocations.0000",
+  "sequence_number": 0,
+  "revocation_corpus_ref": {
+    "artifact_id": "corpus.synthetic-three-items.adjudicator-credential-revocation-bound",
+    "artifact_version": "1.1.0",
+    "artifact_hash": "sha256:0cc4d77649e2d240e719ed98f618f968ba884289663eaf07fd375241ca7e20ab"
+  },
+  "revocation_ledger_ref": {
+    "artifact_id": "ledger.synthetic-witness-conflict-adjudicator-credential-revocations",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:ea15075c2df63244aabed53d61e28c19171ae4c45c61414e426bd89f2364bbc2"
+  },
+  "event_refs": [
+    {
+      "artifact_id": "adjudicator-credential-revocation-event:event.synthetic.fork.suspension.v0.1.0",
+      "artifact_hash": "sha256:21a31d7a3928df49d1bb2121becd29def81a08ac9d4eb0fd0f901f9fd2ccbec8",
+      "canonicalization_version": "ctrt-canonical-json@0.1.0",
+      "media_type": "application/json"
+    }
+  ],
+  "event_count": 1,
+  "event_population_hash": "sha256:c3f4eb1ba0a40e636797b0806b320a3e8fdf32f49df15e26810eb986c23646ee",
+  "predecessor_checkpoint_ref": null,
+  "published_at": "2026-08-03T14:51:00Z"
+}
