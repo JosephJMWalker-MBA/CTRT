@@ -46,7 +46,7 @@
       "witness_id": "witness.synthetic.gamma",
       "attestation_ref": {
         "artifact_id": "checkpoint-witness-attestation:attestation.synthetic.gamma.conflict.v0.1.0",
-        "artifact_hash": "sha256:95fd503da4e7115b8eda660dde00fd20e13c52469a06a644107d7a73662bd4ef",
+        "artifact_hash": "sha256:054a8fff4ccdceb6d4227111a096436bd608ef05a2277c3b67ac05dff666942b",
         "canonicalization_version": "ctrt-canonical-json@0.1.0",
         "media_type": "application/json"
       },
@@ -69,7 +69,7 @@
       "witness_id": "witness.synthetic.gamma",
       "attestation_ref": {
         "artifact_id": "checkpoint-witness-attestation:attestation.synthetic.gamma.conflict.v0.1.0",
-        "artifact_hash": "sha256:95fd503da4e7115b8eda660dde00fd20e13c52469a06a644107d7a73662bd4ef",
+        "artifact_hash": "sha256:054a8fff4ccdceb6d4227111a096436bd608ef05a2277c3b67ac05dff666942b",
         "canonicalization_version": "ctrt-canonical-json@0.1.0",
         "media_type": "application/json"
       },
