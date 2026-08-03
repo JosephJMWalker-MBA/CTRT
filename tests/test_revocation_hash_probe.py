@@ -15,6 +15,12 @@ def test_probe_v050_canonical_hash() -> None:
         / "extraction"
         / "synthetic-corpus.v0.5.0.json"
     )
-    document = cast(dict[str, Any], json.loads(path.read_text(encoding="utf-8")))
+    document = cast(
+        dict[str, Any],
+        json.loads(path.read_text(encoding="utf-8")),
+    )
     corpus = CredentialBoundReviewCorpusSnapshot.from_document(document)
-    assert corpus.artifact_hash == "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+    expected = (
+        "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+    )
+    assert corpus.artifact_hash == expected
