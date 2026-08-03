@@ -466,11 +466,15 @@ def test_unknown_adjudicator_fails_authorization(tmp_path: Path) -> None:
         document["adjudicator_id"] = "adjudicator.synthetic.unknown"
 
     corpus, record = rebuild_case(suffix="unknown", mutate=mutate)
-    with pytest.raises(AdjudicatedWitnessExperimentError) as caught:
-        execute(tmp_path, bound_corpus=corpus, record=record)
-
-    assert caught.value.stage is AdjudicatedWitnessRunnerStage.ADJUDICATION_VALIDATION
-    assert "unknown adjudicator" in str(caught.value)
+    with pytest.raises(
+        WitnessConflictAdjudicationError,
+        match="unknown adjudicator",
+    ):
+        prepare_adjudicated_store(
+            tmp_path,
+            bound_corpus=corpus,
+            record=record,
+        )
 
 
 def test_missing_preserved_dissent_is_rejected() -> None:
