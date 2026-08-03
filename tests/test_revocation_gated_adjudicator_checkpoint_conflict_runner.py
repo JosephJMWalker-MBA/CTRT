@@ -7,7 +7,6 @@ from typing import Any, cast
 
 import pytest
 import test_adjudicator_checkpoint_conflict_credential_attestation as credential_fx
-import test_adjudicator_checkpoint_witness_attestation as adjudicator_witness_fx
 import test_adjudicator_checkpoint_witness_conflict_adjudication as conflict_fx
 import test_adjudicator_credential_attestation as prior_credential_fx
 import test_adjudicator_credential_revocation_checkpoints as adjudicator_checkpoint_fx
@@ -16,6 +15,12 @@ import test_credential_revocation_checkpoints as reviewer_checkpoint_fx
 import test_credential_revocation_ledger as reviewer_revocation_fx
 import test_extraction_review_adjudication as extraction_fx
 import test_witness_conflict_adjudication as reviewer_conflict_fx
+from test_adjudicator_checkpoint_conflict_credential_revocation_ledger import (
+    revocation_corpus,
+    revocation_ledger,
+    revocation_policy,
+    suspension_event,
+)
 from test_credential_revocation_checkpoints import validate_schema
 
 from ctrt.adjudicator_checkpoint_conflict_credential_revocation_ledger import (
@@ -31,12 +36,6 @@ from ctrt.revocation_gated_adjudicator_checkpoint_conflict_runner import (
     RevocationGatedAdjudicatorCheckpointConflictExperimentRunner,
 )
 from ctrt.witness_conflict_adjudication import WitnessConflictAdjudicationOutcome
-from test_adjudicator_checkpoint_conflict_credential_revocation_ledger import (
-    revocation_corpus,
-    revocation_ledger,
-    revocation_policy,
-    suspension_event,
-)
 
 ROOT = Path(__file__).parents[1]
 DECISION_SCHEMA = ROOT / "schemas" / "adjudicator-credential-revocation-decision.schema.json"
