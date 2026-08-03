@@ -7,6 +7,7 @@ from typing import Any, cast
 
 ROOT = Path(__file__).parents[1]
 SOURCE = ROOT / "docs" / "corpora" / "extraction" / "synthetic-corpus.v1.2.0.json"
+OUTPUT = ROOT / "generated-artifacts" / "synthetic-corpus.v1.3.0.json"
 
 
 def test_generate_adjudicator_checkpoint_witness_corpus() -> None:
@@ -54,4 +55,9 @@ def test_generate_adjudicator_checkpoint_witness_corpus() -> None:
             "media_type": "application/json",
         },
     ]
-    raise AssertionError(json.dumps(document, indent=2, ensure_ascii=False))
+    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+    OUTPUT.write_text(
+        json.dumps(document, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    assert json.loads(OUTPUT.read_text(encoding="utf-8")) == document
