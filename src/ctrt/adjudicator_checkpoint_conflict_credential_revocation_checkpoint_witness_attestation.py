@@ -289,7 +289,9 @@ def persist_witness_bound_adjudicator_checkpoint_conflict_credential_revocation_
     *,
     plan: ExperimentPlan,
     corpus: WitnessBoundAdjudicatorCheckpointConflictCredentialRevocationCheckpointCorpusSnapshot,
-    predecessor_corpus: CheckpointBoundAdjudicatorCheckpointConflictCredentialRevocationCorpusSnapshot,
+    predecessor_corpus: (
+        CheckpointBoundAdjudicatorCheckpointConflictCredentialRevocationCorpusSnapshot
+    ),
     registry: CheckpointWitnessRegistrySnapshot,
     policy: CheckpointWitnessPolicySnapshot,
     head_checkpoint: AdjudicatorCredentialRevocationLedgerCheckpointSnapshot,
