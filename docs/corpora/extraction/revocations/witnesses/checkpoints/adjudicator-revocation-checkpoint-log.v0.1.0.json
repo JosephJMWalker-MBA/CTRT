@@ -1,0 +1,25 @@
+{
+  "log_id": "log.synthetic-witness-conflict-adjudicator-revocation-checkpoints",
+  "log_version": "0.1.0",
+  "status": "frozen",
+  "checkpoint_policy_ref": {
+    "artifact_id": "policy.synthetic-witness-conflict-adjudicator-revocation-checkpoints",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:7d9a30205a858e6e7cfa386ba370b151159efbc277ee49af6bad26ac6865c7e8"
+  },
+  "checkpoint_refs": [
+    {
+      "artifact_id": "adjudicator-credential-revocation-checkpoint:checkpoint.synthetic.witness-conflict-adjudicator-revocations.0000",
+      "artifact_hash": "sha256:4034f2202a16a95902b535e38330d71358e5485ded645c4c649cccb1967c5e45",
+      "canonicalization_version": "ctrt-canonical-json@0.1.0",
+      "media_type": "application/json"
+    }
+  ],
+  "head_checkpoint_ref": {
+    "artifact_id": "adjudicator-credential-revocation-checkpoint:checkpoint.synthetic.witness-conflict-adjudicator-revocations.0000",
+    "artifact_hash": "sha256:4034f2202a16a95902b535e38330d71358e5485ded645c4c649cccb1967c5e45",
+    "canonicalization_version": "ctrt-canonical-json@0.1.0",
+    "media_type": "application/json"
+  },
+  "created_at": "2026-08-03T14:52:00Z"
+}
