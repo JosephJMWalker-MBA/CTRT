@@ -17,8 +17,7 @@ from test_adjudicator_checkpoint_witness_conflict_adjudication import load_docum
 from test_credential_revocation_checkpoints import validate_schema
 
 from ctrt import (
-    adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_attestation
-    as witness_contracts,
+    adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_attestation as witness_contracts,
 )
 from ctrt.artifact_store import FileSystemArtifactStore
 from ctrt.checkpoint_witness_attestation import (
