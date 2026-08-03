@@ -98,15 +98,6 @@ from ctrt.checkpoint_gated_adjudicator_revocation_runner import (
     CheckpointGatedAdjudicatorRevocationExperimentRunner,
     VerifiedAdjudicatorCheckpointGatedReceipt,
 )
-from ctrt.credentialed_adjudicator_checkpoint_conflict_runner import (
-    CHECKPOINT_CONFLICT_CREDENTIAL_VERIFIED_CHECKS,
-    CheckpointConflictCredentialExperimentError,
-    CheckpointConflictCredentialFinalManifest,
-    CheckpointConflictCredentialRunnerStage,
-    CheckpointConflictCredentialRunnerStatus,
-    CredentialedAdjudicatorCheckpointConflictExperimentRunner,
-    VerifiedCheckpointConflictCredentialReceipt,
-)
 from ctrt.credentialed_adjudicated_witness_runner import (
     CREDENTIALED_ADJUDICATOR_VERIFIED_CHECKS,
     CredentialedAdjudicatedWitnessExperimentRunner,
@@ -115,6 +106,15 @@ from ctrt.credentialed_adjudicated_witness_runner import (
     CredentialedAdjudicatorRunnerStage,
     CredentialedAdjudicatorRunnerStatus,
     VerifiedCredentialedAdjudicatorReceipt,
+)
+from ctrt.credentialed_adjudicator_checkpoint_conflict_runner import (
+    CHECKPOINT_CONFLICT_CREDENTIAL_VERIFIED_CHECKS,
+    CheckpointConflictCredentialExperimentError,
+    CheckpointConflictCredentialFinalManifest,
+    CheckpointConflictCredentialRunnerStage,
+    CheckpointConflictCredentialRunnerStatus,
+    CredentialedAdjudicatorCheckpointConflictExperimentRunner,
+    VerifiedCheckpointConflictCredentialReceipt,
 )
 from ctrt.revocation_gated_adjudicated_witness_runner import (
     ADJUDICATOR_REVOCATION_GATED_VERIFIED_CHECKS,
