@@ -98,7 +98,6 @@ from ctrt.witness_conflict_adjudication import (
 )
 from ctrt.workbench import AnalyzerRegistry
 
-
 load_witness_evidence = (
     load_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_evidence
 )
