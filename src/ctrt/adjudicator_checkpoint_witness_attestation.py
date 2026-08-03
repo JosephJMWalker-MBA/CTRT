@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
@@ -27,6 +28,7 @@ from ctrt.checkpoint_witness_attestation import (
 )
 from ctrt.confidence import SystemAbstention
 from ctrt.experiments import ExperimentPlan, ExperimentPlanStatus, VersionedArtifactRef
+from ctrt.serialization import CanonicalArtifact
 
 
 class AdjudicatorCheckpointWitnessError(ValueError):
@@ -50,26 +52,36 @@ def _parse_timestamp(value: str, field_name: str) -> datetime:
     return parsed
 
 
-def _versioned_ref(value: object, field_name: str) -> VersionedArtifactRef:
-    if not isinstance(value, dict):
+def _mapping(value: object, field_name: str) -> Mapping[str, object]:
+    if not isinstance(value, Mapping):
         raise AdjudicatorCheckpointWitnessError(f"{field_name} must be an object")
-    try:
-        artifact_id = value["artifact_id"]
-        artifact_version = value["artifact_version"]
-        artifact_hash = value["artifact_hash"]
-    except KeyError as exc:
+    if any(not isinstance(key, str) for key in value):
         raise AdjudicatorCheckpointWitnessError(
-            f"{field_name} is missing {exc.args[0]}"
-        ) from exc
-    values = (artifact_id, artifact_version, artifact_hash)
-    if not all(isinstance(item, str) and item.strip() for item in values):
-        raise AdjudicatorCheckpointWitnessError(
-            f"{field_name} fields must be non-empty strings"
+            f"{field_name} keys must be strings"
         )
+    return value
+
+
+def _string(value: object, field_name: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise AdjudicatorCheckpointWitnessError(
+            f"{field_name} must be a non-empty string"
+        )
+    return value
+
+
+def _versioned_ref(value: object, field_name: str) -> VersionedArtifactRef:
+    document = _mapping(value, field_name)
     return VersionedArtifactRef(
-        artifact_id=artifact_id,
-        artifact_version=artifact_version,
-        artifact_hash=artifact_hash,
+        artifact_id=_string(document.get("artifact_id"), f"{field_name}.artifact_id"),
+        artifact_version=_string(
+            document.get("artifact_version"),
+            f"{field_name}.artifact_version",
+        ),
+        artifact_hash=_string(
+            document.get("artifact_hash"),
+            f"{field_name}.artifact_hash",
+        ),
     )
 
 
@@ -86,7 +98,7 @@ class WitnessBoundAdjudicatorCheckpointCorpusSnapshot:
     @classmethod
     def from_document(
         cls,
-        document: dict[str, Any],
+        document: Mapping[str, object],
     ) -> WitnessBoundAdjudicatorCheckpointCorpusSnapshot:
         refs = document.get("adjudicator_checkpoint_witness_attestation_refs")
         if not isinstance(refs, list):
@@ -110,7 +122,10 @@ class WitnessBoundAdjudicatorCheckpointCorpusSnapshot:
                 "adjudicator_checkpoint_witness_policy_ref",
             ),
             witness_attestation_refs=tuple(
-                StoredArtifactRef.from_document(item) for item in refs
+                StoredArtifactRef.from_document(
+                    _mapping(item, "adjudicator checkpoint witness attestation ref")
+                )
+                for item in refs
             ),
         )
 
@@ -121,7 +136,7 @@ class WitnessBoundAdjudicatorCheckpointCorpusSnapshot:
     def reference(self) -> VersionedArtifactRef:
         return self.corpus.reference()
 
-    def artifact(self):
+    def artifact(self) -> CanonicalArtifact:
         return self.corpus.artifact()
 
 
