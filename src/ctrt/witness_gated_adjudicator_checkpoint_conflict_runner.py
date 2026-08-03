@@ -55,13 +55,6 @@ from ctrt.checkpoint_conflict_revocation_witness import (
     load_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_evidence,
     validate_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_attestations,
 )
-
-load_witness_evidence = (
-    load_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_evidence
-)
-validate_witnesses = (
-    validate_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_attestations
-)
 from ctrt.checkpoint_gated_adjudicator_checkpoint_conflict_runner import (
     CheckpointConflictAdjudicatorRevocationCheckpointExperimentError,
     CheckpointGatedAdjudicatorCheckpointConflictExperimentRunner,
@@ -104,6 +97,14 @@ from ctrt.witness_conflict_adjudication import (
     WitnessConflictAdjudicatorRegistrySnapshot,
 )
 from ctrt.workbench import AnalyzerRegistry
+
+
+load_witness_evidence = (
+    load_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_evidence
+)
+validate_witnesses = (
+    validate_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_attestations
+)
 
 
 class CheckpointConflictRevocationWitnessRunnerStage(StrEnum):
