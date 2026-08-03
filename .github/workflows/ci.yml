@@ -32,3 +32,9 @@ jobs:
 
       - name: Test
         run: python -m pytest -q
+
+      - name: Upload generated witness corpus
+        uses: actions/upload-artifact@v4
+        with:
+          name: adjudicator-checkpoint-witness-corpus
+          path: generated-artifacts/synthetic-corpus.v1.3.0.json
