@@ -16,12 +16,9 @@ from test_adjudicator_checkpoint_conflict_credential_revocation_checkpoints impo
 from test_adjudicator_checkpoint_witness_conflict_adjudication import load_document
 from test_credential_revocation_checkpoints import validate_schema
 
-from ctrt.adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_attestation import (
-    AdjudicatorCheckpointWitnessError,
-    WitnessBoundAdjudicatorCheckpointConflictCredentialRevocationCheckpointCorpusSnapshot,
-    load_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_evidence,
-    persist_witness_bound_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_corpus,
-    validate_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_attestations,
+from ctrt import (
+    adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_attestation
+    as witness_contracts,
 )
 from ctrt.artifact_store import FileSystemArtifactStore
 from ctrt.checkpoint_witness_attestation import (
@@ -30,6 +27,20 @@ from ctrt.checkpoint_witness_attestation import (
     CheckpointWitnessObservationKind,
     CheckpointWitnessPolicySnapshot,
     CheckpointWitnessRegistrySnapshot,
+)
+
+AdjudicatorCheckpointWitnessError = witness_contracts.AdjudicatorCheckpointWitnessError
+WitnessCorpus = (
+    witness_contracts.WitnessBoundAdjudicatorCheckpointConflictCredentialRevocationCheckpointCorpusSnapshot
+)
+load_witness_evidence = (
+    witness_contracts.load_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_evidence
+)
+persist_witness_corpus = (
+    witness_contracts.persist_witness_bound_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_corpus
+)
+validate_witness_attestations = (
+    witness_contracts.validate_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_attestations
 )
 
 ROOT = Path(__file__).parents[1]
@@ -92,20 +103,14 @@ def witness_corpus(
     document: dict[str, Any] | None = None,
     *,
     predecessor: Any | None = None,
-) -> WitnessBoundAdjudicatorCheckpointConflictCredentialRevocationCheckpointCorpusSnapshot:
-    snapshot = (
-        WitnessBoundAdjudicatorCheckpointConflictCredentialRevocationCheckpointCorpusSnapshot
-    )
-    return snapshot.from_document(
+) -> WitnessCorpus:
+    return WitnessCorpus.from_document(
         document or load_document(CORPUS_PATH),
         predecessor=predecessor or checkpoint_corpus(),
     )
 
 
-def witness_plan(
-    selected: WitnessBoundAdjudicatorCheckpointConflictCredentialRevocationCheckpointCorpusSnapshot
-    | None = None,
-):
+def witness_plan(selected: WitnessCorpus | None = None):
     corpus = selected or witness_corpus()
     return replace(
         frozen_plan(),
@@ -125,13 +130,12 @@ def stored_ref_document(reference: Any) -> dict[str, str]:
 
 def validate(
     *,
-    selected_corpus: WitnessBoundAdjudicatorCheckpointConflictCredentialRevocationCheckpointCorpusSnapshot
-    | None = None,
+    selected_corpus: WitnessCorpus | None = None,
     attestations: tuple[CheckpointWitnessAttestationSnapshot, ...] | None = None,
     evaluated_at: str = "2026-08-03T19:53:30Z",
 ):
     corpus = selected_corpus or witness_corpus()
-    return validate_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_attestations(
+    return validate_witness_attestations(
         plan=witness_plan(corpus),
         corpus=corpus,
         registry=witness_registry(),
@@ -152,7 +156,7 @@ def prepare_witness_store(tmp_path: Path) -> tuple[Any, ...]:
         corpus_ref=selected.reference(),
         content_ids=selected.content_ids,
     )
-    persist_witness_bound_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_corpus(
+    persist_witness_corpus(
         store,
         plan=plan,
         corpus=selected,
@@ -238,17 +242,14 @@ def test_observation_before_checkpoint_publication_is_rejected() -> None:
 def test_manifest_last_persistence_and_reconstruction(tmp_path: Path) -> None:
     prepared = prepare_witness_store(tmp_path)
     store = cast(FileSystemArtifactStore, prepared[0])
-    selected = cast(
-        WitnessBoundAdjudicatorCheckpointConflictCredentialRevocationCheckpointCorpusSnapshot,
-        prepared[-1],
-    )
-    first = load_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_evidence(
+    selected = cast(WitnessCorpus, prepared[-1])
+    first = load_witness_evidence(
         store,
         corpus=selected,
         registry=witness_registry(),
         policy=witness_policy(),
     )
-    second = load_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_evidence(
+    second = load_witness_evidence(
         store,
         corpus=selected,
         registry=witness_registry(),
