@@ -1,0 +1,29 @@
+{
+  "ledger_id": "ledger.synthetic-reviewer-credential-revocations",
+  "ledger_version": "0.1.0",
+  "status": "frozen",
+  "credential_corpus_ref": {
+    "artifact_id": "corpus.synthetic-three-items.credential-bound",
+    "artifact_version": "0.5.0",
+    "artifact_hash": "sha256:e496ff29a25b471b079dca4d4b2ec3a5e5a2fa1155e0282f27b50ac9738b490a"
+  },
+  "issuer_registry_ref": {
+    "artifact_id": "registry.synthetic-reviewer-credential-issuers",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:8c0e3997bb804869560adc4d36606fb06250728eb1be89e69d9dd9f15804a723"
+  },
+  "revocation_policy_ref": {
+    "artifact_id": "policy.synthetic-credential-revocation",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:8c716432335c0f7249431d60d369aecc654efed6ab5a33308730ff0b85dcf7cd"
+  },
+  "event_refs": [
+    {
+      "artifact_id": "credential-revocation-event:event.synthetic.secondary.suspension-2027",
+      "artifact_hash": "sha256:bb10f22ff3cada3a74a12bfef3c70f24058be06d996c40547190713f2c3bb09a",
+      "canonicalization_version": "ctrt-canonical-json@0.1.0",
+      "media_type": "application/json"
+    }
+  ],
+  "created_at": "2026-08-03T02:02:00Z"
+}
