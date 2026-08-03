@@ -2,7 +2,7 @@
   "artifact_id": "checkpoint-witness-attestation:attestation.synthetic.gamma.conflict.v0.1.0",
   "attestation_id": "attestation.synthetic.gamma.conflict.v0.1.0",
   "witness_id": "witness.synthetic.gamma",
-  "witness_identity_revision": "synthetic-witness@0.1.0",
+  "witness_identity_revision": "synthetic-checkpoint-witness@0.1.0",
   "checkpoint_corpus_ref": {
     "artifact_id": "corpus.synthetic-three-items.checkpoint-bound",
     "artifact_version": "0.7.0",
