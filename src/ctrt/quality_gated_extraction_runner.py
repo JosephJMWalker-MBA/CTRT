@@ -6,9 +6,18 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import StrEnum
 
-from ctrt.artifact_store import ArtifactIntegrityError, ArtifactStoreError, FileSystemArtifactStore, StoredArtifactRef
+from ctrt.artifact_store import (
+    ArtifactIntegrityError,
+    ArtifactStoreError,
+    FileSystemArtifactStore,
+    StoredArtifactRef,
+)
 from ctrt.candidate_eligibility import CandidateRegistrySnapshot
-from ctrt.eligible_extraction_runner import EligibleExtractionExperimentError, EligibleExtractionExperimentRunner, VerifiedEligibleExtractionExperimentReceipt
+from ctrt.eligible_extraction_runner import (
+    EligibleExtractionExperimentError,
+    EligibleExtractionExperimentRunner,
+    VerifiedEligibleExtractionExperimentReceipt,
+)
 from ctrt.experiments import ExecutionEnvironment, ExperimentPlan, ExperimentPlanStatus
 from ctrt.extraction_bound_runner import ExtractionExecutionWindow
 from ctrt.extraction_method_eligibility import ExtractionMethodRegistrySnapshot
@@ -111,29 +120,51 @@ class QualityGatedExtractionFinalManifest:
                 self.experiment_version,
             )
         ):
-            raise ValueError("quality-gated final identity fields must not be empty")
+            raise ValueError(
+                "quality-gated final identity fields must not be empty"
+            )
         if self.status is not QualityGatedRunnerStatus.VERIFIED:
             raise ValueError("quality-gated final status must be verified")
-        if len(self.content_ids) < 2 or len(self.content_ids) != len(set(self.content_ids)):
-            raise ValueError("quality-gated final requires unique multiple content items")
+        if len(self.content_ids) < 2 or len(self.content_ids) != len(
+            set(self.content_ids)
+        ):
+            raise ValueError(
+                "quality-gated final requires unique multiple content items"
+            )
         if len(self.quality_assessment_refs) != len(self.content_ids):
-            raise ValueError("quality-gated final requires one assessment per content")
+            raise ValueError(
+                "quality-gated final requires one assessment per content"
+            )
         if self.outcome is QualityDecisionOutcome.EXECUTE:
-            if self.final_id != f"{self.experiment_run_id}:quality-gated-completion":
-                raise ValueError("executed final_id must derive from experiment_run_id")
+            if self.final_id != (
+                f"{self.experiment_run_id}:quality-gated-completion"
+            ):
+                raise ValueError(
+                    "executed final_id must derive from experiment_run_id"
+                )
             if self.eligible_extraction_completion_ref is None:
-                raise ValueError("executed quality outcome requires eligible completion")
+                raise ValueError(
+                    "executed quality outcome requires eligible completion"
+                )
             if self.eligible_extraction_completion_ref.artifact_id != (
                 f"{self.experiment_run_id}:eligible-extraction-completion"
             ):
-                raise ValueError("eligible completion must identify experiment_run_id")
+                raise ValueError(
+                    "eligible completion must identify experiment_run_id"
+                )
         else:
             if self.final_id != f"{self.experiment_run_id}:quality-abstention":
-                raise ValueError("abstention final_id must derive from experiment_run_id")
+                raise ValueError(
+                    "abstention final_id must derive from experiment_run_id"
+                )
             if self.eligible_extraction_completion_ref is not None:
-                raise ValueError("abstained outcome may not reference execution completion")
+                raise ValueError(
+                    "abstained outcome may not reference execution completion"
+                )
         if self.verified_checks != QUALITY_GATED_VERIFIED_CHECKS:
-            raise ValueError("quality-gated final must preserve every check")
+            raise ValueError(
+                "quality-gated final must preserve every check"
+            )
         _parse_timestamp(self.completed_at, "completed_at")
 
 
@@ -151,7 +182,9 @@ class VerifiedQualityGatedExtractionReceipt:
     quality_policy_ref: StoredArtifactRef
     quality_assessment_refs: tuple[StoredArtifactRef, ...]
     quality_decision_ref: StoredArtifactRef
-    eligible_extraction_receipt: VerifiedEligibleExtractionExperimentReceipt | None
+    eligible_extraction_receipt: (
+        VerifiedEligibleExtractionExperimentReceipt | None
+    )
     final_manifest_ref: StoredArtifactRef
     verified_checks: tuple[str, ...]
     completed_at: str
@@ -160,19 +193,32 @@ class VerifiedQualityGatedExtractionReceipt:
         if self.status is not QualityGatedRunnerStatus.VERIFIED:
             raise ValueError("verified quality-gated status must be verified")
         if len(self.quality_assessment_refs) != len(self.content_ids):
-            raise ValueError("verified receipt requires one assessment per content")
+            raise ValueError(
+                "verified receipt requires one assessment per content"
+            )
         if self.outcome is QualityDecisionOutcome.EXECUTE:
             if self.eligible_extraction_receipt is None:
-                raise ValueError("executed receipt requires eligible extraction receipt")
-            if self.eligible_extraction_receipt.experiment_run_id != self.experiment_run_id:
-                raise ValueError("eligible receipt must identify experiment_run_id")
+                raise ValueError(
+                    "executed receipt requires eligible extraction receipt"
+                )
+            if (
+                self.eligible_extraction_receipt.experiment_run_id
+                != self.experiment_run_id
+            ):
+                raise ValueError(
+                    "eligible receipt must identify experiment_run_id"
+                )
             expected_id = f"{self.experiment_run_id}:quality-gated-completion"
         else:
             if self.eligible_extraction_receipt is not None:
-                raise ValueError("abstained receipt may not contain execution receipt")
+                raise ValueError(
+                    "abstained receipt may not contain execution receipt"
+                )
             expected_id = f"{self.experiment_run_id}:quality-abstention"
         if self.final_manifest_ref.artifact_id != expected_id:
-            raise ValueError("final manifest reference must identify this outcome")
+            raise ValueError(
+                "final manifest reference must identify this outcome"
+            )
         if self.verified_checks != QUALITY_GATED_VERIFIED_CHECKS:
             raise ValueError("verified receipt must preserve every check")
         _parse_timestamp(self.completed_at, "completed_at")
@@ -207,16 +253,26 @@ class QualityGatedExtractionExperimentRunner:
             raise ValueError("experiment_run_id must not be empty")
         _parse_timestamp(quality_evaluated_at, "quality_evaluated_at")
         if plan.status is not ExperimentPlanStatus.FROZEN:
-            raise ValueError("quality-gated execution requires a frozen plan")
+            raise ValueError(
+                "quality-gated execution requires a frozen plan"
+            )
         if plan.corpus_ref != corpus.reference():
-            raise ValueError("plan corpus_ref must match quality-bound corpus")
+            raise ValueError(
+                "plan corpus_ref must match quality-bound corpus"
+            )
         if plan.content_ids != corpus.content_ids:
-            raise ValueError("plan content order must match quality-bound corpus")
+            raise ValueError(
+                "plan content order must match quality-bound corpus"
+            )
         if corpus.quality_policy_ref != policy.reference():
-            raise ValueError("quality-bound corpus policy reference must match policy")
+            raise ValueError(
+                "quality-bound corpus policy reference must match policy"
+            )
         window_ids = tuple(item.content_id for item in windows)
         if window_ids != corpus.content_ids or len(window_ids) < 2:
-            raise ValueError("execution windows must match unique frozen content order")
+            raise ValueError(
+                "execution windows must match unique frozen content order"
+            )
 
     def _persist_decision(
         self,
@@ -228,9 +284,14 @@ class QualityGatedExtractionExperimentRunner:
             report,
         )
         reference = self._store.append(artifact)
-        stored = self._store.get(reference.artifact_id, expected_hash=reference.artifact_hash)
+        stored = self._store.get(
+            reference.artifact_id,
+            expected_hash=reference.artifact_hash,
+        )
         if stored.payload != artifact.payload:
-            raise ArtifactIntegrityError("stored quality decision differs from report")
+            raise ArtifactIntegrityError(
+                "stored quality decision differs from report"
+            )
 
         index_artifact = serialize_artifact(
             report.artifact_id,
@@ -255,21 +316,31 @@ class QualityGatedExtractionExperimentRunner:
         decision: ExtractionQualityDecisionReport,
     ) -> None:
         expected = serialize_artifact(final.final_id, final)
-        stored = self._store.get(final_ref.artifact_id, expected_hash=final_ref.artifact_hash)
+        stored = self._store.get(
+            final_ref.artifact_id,
+            expected_hash=final_ref.artifact_hash,
+        )
         if stored.payload != expected.payload:
             raise ArtifactIntegrityError("stored quality-gated final differs")
         if self._store.get(
             final.quality_corpus_ref.artifact_id,
             expected_hash=final.quality_corpus_ref.artifact_hash,
         ).payload != corpus.artifact().payload:
-            raise ArtifactIntegrityError("quality corpus differs during verification")
+            raise ArtifactIntegrityError(
+                "quality corpus differs during verification"
+            )
         if self._store.get(
             final.quality_policy_ref.artifact_id,
             expected_hash=final.quality_policy_ref.artifact_hash,
         ).payload != policy.canonical_payload:
-            raise ArtifactIntegrityError("quality policy differs during verification")
+            raise ArtifactIntegrityError(
+                "quality policy differs during verification"
+            )
         for reference in evidence.assessment_refs:
-            self._store.get(reference.artifact_id, expected_hash=reference.artifact_hash)
+            self._store.get(
+                reference.artifact_id,
+                expected_hash=reference.artifact_hash,
+            )
         decision_artifact = serialize_artifact(
             f"{final.experiment_run_id}:extraction-quality-decision",
             decision,
@@ -278,11 +349,15 @@ class QualityGatedExtractionExperimentRunner:
             final.quality_decision_ref.artifact_id,
             expected_hash=final.quality_decision_ref.artifact_hash,
         ).payload != decision_artifact.payload:
-            raise ArtifactIntegrityError("quality decision differs during verification")
+            raise ArtifactIntegrityError(
+                "quality decision differs during verification"
+            )
         if final.eligible_extraction_completion_ref is not None:
             self._store.get(
                 final.eligible_extraction_completion_ref.artifact_id,
-                expected_hash=final.eligible_extraction_completion_ref.artifact_hash,
+                expected_hash=(
+                    final.eligible_extraction_completion_ref.artifact_hash
+                ),
             )
 
     def run(
@@ -310,12 +385,27 @@ class QualityGatedExtractionExperimentRunner:
                 quality_evaluated_at=quality_evaluated_at,
             )
         except ValueError as exc:
-            raise QualityGatedExperimentError(QualityGatedRunnerStage.PREFLIGHT, str(exc)) from exc
+            raise QualityGatedExperimentError(
+                QualityGatedRunnerStage.PREFLIGHT,
+                str(exc),
+            ) from exc
 
         try:
-            evidence = load_quality_evidence(self._store, corpus=corpus, policy=quality_policy)
-        except (ArtifactStoreError, ExtractionQualityEvidenceError, OSError, ValueError) as exc:
-            raise QualityGatedExperimentError(QualityGatedRunnerStage.QUALITY_LOADING, str(exc)) from exc
+            evidence = load_quality_evidence(
+                self._store,
+                corpus=corpus,
+                policy=quality_policy,
+            )
+        except (
+            ArtifactStoreError,
+            ExtractionQualityEvidenceError,
+            OSError,
+            ValueError,
+        ) as exc:
+            raise QualityGatedExperimentError(
+                QualityGatedRunnerStage.QUALITY_LOADING,
+                str(exc),
+            ) from exc
 
         try:
             decision = validate_extraction_quality_evidence(
@@ -326,12 +416,26 @@ class QualityGatedExtractionExperimentRunner:
                 evaluated_at=quality_evaluated_at,
             )
         except (ExtractionQualityEvidenceError, ValueError) as exc:
-            raise QualityGatedExperimentError(QualityGatedRunnerStage.QUALITY_VALIDATION, str(exc)) from exc
+            raise QualityGatedExperimentError(
+                QualityGatedRunnerStage.QUALITY_VALIDATION,
+                str(exc),
+            ) from exc
 
         try:
-            decision_ref = self._persist_decision(decision, experiment_run_id)
-        except (ArtifactStoreError, CanonicalSerializationError, OSError, ValueError) as exc:
-            raise QualityGatedExperimentError(QualityGatedRunnerStage.DECISION_PERSISTENCE, str(exc)) from exc
+            decision_ref = self._persist_decision(
+                decision,
+                experiment_run_id,
+            )
+        except (
+            ArtifactStoreError,
+            CanonicalSerializationError,
+            OSError,
+            ValueError,
+        ) as exc:
+            raise QualityGatedExperimentError(
+                QualityGatedRunnerStage.DECISION_PERSISTENCE,
+                str(exc),
+            ) from exc
 
         eligible_receipt: VerifiedEligibleExtractionExperimentReceipt | None = None
         eligible_completion_ref: StoredArtifactRef | None = None
@@ -377,8 +481,15 @@ class QualityGatedExtractionExperimentRunner:
             completed_at=completed_at,
         )
         try:
-            final_ref = self._store.append(serialize_artifact(final.final_id, final))
-        except (ArtifactStoreError, CanonicalSerializationError, OSError, ValueError) as exc:
+            final_ref = self._store.append(
+                serialize_artifact(final.final_id, final)
+            )
+        except (
+            ArtifactStoreError,
+            CanonicalSerializationError,
+            OSError,
+            ValueError,
+        ) as exc:
             raise QualityGatedExperimentError(
                 QualityGatedRunnerStage.FINAL_PERSISTENCE,
                 str(exc),
@@ -398,7 +509,12 @@ class QualityGatedExtractionExperimentRunner:
                 evidence=evidence,
                 decision=decision,
             )
-        except (ArtifactStoreError, CanonicalSerializationError, OSError, ValueError) as exc:
+        except (
+            ArtifactStoreError,
+            CanonicalSerializationError,
+            OSError,
+            ValueError,
+        ) as exc:
             raise QualityGatedExperimentError(
                 QualityGatedRunnerStage.VERIFICATION,
                 str(exc),
