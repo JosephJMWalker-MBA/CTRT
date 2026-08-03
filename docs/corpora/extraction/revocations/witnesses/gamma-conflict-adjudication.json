@@ -1,0 +1,87 @@
+{
+  "artifact_id": "witness-conflict-adjudication:adjudication.synthetic.gamma-conflict.v0.1.0",
+  "adjudication_id": "adjudication.synthetic.gamma-conflict.v0.1.0",
+  "witness_predecessor_corpus_ref": {
+    "artifact_id": "corpus.synthetic-three-items.witness-bound",
+    "artifact_version": "0.8.0",
+    "artifact_hash": "sha256:fff4040660e400c467de4cd53e3f6b6fec1a85fe8910c82558d07bb316b70db5"
+  },
+  "witness_registry_ref": {
+    "artifact_id": "registry.synthetic-checkpoint-witnesses",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:aeb4180c247db518a834eaaf445f2a5815bdac34b13f036f1a25470e2a74d8c1"
+  },
+  "witness_policy_ref": {
+    "artifact_id": "policy.synthetic-checkpoint-witnesses",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:75eac249bf3ded723ce1d8b57b70642866ca59eb6575b4363823e72f3db13edd"
+  },
+  "adjudicator_registry_ref": {
+    "artifact_id": "registry.synthetic-witness-conflict-adjudicators",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:9d1b928d874d84a405693274c096966400c74930fae8efd6f1d027b6645634aa"
+  },
+  "adjudication_policy_ref": {
+    "artifact_id": "policy.synthetic-witness-conflict-adjudication",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:e590bc9415592ea0cf4943a6a7fa1d939b46cc9ad7ecbf001579baf59849cdc2"
+  },
+  "checkpoint_head_ref": {
+    "artifact_id": "credential-revocation-checkpoint:checkpoint.synthetic.revocation-ledger.0000",
+    "artifact_hash": "sha256:23826850793563e4998687ff0382b288b6d34a6b6b07d6a06bcc03512a652a81",
+    "canonicalization_version": "ctrt-canonical-json@0.1.0",
+    "media_type": "application/json"
+  },
+  "status": "resolved",
+  "adjudicator_id": "adjudicator.synthetic.fork",
+  "adjudicator_identity_revision": "synthetic-adjudicator@0.1.0",
+  "selected_head_ref": {
+    "artifact_id": "credential-revocation-checkpoint:checkpoint.synthetic.revocation-ledger.0000",
+    "artifact_hash": "sha256:23826850793563e4998687ff0382b288b6d34a6b6b07d6a06bcc03512a652a81",
+    "canonicalization_version": "ctrt-canonical-json@0.1.0",
+    "media_type": "application/json"
+  },
+  "fork_evidence": [
+    {
+      "witness_id": "witness.synthetic.gamma",
+      "attestation_ref": {
+        "artifact_id": "checkpoint-witness-attestation:attestation.synthetic.gamma.conflict.v0.1.0",
+        "artifact_hash": "sha256:054a8fff4ccdceb6d4227111a096436bd608ef05a2277c3b67ac05dff666942b",
+        "canonicalization_version": "ctrt-canonical-json@0.1.0",
+        "media_type": "application/json"
+      },
+      "expected_head_ref": {
+        "artifact_id": "credential-revocation-checkpoint:checkpoint.synthetic.revocation-ledger.0000",
+        "artifact_hash": "sha256:23826850793563e4998687ff0382b288b6d34a6b6b07d6a06bcc03512a652a81",
+        "canonicalization_version": "ctrt-canonical-json@0.1.0",
+        "media_type": "application/json"
+      },
+      "observed_head_ref": {
+        "artifact_id": "credential-revocation-checkpoint:checkpoint.synthetic.revocation-ledger.conflict",
+        "artifact_hash": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+        "canonicalization_version": "ctrt-canonical-json@0.1.0",
+        "media_type": "application/json"
+      }
+    }
+  ],
+  "preserved_dissent": [
+    {
+      "witness_id": "witness.synthetic.gamma",
+      "attestation_ref": {
+        "artifact_id": "checkpoint-witness-attestation:attestation.synthetic.gamma.conflict.v0.1.0",
+        "artifact_hash": "sha256:054a8fff4ccdceb6d4227111a096436bd608ef05a2277c3b67ac05dff666942b",
+        "canonicalization_version": "ctrt-canonical-json@0.1.0",
+        "media_type": "application/json"
+      },
+      "observed_head_ref": {
+        "artifact_id": "credential-revocation-checkpoint:checkpoint.synthetic.revocation-ledger.conflict",
+        "artifact_hash": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+        "canonicalization_version": "ctrt-canonical-json@0.1.0",
+        "media_type": "application/json"
+      },
+      "note": "Gamma's conflicting-head observation remains visible after resolution."
+    }
+  ],
+  "rationale": "The adjudicator selected the checkpoint head already proven by the frozen checkpoint chain while preserving the conflicting witness claim as dissent.",
+  "decided_at": "2026-08-03T03:38:00Z"
+}

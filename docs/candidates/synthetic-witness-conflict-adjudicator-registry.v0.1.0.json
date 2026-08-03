@@ -1,0 +1,13 @@
+{
+  "registry_id": "registry.synthetic-witness-conflict-adjudicators",
+  "registry_version": "0.1.0",
+  "status": "accepted",
+  "adjudicators": [
+    {
+      "adjudicator_id": "adjudicator.synthetic.fork",
+      "identity_revision": "synthetic-adjudicator@0.1.0",
+      "role": "witness_conflict_adjudicator"
+    }
+  ],
+  "created_at": "2026-08-03T03:35:00Z"
+}
