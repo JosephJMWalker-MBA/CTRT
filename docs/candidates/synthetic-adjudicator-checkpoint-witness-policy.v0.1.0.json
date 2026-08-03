@@ -1,0 +1,18 @@
+{
+  "policy_id": "policy.synthetic-adjudicator-checkpoint-witnesses",
+  "policy_version": "0.1.0",
+  "status": "accepted",
+  "witness_registry_ref": {
+    "artifact_id": "registry.synthetic-adjudicator-checkpoint-witnesses",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:b5ac0ac412e26fb1c7b175459cad16647a3fbae24a8d8906d3fcceff14bcd770"
+  },
+  "required_witness_ids": [
+    "witness.synthetic.adjudicator-alpha",
+    "witness.synthetic.adjudicator-beta",
+    "witness.synthetic.adjudicator-gamma"
+  ],
+  "abstain_on_conflicting_head": true,
+  "forbid_vote_aggregation": true,
+  "created_at": "2026-08-03T14:54:00Z"
+}
