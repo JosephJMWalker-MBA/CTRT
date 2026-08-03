@@ -1,0 +1,18 @@
+{
+  "artifact_id": "credential-revocation-event:event.synthetic.secondary.suspension-2027",
+  "event_id": "event.synthetic.secondary.suspension-2027",
+  "credential_attestation_ref": {
+    "artifact_id": "reviewer-credential:credential.synthetic.secondary.v0.1.0",
+    "artifact_hash": "sha256:6884549a40f0c44cd6af0e4e81a7111108ae5c856d0a0e3e7c2e6e5d659cca85",
+    "canonicalization_version": "ctrt-canonical-json@0.1.0",
+    "media_type": "application/json"
+  },
+  "reviewer_id": "reviewer.synthetic.secondary",
+  "issuer_id": "issuer.synthetic-reviewer-credentials",
+  "issuer_revision": "synthetic-issuer@0.1.0",
+  "effect": "suspended",
+  "effective_at": "2027-01-01T00:00:00Z",
+  "recorded_at": "2026-08-03T02:01:00Z",
+  "reason": "Scheduled synthetic suspension used to verify deterministic as-of evaluation.",
+  "supersedes_event_id": null
+}
