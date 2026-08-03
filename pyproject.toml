@@ -37,6 +37,10 @@ packages = ["ctrt"]
 module = "ctrt.reviewer_credential_attestation"
 allow_redefinition = true
 
+[[tool.mypy.overrides]]
+module = "ctrt.adjudicator_credential_attestation"
+allow_redefinition = true
+
 [tool.ruff]
 target-version = "py311"
 line-length = 100
@@ -48,3 +52,4 @@ select = ["E", "F", "I", "UP", "B", "SIM"]
 "tests/test_reviewer_credential_attestation.py" = ["I001"]
 "tests/test_checkpoint_witness_attestation.py" = ["I001", "F401", "UP035"]
 "tests/test_witness_conflict_adjudication.py" = ["I001", "F401", "UP035"]
+"tests/test_adjudicator_credential_attestation.py" = ["I001", "F401", "UP035"]
