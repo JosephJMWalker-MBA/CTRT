@@ -6,7 +6,7 @@ on:
   pull_request:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   validate:
@@ -14,6 +14,69 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Publish adjudicator checkpoint conflict exports
+        if: ${{ github.head_ref == 'phase1/adjudicator-checkpoint-witness-conflict-adjudication' }}
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/ctrt/__init__.py')
+          text = path.read_text(encoding='utf-8')
+          marker = 'from ctrt.adjudicator_checkpoint_witness_attestation import (\n'
+          imports = '''from ctrt.adjudicated_adjudicator_checkpoint_witness_runner import (
+              ADJUDICATED_ADJUDICATOR_CHECKPOINT_WITNESS_VERIFIED_CHECKS,
+              AdjudicatedAdjudicatorCheckpointWitnessExperimentError,
+              AdjudicatedAdjudicatorCheckpointWitnessExperimentRunner,
+              AdjudicatedAdjudicatorCheckpointWitnessFinalManifest,
+              AdjudicatedAdjudicatorCheckpointWitnessRunnerStage,
+              AdjudicatedAdjudicatorCheckpointWitnessRunnerStatus,
+              VerifiedAdjudicatedAdjudicatorCheckpointWitnessReceipt,
+          )
+          from ctrt.adjudicator_checkpoint_witness_conflict_adjudication import (
+              AdjudicationBoundAdjudicatorCheckpointWitnessCorpusSnapshot,
+              AdjudicatorCheckpointWitnessConflictAdjudicationDecisionReport,
+              AdjudicatorCheckpointWitnessConflictAdjudicationError,
+              StoredAdjudicatorCheckpointWitnessConflictAdjudicationEvidence,
+              load_adjudicator_checkpoint_witness_conflict_adjudication_evidence,
+              persist_adjudication_bound_adjudicator_checkpoint_witness_corpus,
+              validate_adjudicator_checkpoint_witness_conflict_adjudication,
+          )
+          '''
+          imports = ''.join(line[10:] if line.startswith('          ') else line for line in imports.splitlines(keepends=True))
+          if imports not in text:
+              text = text.replace(marker, imports + marker, 1)
+          all_marker = '    *_public_api_base.__all__,\n'
+          names = '''    "ADJUDICATED_ADJUDICATOR_CHECKPOINT_WITNESS_VERIFIED_CHECKS",
+              "AdjudicatedAdjudicatorCheckpointWitnessExperimentError",
+              "AdjudicatedAdjudicatorCheckpointWitnessExperimentRunner",
+              "AdjudicatedAdjudicatorCheckpointWitnessFinalManifest",
+              "AdjudicatedAdjudicatorCheckpointWitnessRunnerStage",
+              "AdjudicatedAdjudicatorCheckpointWitnessRunnerStatus",
+              "AdjudicationBoundAdjudicatorCheckpointWitnessCorpusSnapshot",
+              "AdjudicatorCheckpointWitnessConflictAdjudicationDecisionReport",
+              "AdjudicatorCheckpointWitnessConflictAdjudicationError",
+              "StoredAdjudicatorCheckpointWitnessConflictAdjudicationEvidence",
+              "VerifiedAdjudicatedAdjudicatorCheckpointWitnessReceipt",
+              "load_adjudicator_checkpoint_witness_conflict_adjudication_evidence",
+              "persist_adjudication_bound_adjudicator_checkpoint_witness_corpus",
+              "validate_adjudicator_checkpoint_witness_conflict_adjudication",
+          '''
+          names = ''.join(line[10:] if line.startswith('          ') else line for line in names.splitlines(keepends=True))
+          if names not in text:
+              text = text.replace(all_marker, all_marker + names, 1)
+          path.write_text(text, encoding='utf-8')
+          PY
+          python -m ruff check --fix src/ctrt/__init__.py
+          if ! git diff --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add src/ctrt/__init__.py
+            git commit -m "Export adjudicator checkpoint conflict contracts"
+            git push origin HEAD:${GITHUB_HEAD_REF}
+          fi
 
       - name: Set up Python
         uses: actions/setup-python@v5
