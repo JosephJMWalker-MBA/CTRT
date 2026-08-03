@@ -1,0 +1,32 @@
+{
+  "artifact_id": "checkpoint-witness-attestation:attestation.synthetic.alpha.v0.1.0",
+  "attestation_id": "attestation.synthetic.alpha.v0.1.0",
+  "witness_id": "witness.synthetic.alpha",
+  "witness_identity_revision": "synthetic-checkpoint-witness@0.1.0",
+  "checkpoint_corpus_ref": {
+    "artifact_id": "corpus.synthetic-three-items.checkpoint-bound",
+    "artifact_version": "0.7.0",
+    "artifact_hash": "sha256:438064d97f7de03fd0691ba96e51d3fba0a2be80599235054ec53287c59768f3"
+  },
+  "checkpoint_log_ref": {
+    "artifact_id": "log.synthetic-credential-revocation-checkpoints",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:d2caf2eeb5f1664ca2f94607ec4e026f2cba3fbc6ce9bb4a644750cd766cdf5c"
+  },
+  "expected_head_ref": {
+    "artifact_id": "credential-revocation-checkpoint:checkpoint.synthetic.revocation-ledger.0000",
+    "artifact_hash": "sha256:23826850793563e4998687ff0382b288b6d34a6b6b07d6a06bcc03512a652a81",
+    "canonicalization_version": "ctrt-canonical-json@0.1.0",
+    "media_type": "application/json"
+  },
+  "observed_head_ref": {
+    "artifact_id": "credential-revocation-checkpoint:checkpoint.synthetic.revocation-ledger.0000",
+    "artifact_hash": "sha256:23826850793563e4998687ff0382b288b6d34a6b6b07d6a06bcc03512a652a81",
+    "canonicalization_version": "ctrt-canonical-json@0.1.0",
+    "media_type": "application/json"
+  },
+  "observation_kind": "matches_head",
+  "observed_at": "2026-08-03T03:02:00Z",
+  "received_at": "2026-08-03T03:02:20Z",
+  "note": "Synthetic witness observed the declared checkpoint head."
+}
