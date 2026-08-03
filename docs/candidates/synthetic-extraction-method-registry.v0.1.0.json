@@ -1,0 +1,28 @@
+{
+  "registry_id": "registry.synthetic-extraction-methods",
+  "registry_version": "0.1.0",
+  "status": "accepted",
+  "methods": [
+    {
+      "method_id": "synthetic.identity-text",
+      "status": "eligible_for_evaluation",
+      "license_review": {
+        "status": "provisionally_verified"
+      },
+      "revision_policy": {
+        "pin_required": true,
+        "pinned_revision": "ctrt-synthetic-identity-text@0.1.0"
+      },
+      "supported_source_types": [
+        "raw_text"
+      ],
+      "permitted_mapping_kinds": [
+        "exact"
+      ],
+      "authorized_configuration_hashes": [
+        "sha256:bc8e485583a873ac9269382749b2ff803b649939b3ec829ec8bf140db6e350c8"
+      ]
+    }
+  ],
+  "created_at": "2026-08-03T00:07:00Z"
+}
