@@ -379,7 +379,7 @@
   "adjudicator_checkpoint_witness_adjudication_predecessor_corpus_ref": {
     "artifact_id": "corpus.synthetic-three-items.adjudicator-checkpoint-witness-bound",
     "artifact_version": "1.3.0",
-    "artifact_hash": "sha256:40ace6feb9b4193f4181d485f14bc07684f5b8503787c9412bddb4602cf84a0e"
+    "artifact_hash": "sha256:640fbcb6d5fac9fe5e686c5dcc625263beff1c5dd9a9ad585f6240b04f00e650"
   },
   "adjudicator_checkpoint_witness_conflict_adjudicator_registry_ref": {
     "artifact_id": "registry.synthetic-adjudicator-checkpoint-witness-conflict-adjudicators",
@@ -393,7 +393,7 @@
   },
   "adjudicator_checkpoint_witness_conflict_adjudication_ref": {
     "artifact_id": "witness-conflict-adjudication:adjudication.synthetic.adjudicator-checkpoint-gamma-conflict.v0.1.0",
-    "artifact_hash": "sha256:274d7fad984419e32354cf69d3d9200a8abec5f8bd200b45e18be930e092acf4",
+    "artifact_hash": "sha256:4155e103aea342e5fc9e33d8f8242a7dcb55921b0c17659d0744c60a343c98e0",
     "canonicalization_version": "ctrt-canonical-json@0.1.0",
     "media_type": "application/json"
   }

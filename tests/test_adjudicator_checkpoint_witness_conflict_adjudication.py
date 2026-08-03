@@ -163,6 +163,20 @@ def validate(
     evaluated_at: str = "2026-08-03T16:01:00Z",
 ):
     selected = bound or corpus()
+    selected_record = decision_record or conflict_adjudication()
+    if selected.adjudication_ref != selected_record.reference():
+        document = load_document(CORPUS_PATH)
+        document["corpus_id"] = (
+            "corpus.synthetic-three-items.adjudicator-checkpoint-witness-"
+            f"adjudication-bound.{selected_record.status.value}-test"
+        )
+        document["corpus_version"] = (
+            f"1.4.1-test-{selected_record.status.value}"
+        )
+        document[
+            "adjudicator_checkpoint_witness_conflict_adjudication_ref"
+        ] = stored_ref_document(selected_record.reference())
+        selected = corpus(document)
     plan = plan_for(selected.corpus)
     witness_decision = validate_adjudicator_checkpoint_witness_attestations(
         plan=plan,
@@ -181,7 +195,7 @@ def validate(
         adjudicator_registry=adjudicators or conflict_adjudicator_registry(),
         adjudication_policy=rules or conflict_adjudication_policy(),
         witness_decision=witness_decision,
-        adjudication=decision_record or conflict_adjudication(),
+        adjudication=selected_record,
         evaluated_at=evaluated_at,
     )
 
