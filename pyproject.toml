@@ -41,10 +41,6 @@ allow_redefinition = true
 module = "ctrt.adjudicator_credential_attestation"
 allow_redefinition = true
 
-[[tool.mypy.overrides]]
-module = "ctrt.adjudicator_checkpoint_conflict_credential_attestation"
-allow_redefinition = true
-
 [tool.ruff]
 target-version = "py311"
 line-length = 100
