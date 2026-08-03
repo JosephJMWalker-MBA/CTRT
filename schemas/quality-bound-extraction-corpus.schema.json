@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ctrt.dev/schemas/quality-bound-extraction-corpus.schema.json",
+  "title": "CTRT Quality-Bound Extraction Corpus",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "corpus_id",
+    "corpus_version",
+    "status",
+    "method_registry_ref",
+    "quality_policy_ref",
+    "contents",
+    "created_at"
+  ],
+  "properties": {
+    "corpus_id": {"type": "string", "minLength": 1},
+    "corpus_version": {"type": "string", "minLength": 1},
+    "status": {"const": "frozen"},
+    "method_registry_ref": {"$ref": "#/$defs/versionedRef"},
+    "quality_policy_ref": {"$ref": "#/$defs/versionedRef"},
+    "contents": {
+      "type": "array",
+      "minItems": 2,
+      "items": {"$ref": "#/$defs/contentEntry"}
+    },
+    "created_at": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "versionedRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_id", "artifact_version", "artifact_hash"],
+      "properties": {
+        "artifact_id": {"type": "string", "minLength": 1},
+        "artifact_version": {"type": "string", "minLength": 1},
+        "artifact_hash": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "storedRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "artifact_hash",
+        "canonicalization_version",
+        "media_type"
+      ],
+      "properties": {
+        "artifact_id": {"type": "string", "minLength": 1},
+        "artifact_hash": {"$ref": "#/$defs/sha256"},
+        "canonicalization_version": {"const": "ctrt-canonical-json@0.1.0"},
+        "media_type": {"const": "application/json"}
+      }
+    },
+    "contentEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "position",
+        "content_id",
+        "content_hash",
+        "language",
+        "source_type",
+        "source_uri",
+        "source_artifact_ref",
+        "extraction_artifact_ref",
+        "content_artifact_ref",
+        "quality_assessment_ref"
+      ],
+      "properties": {
+        "position": {"type": "integer", "minimum": 0},
+        "content_id": {"type": "string", "minLength": 1},
+        "content_hash": {"$ref": "#/$defs/sha256"},
+        "language": {"type": "string", "minLength": 1},
+        "source_type": {
+          "enum": ["raw_text", "webpage", "transcript", "other"]
+        },
+        "source_uri": {"type": ["string", "null"]},
+        "source_artifact_ref": {"$ref": "#/$defs/storedRef"},
+        "extraction_artifact_ref": {"$ref": "#/$defs/storedRef"},
+        "content_artifact_ref": {"$ref": "#/$defs/storedRef"},
+        "quality_assessment_ref": {"$ref": "#/$defs/storedRef"}
+      }
+    }
+  }
+}

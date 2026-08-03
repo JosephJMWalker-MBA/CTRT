@@ -1,0 +1,20 @@
+{
+  "policy_id": "policy.synthetic-extraction-quality",
+  "policy_version": "0.1.0",
+  "status": "accepted",
+  "required_checks": [
+    {
+      "check_id": "exact-coordinate-coverage",
+      "check_revision": "0.1.0"
+    },
+    {
+      "check_id": "source-output-byte-equality",
+      "check_revision": "0.1.0"
+    }
+  ],
+  "minimum_reviewer_observations": 1,
+  "abstain_on_statuses": [
+    "failed"
+  ],
+  "created_at": "2026-08-03T00:25:00Z"
+}

@@ -4,7 +4,7 @@ CTRT is an open, explainable framework for measuring characteristics of digital 
 
 ## Current phase
 
-**Phase 0: Constitutional and Research Foundations** has closed its schema-impacting contract gaps. CTRT has begun **Phase 1A: the Content Analysis Workbench** with dependency-free synthetic execution, versioned experiment records, exact candidate eligibility, canonical artifact hashing, append-only local persistence, fail-closed governed execution sessions, multi-content experiment completion, frozen corpus binding, and storage-backed canonical content reconstruction.
+**Phase 0: Constitutional and Research Foundations** has closed its schema-impacting contract gaps. CTRT has begun **Phase 1A: the Content Analysis Workbench** with dependency-free synthetic execution, versioned experiment records, exact candidate eligibility, canonical artifact hashing, append-only local persistence, governed execution, frozen corpus and extraction provenance, extraction-method authorization, and independent extraction-quality evidence.
 
 CTRT is not a censorship system and does not determine whether content should exist. It measures content items and reports the instruments, evidence, disagreement, confidence, and limitations behind each result.
 
@@ -122,7 +122,7 @@ This local store does not yet provide remote durability, signatures, access cont
 
 ## Governed execution sessions
 
-The first complete synthetic lifecycle is now enforced by `GovernedExecutionSession`.
+The first complete synthetic lifecycle is enforced by `GovernedExecutionSession`.
 
 Before execution, the session verifies:
 
@@ -169,7 +169,7 @@ The initial runner is sequential, supports one shared dimension, and intentional
 
 ## Frozen corpus binding
 
-A frozen corpus manifest now binds the experiment to an exact ordered content population before any session executes.
+A frozen corpus manifest binds the experiment to an exact ordered content population before any session executes.
 
 Each manifest entry records the content ID, SHA-256 of the exact UTF-8 text, language, source type, source URI, and extraction identity. The runtime recomputes the text hash and compares every field before publishing the corpus manifest or starting the experiment.
 
@@ -181,18 +181,18 @@ See:
 - [Phase 1A Corpus Manifest Binding](docs/phase-1a-corpus-manifest-binding.md)
 - [Corpus manifest schema](schemas/corpus-manifest.schema.json)
 
-The current extraction identity remains limited to `content-item:<content-id>`.
+The original corpus-binding slice preserved the temporary `content-item:<content-id>` convention. Later extraction artifacts replace that convention without rewriting the frozen legacy corpus.
 
 ## Canonical content artifacts
 
-The linked corpus can now preserve and reconstruct the actual analyzer inputs from append-only storage.
+The linked corpus can preserve and reconstruct the actual analyzer inputs from append-only storage.
 
 Every canonical content artifact contains the exact text plus language, source type, source URI, and extraction identity. CTRT keeps two identities distinct:
 
 - `content_hash` identifies the exact UTF-8 text bytes;
 - the canonical artifact hash identifies the full text-and-metadata record.
 
-A new linked synthetic corpus version references each content artifact by exact ID and hash. Ingestion writes the content artifacts first and the corpus manifest last, so partial writes cannot claim that a complete corpus exists.
+A linked synthetic corpus version references each content artifact by exact ID and hash. Ingestion writes the content artifacts first and the corpus manifest last, so partial writes cannot claim that a complete corpus exists.
 
 `StoredContentExperimentRunner` accepts only ordered content IDs and timestamps. It loads, re-hashes, verifies, and reconstructs every `ContentItem` from storage before delegating the existing corpus-bound lifecycle. Its final completion marker links all stored inputs to the verified experiment completion.
 
@@ -204,6 +204,83 @@ See:
 - [Linked synthetic corpus](docs/corpora/synthetic-three-items.v0.2.0.json)
 
 The earlier unlinked corpus version remains unchanged and cannot authorize storage-backed execution.
+
+## Extraction manifest binding
+
+Extraction provenance now replaces the temporary implicit content-item identity with an immutable artifact graph.
+
+For each content item, CTRT stores and verifies:
+
+- the exact source artifact;
+- the extraction method ID and immutable revision;
+- the canonical configuration hash;
+- the extracted-content artifact;
+- explicit ordered half-open source-to-canonical coordinate spans.
+
+The first executable mapping vocabulary is deliberately limited to `exact`. Every span must preserve length and identical text, and the mapping must cover both source and canonical text completely. A frozen extraction-corpus manifest is written only after every source, content, and extraction artifact exists.
+
+See:
+
+- [ADR-0016: Extraction manifest binding](docs/adr/0016-extraction-manifest-binding.md)
+- [Phase 1A Extraction Manifest Binding](docs/phase-1a-extraction-manifest-binding.md)
+- [Extraction manifest schema](schemas/extraction-manifest.schema.json)
+- [Synthetic extraction corpus](docs/corpora/extraction/synthetic-corpus.v0.1.0.json)
+
+This architecture does not yet run OCR, HTML parsing, transcription, normalization, geometry mapping, or another real extractor.
+
+## Extraction-method eligibility
+
+An extraction manifest may drive execution only after its method passes an exact frozen method-registry gate.
+
+The registry independently verifies:
+
+- method identity and accepted disposition;
+- license-review state;
+- mandatory immutable revision pinning;
+- supported source types;
+- permitted coordinate-mapping kinds;
+- explicitly authorized configuration hashes.
+
+The eligibility decision is a canonical artifact distinct from the extraction manifest and from downstream analytical results. A method can be authorized without claiming that one particular extraction is accurate.
+
+See:
+
+- [ADR-0017: Extraction-method eligibility](docs/adr/0017-extraction-method-eligibility.md)
+- [Phase 1A Extraction Method Eligibility](docs/phase-1a-extraction-method-eligibility.md)
+- [Synthetic extraction-method registry](docs/candidates/synthetic-extraction-method-registry.v0.1.0.json)
+- [Method-bound extraction corpus](docs/corpora/extraction/synthetic-corpus.v0.2.0.json)
+
+No extraction method becomes executable merely by appearing in documentation or a draft registry.
+
+## Independent extraction-quality evidence
+
+Method authorization does not prove extraction completeness or fidelity. CTRT therefore evaluates independent quality evidence before any analyzer runs.
+
+Every quality assessment binds the exact source, extraction, and canonical-content artifacts and preserves:
+
+- deterministic automated checks with exact revisions;
+- reviewer observations and evidence references;
+- unresolved uncertainty;
+- explicit issues;
+- `clean`, `partial`, `degraded`, or `failed` quality state;
+- an independent abstention decision with reason codes.
+
+`clean` is strict: it may not contain issues, uncertainty, failed checks, reviewer concerns, or abstention. Non-clean states require visible issues. Failed quality must abstain.
+
+`QualityGatedExtractionExperimentRunner` has two verified terminal outcomes:
+
+- `execute` delegates the existing method-eligible lifecycle and links its completion;
+- `abstain` persists and reverifies the quality decision without invoking any analyzer or creating an experiment completion.
+
+A verified abstention is a successful governance result, not a hidden error. Neither outcome produces a scalar extraction confidence, aggregate CTRT score, or content verdict.
+
+See:
+
+- [ADR-0018: Independent extraction-quality evidence](docs/adr/0018-extraction-quality-evidence.md)
+- [Phase 1A Extraction Quality Evidence](docs/phase-1a-extraction-quality-evidence.md)
+- [Synthetic extraction-quality policy](docs/candidates/synthetic-extraction-quality-policy.v0.1.0.json)
+- [Quality-bound extraction corpus](docs/corpora/extraction/synthetic-corpus.v0.3.0.json)
+- [Extraction quality assessment schema](schemas/extraction-quality-assessment.schema.json)
 
 ## Measurement contract decisions
 
@@ -250,8 +327,8 @@ Out-of-domain analysis, failed extraction, strong disagreement, or agreement-lev
 src/ctrt/          Contracts, Workbench, governance, artifacts, storage, sessions, runners
 schemas/           Canonical JSON Schemas
 tests/             Contract, schema, registry, Workbench, artifact, storage, and runner tests
-docs/candidates/   Versioned candidate technology registries
-docs/corpora/      Versioned corpus manifests and synthetic canonical content fixtures
+docs/candidates/   Versioned candidate, method, and quality-policy registries
+docs/corpora/      Versioned corpus manifests and synthetic provenance fixtures
 docs/dimensions/   Versioned dimension eligibility records
 docs/adr/          Architecture and governance decisions
 ```
@@ -264,20 +341,21 @@ The present logic and repository work may define:
 - a provisional measurement ontology;
 - versioned schemas and provider-neutral contracts;
 - architecture decision records;
-- candidate and dimension registries;
+- candidate, method, policy, and dimension registries;
 - model-evaluation and benchmarking protocols;
 - dependency-free synthetic analyzers and workbench tests;
 - frozen experiment plans and append-only run records;
-- exact candidate eligibility gates;
+- exact candidate and extraction-method eligibility gates;
 - deterministic canonical serialization and artifact hashing;
 - dependency-free append-only local artifact persistence;
 - fail-closed governed synthetic execution sessions;
 - exact-scope multi-content experiment completion;
 - frozen corpus manifests and exact runtime content binding;
-- canonical content artifact persistence and storage-backed input reconstruction;
+- canonical content and extraction-provenance artifacts;
+- independent extraction-quality evidence and governed abstention;
 - the Phase 1 workbench specification.
 
-This stage will not download or run transformer models, tune aggregate scores, deploy infrastructure, or begin large-scale corpus evaluation.
+This stage will not download or run transformer models or real extractors, tune aggregate scores, deploy infrastructure, or begin large-scale corpus evaluation.
 
 ## Development
 
@@ -298,4 +376,4 @@ python -m pytest -q
 
 ## Status
 
-Phase 1A now has a complete governed synthetic path from frozen plan and exact stored corpus inputs through runtime authorization, per-content execution, canonical serialization, append-only persistence, independent receipt preservation, and fully linked completion re-verification. No real candidate is executable, and no CTRT score is validated or suitable for consequential decision-making.
+Phase 1A now has a complete governed synthetic path from frozen plan, exact stored source and extraction provenance, method authorization, and independent quality evidence through either verified abstention or authorized per-content analysis, canonical serialization, append-only persistence, receipt preservation, and linked completion reverification. No real candidate or extractor is executable, and no CTRT score is validated or suitable for consequential decision-making.

@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ctrt.dev/schemas/quality-gated-extraction-final.schema.json",
+  "title": "CTRT Quality-Gated Extraction Final",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "final_id",
+    "experiment_run_id",
+    "status",
+    "outcome",
+    "experiment_id",
+    "experiment_version",
+    "content_ids",
+    "quality_corpus_ref",
+    "quality_policy_ref",
+    "quality_assessment_refs",
+    "quality_decision_ref",
+    "eligible_extraction_completion_ref",
+    "verified_checks",
+    "completed_at"
+  ],
+  "properties": {
+    "final_id": {"type": "string", "minLength": 1},
+    "experiment_run_id": {"type": "string", "minLength": 1},
+    "status": {"const": "verified"},
+    "outcome": {"enum": ["execute", "abstain"]},
+    "experiment_id": {"type": "string", "minLength": 1},
+    "experiment_version": {"type": "string", "minLength": 1},
+    "content_ids": {
+      "type": "array",
+      "minItems": 2,
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "quality_corpus_ref": {"$ref": "#/$defs/storedRef"},
+    "quality_policy_ref": {"$ref": "#/$defs/storedRef"},
+    "quality_assessment_refs": {
+      "type": "array",
+      "minItems": 2,
+      "items": {"$ref": "#/$defs/storedRef"}
+    },
+    "quality_decision_ref": {"$ref": "#/$defs/storedRef"},
+    "eligible_extraction_completion_ref": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/storedRef"}
+      ]
+    },
+    "verified_checks": {
+      "const": [
+        "exact-quality-policy-bound",
+        "quality-assessments-reverified",
+        "automated-and-review-evidence-preserved",
+        "uncertainty-and-abstention-preserved",
+        "quality-decision-persisted",
+        "quality-outcome-finalized"
+      ]
+    },
+    "completed_at": {"type": "string", "format": "date-time"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"outcome": {"const": "execute"}}},
+      "then": {
+        "properties": {
+          "eligible_extraction_completion_ref": {"$ref": "#/$defs/storedRef"}
+        }
+      },
+      "else": {
+        "properties": {
+          "eligible_extraction_completion_ref": {"type": "null"}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "storedRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "artifact_hash",
+        "canonicalization_version",
+        "media_type"
+      ],
+      "properties": {
+        "artifact_id": {"type": "string", "minLength": 1},
+        "artifact_hash": {"$ref": "#/$defs/sha256"},
+        "canonicalization_version": {"const": "ctrt-canonical-json@0.1.0"},
+        "media_type": {"const": "application/json"}
+      }
+    }
+  }
+}
