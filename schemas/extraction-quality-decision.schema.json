@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ctrt.dev/schemas/extraction-quality-decision.schema.json",
+  "title": "CTRT Extraction Quality Decision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "experiment_id",
+    "experiment_version",
+    "quality_corpus_ref",
+    "method_bound_corpus_ref",
+    "quality_policy_ref",
+    "outcome",
+    "assessments",
+    "evaluated_at"
+  ],
+  "properties": {
+    "experiment_id": {"type": "string", "minLength": 1},
+    "experiment_version": {"type": "string", "minLength": 1},
+    "quality_corpus_ref": {"$ref": "#/$defs/versionedRef"},
+    "method_bound_corpus_ref": {"$ref": "#/$defs/versionedRef"},
+    "quality_policy_ref": {"$ref": "#/$defs/versionedRef"},
+    "outcome": {"enum": ["execute", "abstain"]},
+    "assessments": {
+      "type": "array",
+      "minItems": 2,
+      "items": {"$ref": "#/$defs/summary"}
+    },
+    "evaluated_at": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "versionedRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_id", "artifact_version", "artifact_hash"],
+      "properties": {
+        "artifact_id": {"type": "string", "minLength": 1},
+        "artifact_version": {"type": "string", "minLength": 1},
+        "artifact_hash": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "abstention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["triggered", "reasons"],
+      "properties": {
+        "triggered": {"type": "boolean"},
+        "reasons": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "content_id",
+        "quality_status",
+        "issues",
+        "uncertainty_ids",
+        "abstention"
+      ],
+      "properties": {
+        "content_id": {"type": "string", "minLength": 1},
+        "quality_status": {"enum": ["clean", "partial", "degraded", "failed"]},
+        "issues": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "uncertainty_ids": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "abstention": {"$ref": "#/$defs/abstention"}
+      }
+    }
+  }
+}
