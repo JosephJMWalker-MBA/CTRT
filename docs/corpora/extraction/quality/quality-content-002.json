@@ -1,0 +1,70 @@
+{
+  "artifact_id": "extraction-quality:quality.synthetic.content-002.v0.1.0",
+  "assessment_id": "quality.synthetic.content-002.v0.1.0",
+  "content_id": "content-002",
+  "source_artifact_ref": {
+    "artifact_id": "source-artifact:source.synthetic.content-002:6643e7322a3e5f55edd4baa5db37cdd046e716802631545204c87acad3c7fc17",
+    "artifact_hash": "sha256:4f88fd7444eaf450ecd63a0c6326007a28ec7074246f844ee4e2199dee590b39",
+    "canonicalization_version": "ctrt-canonical-json@0.1.0",
+    "media_type": "application/json"
+  },
+  "extraction_artifact_ref": {
+    "artifact_id": "extraction:content-002:4f3be7ef337ad765ba54b93473f58a96067238c3b2b3abf17f871aec5f084cd2",
+    "artifact_hash": "sha256:94e1717849b102d856529bb02988360b2a593f52e7140f5e5d260f2b865955b3",
+    "canonicalization_version": "ctrt-canonical-json@0.1.0",
+    "media_type": "application/json"
+  },
+  "content_artifact_ref": {
+    "artifact_id": "extracted-content:content-002:6643e7322a3e5f55edd4baa5db37cdd046e716802631545204c87acad3c7fc17:c62e9efefd24420720fef254b84016b44f81297b2b7e0b5fadc2ba4c1ca094b2",
+    "artifact_hash": "sha256:f0527a5ced76abb741926e739d590b12d2a858b0934ff61cf793c2c1c027412e",
+    "canonicalization_version": "ctrt-canonical-json@0.1.0",
+    "media_type": "application/json"
+  },
+  "quality_policy_ref": {
+    "artifact_id": "policy.synthetic-extraction-quality",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:9e6d086f739584665941a76c6f25bff7070bafbfde4ce229d371a4cde566b870"
+  },
+  "automated_checks": [
+    {
+      "check_id": "exact-coordinate-coverage",
+      "check_revision": "0.1.0",
+      "outcome": "passed",
+      "details": "The exact mapping spans cover the complete source and canonical text.",
+      "evidence_refs": [
+        "extraction:content-002:4f3be7ef337ad765ba54b93473f58a96067238c3b2b3abf17f871aec5f084cd2"
+      ]
+    },
+    {
+      "check_id": "source-output-byte-equality",
+      "check_revision": "0.1.0",
+      "outcome": "passed",
+      "details": "The synthetic identity extraction preserves identical UTF-8 text.",
+      "evidence_refs": [
+        "source-artifact:source.synthetic.content-002:6643e7322a3e5f55edd4baa5db37cdd046e716802631545204c87acad3c7fc17",
+        "extracted-content:content-002:6643e7322a3e5f55edd4baa5db37cdd046e716802631545204c87acad3c7fc17:c62e9efefd24420720fef254b84016b44f81297b2b7e0b5fadc2ba4c1ca094b2"
+      ]
+    }
+  ],
+  "reviewer_observations": [
+    {
+      "observation_id": "review.synthetic.content-002.v0.1.0",
+      "reviewer_role": "synthetic-fixture-reviewer",
+      "finding": "confirmed",
+      "notes": "The source, coordinate map, and canonical text are internally consistent.",
+      "evidence_refs": [
+        "source-artifact:source.synthetic.content-002:6643e7322a3e5f55edd4baa5db37cdd046e716802631545204c87acad3c7fc17",
+        "extraction:content-002:4f3be7ef337ad765ba54b93473f58a96067238c3b2b3abf17f871aec5f084cd2",
+        "extracted-content:content-002:6643e7322a3e5f55edd4baa5db37cdd046e716802631545204c87acad3c7fc17:c62e9efefd24420720fef254b84016b44f81297b2b7e0b5fadc2ba4c1ca094b2"
+      ]
+    }
+  ],
+  "uncertainties": [],
+  "quality_status": "clean",
+  "issues": [],
+  "abstention": {
+    "triggered": false,
+    "reasons": []
+  },
+  "assessed_at": "2026-08-03T00:27:00Z"
+}
