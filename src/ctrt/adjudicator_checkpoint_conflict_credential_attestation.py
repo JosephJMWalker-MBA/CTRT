@@ -427,18 +427,18 @@ def validate_adjudicator_checkpoint_conflict_credentials(
         by_id[adjudicator.adjudicator_id] = attestation
 
     if adjudication.adjudicator_id is not None:
-        attestation = by_id.get(adjudication.adjudicator_id)
-        if attestation is None:
+        selected_attestation = by_id.get(adjudication.adjudicator_id)
+        if selected_attestation is None:
             failures.append("checkpoint conflict adjudication credential is absent")
         elif (
             adjudication.adjudicator_identity_revision
-            != attestation.identity_revision
+            != selected_attestation.identity_revision
         ):
             failures.append(
                 "checkpoint conflict adjudication identity differs from credential"
             )
         elif WitnessConflictAdjudicatorRole.WITNESS_CONFLICT_ADJUDICATOR not in (
-            attestation.authorized_roles
+            selected_attestation.authorized_roles
         ):
             failures.append(
                 "checkpoint conflict adjudication role is not attested"
