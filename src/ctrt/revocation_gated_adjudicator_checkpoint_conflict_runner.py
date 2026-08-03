@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime
 from enum import StrEnum
 
@@ -616,9 +616,14 @@ class RevocationGatedAdjudicatorCheckpointConflictExperimentRunner:
 
         delegated: VerifiedCheckpointConflictCredentialReceipt | None = None
         if decision.outcome is CredentialDecisionOutcome.EXECUTE:
+            delegated_plan = replace(
+                plan,
+                corpus_ref=corpus.corpus.reference(),
+                content_ids=corpus.corpus.content_ids,
+            )
             try:
                 delegated = self._runner.run(
-                    plan=plan,
+                    plan=delegated_plan,
                     candidate_registry=candidate_registry,
                     method_registry=method_registry,
                     quality_policy=quality_policy,
@@ -786,9 +791,7 @@ class RevocationGatedAdjudicatorCheckpointConflictExperimentRunner:
             revocation_policy_ref=evidence.revocation_policy_ref,
             revocation_ledger_ref=evidence.revocation_ledger_ref,
             revocation_event_refs=evidence.event_refs,
-            adjudication_ref=checkpoint_conflict_adjudicator_credentials[0].reference()
-            if False
-            else adjudicator_checkpoint_conflict_adjudication.reference(),
+            adjudication_ref=adjudicator_checkpoint_conflict_adjudication.reference(),
             revocation_decision_ref=decision_ref,
             credentialed_conflict_final_ref=delegated_final_ref,
             verified_checks=(
