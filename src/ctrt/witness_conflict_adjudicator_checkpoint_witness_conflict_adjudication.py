@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Self, cast
 
-from ctrt import adjudicator_checkpoint_witness_conflict_adjudication as base
+import ctrt.adjudicator_checkpoint_witness_conflict_adjudication as base
 import ctrt.checkpoint_conflict_witness_adjudicator_credential_revocation_checkpoints as cp
 from ctrt.artifact_store import (
     ArtifactIntegrityError,
