@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import sys
 from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import datetime
@@ -292,7 +293,7 @@ def validate_current_checkpoint_witness_conflict_adjudicator_credential_revocati
     return report
 
 
-def persist_checkpoint_bound_current_checkpoint_witness_conflict_adjudicator_credential_revocation_corpus(
+def persist_current_checkpoint_witness_conflict_adjudicator_revocation_checkpoint_corpus(
     store: FileSystemArtifactStore,
     *,
     plan: ExperimentPlan,
@@ -321,3 +322,11 @@ def persist_checkpoint_bound_current_checkpoint_witness_conflict_adjudicator_cre
         checkpoints=checkpoints,
         verified_at=verified_at,
     )
+
+
+setattr(
+    sys.modules[__name__],
+    "persist_checkpoint_bound_current_checkpoint_witness_conflict_"
+    "adjudicator_credential_revocation_corpus",
+    persist_current_checkpoint_witness_conflict_adjudicator_revocation_checkpoint_corpus,
+)
