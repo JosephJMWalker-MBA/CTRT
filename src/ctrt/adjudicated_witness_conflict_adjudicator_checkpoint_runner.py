@@ -5,7 +5,9 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 from datetime import datetime
 from enum import StrEnum
+from typing import Any, cast
 
+import ctrt.checkpoint_conflict_witness_adjudicator_credential_revocation_checkpoints as cp
 from ctrt.adjudicated_checkpoint_conflict_revocation_witness_runner import (
     CheckpointExecutor,
 )
@@ -74,35 +76,11 @@ from ctrt.witness_gated_witness_conflict_adjudicator_checkpoint_runner import (
 )
 
 CheckpointCorpus = (
-    __import__(
-        "ctrt.checkpoint_conflict_witness_adjudicator_credential_"
-        "revocation_checkpoints",
-        fromlist=[
-            "CheckpointBoundCheckpointConflictWitnessAdjudicatorCredentialRevocationCorpusSnapshot"
-        ],
-    ).CheckpointBoundCheckpointConflictWitnessAdjudicatorCredentialRevocationCorpusSnapshot
+    cp.CheckpointBoundCheckpointConflictWitnessAdjudicatorCredentialRevocationCorpusSnapshot
 )
-CheckpointSnapshot = (
-    __import__(
-        "ctrt.checkpoint_conflict_witness_adjudicator_credential_"
-        "revocation_checkpoints",
-        fromlist=["AdjudicatorCredentialRevocationLedgerCheckpointSnapshot"],
-    ).AdjudicatorCredentialRevocationLedgerCheckpointSnapshot
-)
-CheckpointPolicy = (
-    __import__(
-        "ctrt.checkpoint_conflict_witness_adjudicator_credential_"
-        "revocation_checkpoints",
-        fromlist=["AdjudicatorCredentialRevocationCheckpointPolicySnapshot"],
-    ).AdjudicatorCredentialRevocationCheckpointPolicySnapshot
-)
-CheckpointLog = (
-    __import__(
-        "ctrt.checkpoint_conflict_witness_adjudicator_credential_"
-        "revocation_checkpoints",
-        fromlist=["AdjudicatorCredentialRevocationCheckpointLogSnapshot"],
-    ).AdjudicatorCredentialRevocationCheckpointLogSnapshot
-)
+CheckpointSnapshot = cp.AdjudicatorCredentialRevocationLedgerCheckpointSnapshot
+CheckpointPolicy = cp.AdjudicatorCredentialRevocationCheckpointPolicySnapshot
+CheckpointLog = cp.AdjudicatorCredentialRevocationCheckpointLogSnapshot
 RevocationCorpus = (
     RevocationBoundCheckpointConflictWitnessAdjudicatorCredentialCorpusSnapshot
 )
@@ -658,7 +636,7 @@ class AdjudicatedWitnessConflictAdjudicatorCheckpointExperimentRunner:
         try:
             witness_decision = validate_witness_attestations(
                 plan=plan,
-                corpus=corpus.corpus,
+                corpus=cast(Any, corpus.corpus),
                 registry=witness_registry,
                 policy=witness_policy,
                 head_checkpoint=checkpoints[-1],
