@@ -1,9 +1,13 @@
 from __future__ import annotations
 
-import ctrt.checkpoint_gated_current_checkpoint_witness_conflict_runner as runner
-from ctrt import (
-    current_checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoints
-    as contract,
+from importlib import import_module
+
+runner = import_module(
+    "ctrt.checkpoint_gated_current_checkpoint_witness_conflict_runner"
+)
+contract = import_module(
+    "ctrt.current_checkpoint_witness_conflict_adjudicator_credential_"
+    "revocation_checkpoints"
 )
 
 CONTRACT_NAMES = (
@@ -15,7 +19,7 @@ CONTRACT_NAMES = (
     "CheckpointBoundCurrentCheckpointWitnessConflictAdjudicatorCredentialRevocationCorpusSnapshot",
     "StoredAdjudicatorCredentialRevocationCheckpointEvidence",
     "load_current_checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoint_evidence",
-    "persist_checkpoint_bound_current_checkpoint_witness_conflict_adjudicator_credential_revocation_corpus",
+    "persist_current_checkpoint_witness_conflict_adjudicator_revocation_checkpoint_corpus",
     "validate_current_checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoints",
 )
 
