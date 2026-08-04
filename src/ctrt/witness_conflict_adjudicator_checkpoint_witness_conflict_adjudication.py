@@ -8,15 +8,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Self, cast
 
+from ctrt import adjudicator_checkpoint_witness_conflict_adjudication as base
 import ctrt.checkpoint_conflict_witness_adjudicator_credential_revocation_checkpoints as cp
-from ctrt.adjudicator_checkpoint_witness_conflict_adjudication import (
-    AdjudicatorCheckpointWitnessConflictAdjudicationDecisionReport,
-    AdjudicatorCheckpointWitnessConflictAdjudicationError,
-    StoredAdjudicatorCheckpointWitnessConflictAdjudicationEvidence,
-)
-from ctrt.adjudicator_checkpoint_witness_conflict_adjudication import (
-    validate_adjudicator_checkpoint_witness_conflict_adjudication as _validate_conflict_adjudication,
-)
 from ctrt.artifact_store import (
     ArtifactIntegrityError,
     FileSystemArtifactStore,
@@ -45,6 +38,15 @@ CheckpointSnapshot = cp.AdjudicatorCredentialRevocationLedgerCheckpointSnapshot
 CheckpointCorpus = (
     cp.CheckpointBoundCheckpointConflictWitnessAdjudicatorCredentialRevocationCorpusSnapshot
 )
+ConflictAdjudicationDecisionReport = (
+    base.AdjudicatorCheckpointWitnessConflictAdjudicationDecisionReport
+)
+ConflictAdjudicationError = (
+    base.AdjudicatorCheckpointWitnessConflictAdjudicationError
+)
+StoredConflictAdjudicationEvidence = (
+    base.StoredAdjudicatorCheckpointWitnessConflictAdjudicationEvidence
+)
 
 WITNESS_PREFIX = (
     "checkpoint_conflict_revocation_witness_conflict_adjudicator_"
@@ -53,10 +55,10 @@ WITNESS_PREFIX = (
 
 __all__ = (
     "AdjudicationBoundCheckpointWitnessCorpusSnapshot",
-    "AdjudicatorCheckpointWitnessConflictAdjudicationDecisionReport",
-    "AdjudicatorCheckpointWitnessConflictAdjudicationError",
+    "ConflictAdjudicationDecisionReport",
+    "ConflictAdjudicationError",
     "ConflictingCheckpointWitnessCorpusSnapshot",
-    "StoredAdjudicatorCheckpointWitnessConflictAdjudicationEvidence",
+    "StoredConflictAdjudicationEvidence",
     "load_conflict_adjudication_evidence",
     "persist_adjudication_bound_corpus",
     "validate_conflict_adjudication",
@@ -65,19 +67,15 @@ __all__ = (
 
 def _mapping(value: object, field_name: str) -> Mapping[str, object]:
     if not isinstance(value, Mapping):
-        raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
-            f"{field_name} must be an object"
-        )
+        raise ConflictAdjudicationError(f"{field_name} must be an object")
     if any(not isinstance(key, str) for key in value):
-        raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
-            f"{field_name} keys must be strings"
-        )
+        raise ConflictAdjudicationError(f"{field_name} keys must be strings")
     return value
 
 
 def _string(value: object, field_name: str) -> str:
     if not isinstance(value, str) or not value.strip():
-        raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
+        raise ConflictAdjudicationError(
             f"{field_name} must be a non-empty string"
         )
     return value
@@ -88,11 +86,11 @@ def _parse_timestamp(value: str, field_name: str) -> datetime:
     try:
         parsed = datetime.fromisoformat(normalized)
     except ValueError as exc:
-        raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
+        raise ConflictAdjudicationError(
             f"{field_name} must be an ISO-8601 timestamp"
         ) from exc
     if parsed.tzinfo is None:
-        raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
+        raise ConflictAdjudicationError(
             f"{field_name} must include a timezone"
         )
     return parsed
@@ -156,39 +154,39 @@ class ConflictingCheckpointWitnessCorpusSnapshot:
         ):
             _string(value, field_name)
         if self.status != "frozen":
-            raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
+            raise ConflictAdjudicationError(
                 "adjudication-bound checkpoint witness corpus must be frozen"
             )
         if self.predecessor_corpus_ref != self.corpus.reference():
-            raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
+            raise ConflictAdjudicationError(
                 "checkpoint witness predecessor differs from 1.12.0"
             )
         if self.declared_content_ids != self.corpus.content_ids:
-            raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
+            raise ConflictAdjudicationError(
                 "checkpoint witness content order differs from 1.12.0"
             )
         if len(self.declared_content_ids) != len(set(self.declared_content_ids)):
-            raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
+            raise ConflictAdjudicationError(
                 "checkpoint witness content IDs must be unique"
             )
         if not self.witness_attestation_refs:
-            raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
+            raise ConflictAdjudicationError(
                 "adjudication-bound corpus requires witness attestations"
             )
         if len(self.witness_attestation_refs) != len(set(self.witness_attestation_refs)):
-            raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
+            raise ConflictAdjudicationError(
                 "checkpoint witness attestation refs must be unique"
             )
         if _parse_timestamp(self.created_at, "created_at") < _parse_timestamp(
             self.corpus.created_at,
             "checkpoint_predecessor.created_at",
         ):
-            raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
+            raise ConflictAdjudicationError(
                 "adjudication-bound corpus may not precede 1.12.0"
             )
         expected = f"sha256:{hashlib.sha256(self.canonical_payload).hexdigest()}"
         if self.artifact_hash != expected:
-            raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
+            raise ConflictAdjudicationError(
                 "adjudication-bound corpus hash differs from payload"
             )
 
@@ -201,18 +199,16 @@ class ConflictingCheckpointWitnessCorpusSnapshot:
     ) -> Self:
         unknown = sorted(set(document) - _allowed_fields())
         if unknown:
-            raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
+            raise ConflictAdjudicationError(
                 "adjudication-bound corpus contains unsupported fields: "
                 + ", ".join(unknown)
             )
         content_ids = document.get("content_ids")
         if not isinstance(content_ids, list):
-            raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
-                "content_ids must be an array"
-            )
+            raise ConflictAdjudicationError("content_ids must be an array")
         refs = document.get(f"{WITNESS_PREFIX}_attestation_refs")
         if not isinstance(refs, list):
-            raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
+            raise ConflictAdjudicationError(
                 "checkpoint witness attestation refs must be an array"
             )
         payload = canonical_json_bytes(document)
@@ -279,34 +275,34 @@ class AdjudicationBoundCheckpointWitnessCorpusSnapshot:
 
     def __post_init__(self) -> None:
         if self.predecessor_corpus_ref != self.witness_predecessor.reference():
-            raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
+            raise ConflictAdjudicationError(
                 "adjudication predecessor differs from exact 1.13.0 corpus"
             )
         if self.content_ids != self.witness_predecessor.content_ids:
-            raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
+            raise ConflictAdjudicationError(
                 "adjudication content order differs from 1.13.0"
             )
         if self.corpus.predecessor_corpus_ref != (
             self.witness_predecessor.predecessor_corpus_ref
         ):
-            raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
+            raise ConflictAdjudicationError(
                 "adjudication changed the 1.12.0 checkpoint predecessor"
             )
         if self.corpus.witness_registry_ref != (
             self.witness_predecessor.witness_registry_ref
         ):
-            raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
+            raise ConflictAdjudicationError(
                 "adjudication changed the witness registry"
             )
         if self.corpus.witness_policy_ref != self.witness_predecessor.witness_policy_ref:
-            raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
+            raise ConflictAdjudicationError(
                 "adjudication changed the witness policy"
             )
         if _parse_timestamp(self.corpus.created_at, "created_at") < _parse_timestamp(
             self.witness_predecessor.created_at,
             "witness_predecessor.created_at",
         ):
-            raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
+            raise ConflictAdjudicationError(
                 "adjudication successor may not precede 1.13.0"
             )
 
@@ -371,7 +367,7 @@ def load_conflict_adjudication_evidence(
     adjudicator_registry: WitnessConflictAdjudicatorRegistrySnapshot,
     adjudication_policy: WitnessConflictAdjudicationPolicySnapshot,
     adjudication: WitnessConflictAdjudicationSnapshot,
-) -> StoredAdjudicatorCheckpointWitnessConflictAdjudicationEvidence:
+) -> StoredConflictAdjudicationEvidence:
     """Load and reverify the complete 1.14.0 adjudication graph."""
 
     corpus_artifact = store.get(
@@ -403,7 +399,7 @@ def load_conflict_adjudication_evidence(
         registry=witness_registry,
         policy=witness_policy,
     )
-    return StoredAdjudicatorCheckpointWitnessConflictAdjudicationEvidence(
+    return StoredConflictAdjudicationEvidence(
         corpus_ref=store.reference(corpus.reference().artifact_id),
         adjudicator_registry_ref=store.reference(adjudicator_registry.registry_id),
         adjudication_policy_ref=store.reference(adjudication_policy.policy_id),
@@ -423,10 +419,10 @@ def validate_conflict_adjudication(
     witness_decision: AdjudicatorCheckpointWitnessDecisionReport,
     adjudication: WitnessConflictAdjudicationSnapshot,
     evaluated_at: str,
-) -> AdjudicatorCheckpointWitnessConflictAdjudicationDecisionReport:
+) -> ConflictAdjudicationDecisionReport:
     """Validate exact resolution while preserving witness abstention."""
 
-    return _validate_conflict_adjudication(
+    return base.validate_adjudicator_checkpoint_witness_conflict_adjudication(
         plan=plan,
         corpus=cast(Any, corpus),
         witness_registry=witness_registry,
@@ -453,15 +449,15 @@ def persist_adjudication_bound_corpus(
     adjudication_policy: WitnessConflictAdjudicationPolicySnapshot,
     adjudication: WitnessConflictAdjudicationSnapshot,
     evaluated_at: str,
-) -> StoredAdjudicatorCheckpointWitnessConflictAdjudicationEvidence:
+) -> StoredConflictAdjudicationEvidence:
     """Append dependencies, then publish the 1.14.0 manifest last."""
 
     if witness_predecessor.reference() != corpus.predecessor_corpus_ref:
-        raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
+        raise ConflictAdjudicationError(
             "witness predecessor corpus reference differs"
         )
     if witness_predecessor.content_ids != corpus.content_ids:
-        raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
+        raise ConflictAdjudicationError(
             "adjudication corpus content population differs"
         )
     predecessor = store.get(
