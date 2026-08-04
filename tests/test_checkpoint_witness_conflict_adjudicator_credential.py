@@ -9,11 +9,16 @@ import pytest
 from jsonschema import ValidationError
 from test_adjudicator_checkpoint_witness_conflict_adjudication import load_document
 from test_credential_revocation_checkpoints import validate_schema
+from test_witness_conflict_adjudicator_checkpoint_witness import prepare_witness_store
 from test_witness_conflict_adjudicator_checkpoint_witness_conflict_adjudication import (
     adjudication_corpus,
+    checkpoint,
     conflict_adjudication,
+    conflict_adjudication_policy,
     conflict_adjudicator_registry,
-    prepare_adjudication_store,
+    conflict_attestations,
+    witness_policy,
+    witness_registry,
 )
 
 from ctrt.adjudicator_credential_attestation import (
@@ -31,6 +36,9 @@ from ctrt.checkpoint_witness_conflict_adjudicator_credential import (
 from ctrt.reviewer_credential_attestation import (
     CredentialDecisionOutcome,
     CredentialIssuerRegistrySnapshot,
+)
+from ctrt.witness_conflict_adjudicator_checkpoint_witness_conflict_adjudication import (
+    persist_adjudication_bound_corpus,
 )
 
 ROOT = Path(__file__).parents[1]
@@ -165,13 +173,47 @@ def validate(
     )
 
 
-def prepare_credential_store(tmp_path: Path) -> tuple[Any, ...]:
-    prepared = prepare_adjudication_store(tmp_path)
+def prepare_credential_store(
+    tmp_path: Path,
+    *,
+    run_id: str = "adjudication-reconstruction",
+) -> tuple[Any, ...]:
+    prepared = prepare_witness_store(tmp_path, run_id=run_id)
     store = cast(FileSystemArtifactStore, prepared[0])
-    predecessor = prepared[2]
-    selected = corpus(predecessor=predecessor)
-    plan = replace(
+    witness_predecessor = prepared[2]
+    checkpoint_predecessor = prepared[3]
+    selected_adjudication = adjudication_corpus(
+        checkpoint_predecessor=checkpoint_predecessor,
+        witness_predecessor=witness_predecessor,
+    )
+    adjudication_plan = replace(
         prepared[1],
+        corpus_ref=selected_adjudication.reference(),
+        content_ids=selected_adjudication.content_ids,
+    )
+    persist_adjudication_bound_corpus(
+        store,
+        plan=adjudication_plan,
+        corpus=selected_adjudication,
+        witness_predecessor=witness_predecessor,
+        witness_registry=witness_registry(),
+        witness_policy=witness_policy(),
+        head_checkpoint=checkpoint(),
+        witness_attestations=conflict_attestations(),
+        adjudicator_registry=conflict_adjudicator_registry(),
+        adjudication_policy=conflict_adjudication_policy(),
+        adjudication=conflict_adjudication(),
+        evaluated_at="2026-08-03T19:57:21Z",
+    )
+    adjudication_prepared = (
+        store,
+        adjudication_plan,
+        selected_adjudication,
+        *prepared[2:],
+    )
+    selected = corpus(predecessor=selected_adjudication)
+    plan = replace(
+        adjudication_plan,
         corpus_ref=selected.reference(),
         content_ids=selected.content_ids,
     )
@@ -179,7 +221,7 @@ def prepare_credential_store(tmp_path: Path) -> tuple[Any, ...]:
         store,
         plan=plan,
         corpus=selected,
-        predecessor_corpus=predecessor,
+        predecessor_corpus=selected_adjudication,
         adjudicator_registry=conflict_adjudicator_registry(),
         issuer_registry=issuer_registry(),
         credential_policy=credential_policy(),
@@ -187,7 +229,7 @@ def prepare_credential_store(tmp_path: Path) -> tuple[Any, ...]:
         adjudication=conflict_adjudication(),
         evaluated_at="2026-08-03T19:57:35Z",
     )
-    return (store, plan, selected, *prepared[2:])
+    return (store, plan, selected, *adjudication_prepared[2:])
 
 
 def test_fixed_credential_graph_and_schemas() -> None:
