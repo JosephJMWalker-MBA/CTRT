@@ -62,7 +62,7 @@ def execute(
     prior_completed_at: str = "2026-08-03T19:59:00Z",
     completed_at: str = "2026-08-03T19:59:15Z",
 ):
-    prepared = credential_fx.prepare_credential_store(tmp_path)
+    prepared = credential_fx.prepare_credential_store(tmp_path, run_id=run_id)
     store = cast(FileSystemArtifactStore, prepared[0])
     runner = CredentialedCheckpointWitnessConflictExperimentRunner(
         artifact_store=store
