@@ -231,6 +231,33 @@ class RevocationBoundCheckpointConflictWitnessAdjudicatorCredentialCorpusSnapsho
         )
 
 
+def _validate_as_of_chronology(
+    *,
+    corpus: RevocationBoundCheckpointConflictWitnessAdjudicatorCredentialCorpusSnapshot,
+    policy: AdjudicatorCredentialRevocationPolicySnapshot,
+    ledger: AdjudicatorCredentialRevocationLedgerSnapshot,
+    events: tuple[AdjudicatorCredentialRevocationEventSnapshot, ...],
+    evaluated_at: str,
+) -> None:
+    """Require recorded history to exist before an as-of decision may use it."""
+
+    policy_created = _parse_timestamp(policy.created_at, "policy.created_at")
+    ledger_created = _parse_timestamp(ledger.created_at, "ledger.created_at")
+    corpus_created = _parse_timestamp(corpus.created_at, "corpus.created_at")
+    evaluated = _parse_timestamp(evaluated_at, "evaluated_at")
+    if not policy_created <= ledger_created <= corpus_created <= evaluated:
+        raise AdjudicatorCredentialRevocationError(
+            "revocation policy, ledger, corpus, and evaluation chronology differs"
+        )
+    for event in events:
+        recorded = _parse_timestamp(event.recorded_at, "event.recorded_at")
+        if not policy_created <= recorded <= ledger_created:
+            raise AdjudicatorCredentialRevocationError(
+                f"{event.event_id}: event recording chronology differs from policy "
+                "and frozen ledger"
+            )
+
+
 def load_checkpoint_conflict_witness_adjudicator_credential_revocation_evidence(
     store: FileSystemArtifactStore,
     *,
@@ -264,6 +291,13 @@ def validate_checkpoint_conflict_witness_adjudicator_credential_revocation_ledge
 ) -> AdjudicatorCredentialRevocationDecisionReport:
     """Evaluate append-only status history without rewriting credential evidence."""
 
+    _validate_as_of_chronology(
+        corpus=corpus,
+        policy=revocation_policy,
+        ledger=ledger,
+        events=events,
+        evaluated_at=evaluated_at,
+    )
     return _validate_revocation_ledger(
         plan=plan,
         corpus=cast(Any, corpus),
@@ -297,6 +331,13 @@ def persist_checkpoint_conflict_witness_adjudicator_credential_revocation_bound_
 ) -> StoredAdjudicatorCredentialRevocationEvidence:
     """Append policy, events, ledger, then publish the 1.11.0 manifest last."""
 
+    _validate_as_of_chronology(
+        corpus=corpus,
+        policy=revocation_policy,
+        ledger=ledger,
+        events=events,
+        evaluated_at=evaluated_at,
+    )
     return _persist_revocation_corpus(
         store,
         plan=plan,
