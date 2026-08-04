@@ -47,10 +47,8 @@ from ctrt.checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoi
     AdjudicatorCredentialRevocationLedgerCheckpointSnapshot,
     CheckpointBoundCheckpointWitnessConflictAdjudicatorCredentialRevocationCorpusSnapshot,
     StoredAdjudicatorCredentialRevocationCheckpointEvidence,
+    load_checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoint_evidence,
     validate_checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoints,
-)
-from ctrt.checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoints import (
-    load_checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoint_evidence as load_current_checkpoint_evidence,
 )
 from ctrt.checkpoint_witness_conflict_adjudicator_credential_revocation_ledger import (
     RevocationBoundCheckpointWitnessConflictAdjudicatorCredentialCorpusSnapshot,
@@ -82,6 +80,10 @@ from ctrt.witness_conflict_adjudicator_checkpoint_witness_conflict_adjudication 
 )
 from ctrt.witness_gated_adjudicator_checkpoint_conflict_runner import (
     VerifiedCheckpointConflictRevocationWitnessReceipt,
+)
+
+load_current_checkpoint_evidence = (
+    load_checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoint_evidence
 )
 
 CurrentCheckpointCorpus = (
