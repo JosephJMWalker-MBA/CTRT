@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import hashlib
-import sys
 from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import datetime
@@ -43,7 +42,7 @@ __all__ = (
     "CheckpointBoundCurrentCheckpointWitnessConflictAdjudicatorCredentialRevocationCorpusSnapshot",
     "StoredAdjudicatorCredentialRevocationCheckpointEvidence",
     "load_current_checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoint_evidence",
-    "persist_checkpoint_bound_current_checkpoint_witness_conflict_adjudicator_credential_revocation_corpus",
+    "persist_current_checkpoint_witness_conflict_adjudicator_revocation_checkpoint_corpus",
     "validate_current_checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoints",
 )
 
@@ -322,11 +321,3 @@ def persist_current_checkpoint_witness_conflict_adjudicator_revocation_checkpoin
         checkpoints=checkpoints,
         verified_at=verified_at,
     )
-
-
-setattr(
-    sys.modules[__name__],
-    "persist_checkpoint_bound_current_checkpoint_witness_conflict_"
-    "adjudicator_credential_revocation_corpus",
-    persist_current_checkpoint_witness_conflict_adjudicator_revocation_checkpoint_corpus,
-)
