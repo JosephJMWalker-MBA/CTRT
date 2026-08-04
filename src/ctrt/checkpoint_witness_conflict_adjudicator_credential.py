@@ -9,7 +9,7 @@ from datetime import datetime
 from typing import Any, Self, cast
 
 import ctrt.adjudicator_credential_attestation as base
-from ctrt.artifact_store import FileSystemArtifactStore, StoredArtifactRef
+from ctrt.artifact_store import FileSystemArtifactStore
 from ctrt.experiments import ExperimentPlan, VersionedArtifactRef
 from ctrt.reviewer_credential_attestation import CredentialIssuerRegistrySnapshot
 from ctrt.serialization import CanonicalArtifact, canonical_json_bytes
