@@ -5,14 +5,11 @@ from __future__ import annotations
 import hashlib
 from collections.abc import Mapping
 from dataclasses import dataclass, replace
+from importlib import import_module
 from typing import Any, cast
 
 from ctrt.adjudicator_checkpoint_conflict_credential_revocation_checkpoints import (
     AdjudicatorCredentialRevocationLedgerCheckpointSnapshot,
-    CheckpointBoundAdjudicatorCheckpointConflictCredentialRevocationCorpusSnapshot,
-)
-from ctrt.adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_attestation import (
-    WitnessBoundAdjudicatorCheckpointConflictCredentialRevocationCheckpointCorpusSnapshot,
 )
 from ctrt.adjudicator_checkpoint_witness_attestation import (
     AdjudicatorCheckpointWitnessDecisionReport,
@@ -21,14 +18,8 @@ from ctrt.adjudicator_checkpoint_witness_conflict_adjudication import (
     AdjudicatorCheckpointWitnessConflictAdjudicationDecisionReport,
     AdjudicatorCheckpointWitnessConflictAdjudicationError,
     StoredAdjudicatorCheckpointWitnessConflictAdjudicationEvidence,
-)
-from ctrt.adjudicator_checkpoint_witness_conflict_adjudication import (
     load_adjudicator_checkpoint_witness_conflict_adjudication_evidence as _load_evidence,
-)
-from ctrt.adjudicator_checkpoint_witness_conflict_adjudication import (
     persist_adjudication_bound_adjudicator_checkpoint_witness_corpus as _persist_corpus,
-)
-from ctrt.adjudicator_checkpoint_witness_conflict_adjudication import (
     validate_adjudicator_checkpoint_witness_conflict_adjudication as _validate_adjudication,
 )
 from ctrt.artifact_store import FileSystemArtifactStore, StoredArtifactRef
@@ -45,25 +36,55 @@ from ctrt.witness_conflict_adjudication import (
     WitnessConflictAdjudicatorRegistrySnapshot,
 )
 
-__all__ = (
-    "AdjudicationBoundAdjudicatorCheckpointConflictCredentialRevocationCheckpointWitnessCorpusSnapshot",
-    "AdjudicatorCheckpointWitnessConflictAdjudicationDecisionReport",
-    "AdjudicatorCheckpointWitnessConflictAdjudicationError",
-    "StoredAdjudicatorCheckpointWitnessConflictAdjudicationEvidence",
-    "load_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_conflict_adjudication_evidence",
-    "persist_adjudication_bound_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_corpus",
-    "validate_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_conflict_adjudication",
+ConflictDecisionReport = (
+    AdjudicatorCheckpointWitnessConflictAdjudicationDecisionReport
 )
+ConflictAdjudicationError = AdjudicatorCheckpointWitnessConflictAdjudicationError
+StoredConflictAdjudicationEvidence = (
+    StoredAdjudicatorCheckpointWitnessConflictAdjudicationEvidence
+)
+
+__all__ = (
+    "CheckpointConflictWitnessAdjudicationCorpusSnapshot",
+    "ConflictAdjudicationError",
+    "ConflictDecisionReport",
+    "StoredConflictAdjudicationEvidence",
+    "load_checkpoint_conflict_witness_adjudication_evidence",
+    "persist_checkpoint_conflict_witness_adjudication_corpus",
+    "validate_checkpoint_conflict_witness_adjudication",
+)
+
+_witness_contracts = import_module(
+    "ctrt.adjudicator_checkpoint_conflict_credential_revocation_checkpoint_"
+    "witness_attestation"
+)
+_WITNESS_CORPUS_NAME = (
+    "WitnessBoundAdjudicatorCheckpointConflictCredentialRevocation"
+    "CheckpointCorpusSnapshot"
+)
+_WitnessCorpus = getattr(_witness_contracts, _WITNESS_CORPUS_NAME)
 
 _WITNESS_FIELDS = {
     "corpus_id",
     "corpus_version",
     "status",
     "content_ids",
-    "adjudicator_checkpoint_conflict_adjudicator_credential_revocation_checkpoint_witness_predecessor_corpus_ref",
-    "adjudicator_checkpoint_conflict_adjudicator_credential_revocation_checkpoint_witness_registry_ref",
-    "adjudicator_checkpoint_conflict_adjudicator_credential_revocation_checkpoint_witness_policy_ref",
-    "adjudicator_checkpoint_conflict_adjudicator_credential_revocation_checkpoint_witness_attestation_refs",
+    (
+        "adjudicator_checkpoint_conflict_adjudicator_credential_revocation_"
+        "checkpoint_witness_predecessor_corpus_ref"
+    ),
+    (
+        "adjudicator_checkpoint_conflict_adjudicator_credential_revocation_"
+        "checkpoint_witness_registry_ref"
+    ),
+    (
+        "adjudicator_checkpoint_conflict_adjudicator_credential_revocation_"
+        "checkpoint_witness_policy_ref"
+    ),
+    (
+        "adjudicator_checkpoint_conflict_adjudicator_credential_revocation_"
+        "checkpoint_witness_attestation_refs"
+    ),
     "created_at",
 }
 _PREFIX = (
@@ -80,19 +101,15 @@ _ADJUDICATION_FIELDS = {
 
 def _mapping(value: object, field_name: str) -> Mapping[str, object]:
     if not isinstance(value, Mapping):
-        raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
-            f"{field_name} must be an object"
-        )
+        raise ConflictAdjudicationError(f"{field_name} must be an object")
     if any(not isinstance(key, str) for key in value):
-        raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
-            f"{field_name} keys must be strings"
-        )
+        raise ConflictAdjudicationError(f"{field_name} keys must be strings")
     return value
 
 
 def _string(value: object, field_name: str) -> str:
     if not isinstance(value, str) or not value.strip():
-        raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
+        raise ConflictAdjudicationError(
             f"{field_name} must be a non-empty string"
         )
     return value
@@ -101,7 +118,10 @@ def _string(value: object, field_name: str) -> str:
 def _versioned_ref(value: object, field_name: str) -> VersionedArtifactRef:
     document = _mapping(value, field_name)
     return VersionedArtifactRef(
-        artifact_id=_string(document.get("artifact_id"), f"{field_name}.artifact_id"),
+        artifact_id=_string(
+            document.get("artifact_id"),
+            f"{field_name}.artifact_id",
+        ),
         artifact_version=_string(
             document.get("artifact_version"),
             f"{field_name}.artifact_version",
@@ -114,10 +134,10 @@ def _versioned_ref(value: object, field_name: str) -> VersionedArtifactRef:
 
 
 @dataclass(frozen=True, slots=True)
-class AdjudicationBoundAdjudicatorCheckpointConflictCredentialRevocationCheckpointWitnessCorpusSnapshot:
-    """Compact 1.9.0 successor preserving the exact 1.8.0 witness authority."""
+class CheckpointConflictWitnessAdjudicationCorpusSnapshot:
+    """Compact 1.9.0 successor preserving the 1.8.0 witness authority."""
 
-    corpus: WitnessBoundAdjudicatorCheckpointConflictCredentialRevocationCheckpointCorpusSnapshot
+    corpus: Any
     predecessor_corpus_ref: VersionedArtifactRef
     adjudicator_registry_ref: VersionedArtifactRef
     adjudication_policy_ref: VersionedArtifactRef
@@ -128,28 +148,26 @@ class AdjudicationBoundAdjudicatorCheckpointConflictCredentialRevocationCheckpoi
         cls,
         document: Mapping[str, object],
         *,
-        checkpoint_predecessor: (
-            CheckpointBoundAdjudicatorCheckpointConflictCredentialRevocationCorpusSnapshot
-        ),
-        witness_predecessor: (
-            WitnessBoundAdjudicatorCheckpointConflictCredentialRevocationCheckpointCorpusSnapshot
-        ),
-    ) -> AdjudicationBoundAdjudicatorCheckpointConflictCredentialRevocationCheckpointWitnessCorpusSnapshot:
-        unknown = sorted(set(document) - _WITNESS_FIELDS - _ADJUDICATION_FIELDS)
+        checkpoint_predecessor: Any,
+        witness_predecessor: Any,
+    ) -> CheckpointConflictWitnessAdjudicationCorpusSnapshot:
+        unknown = sorted(
+            set(document) - _WITNESS_FIELDS - _ADJUDICATION_FIELDS
+        )
         if unknown:
-            raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
-                "checkpoint-conflict witness adjudication corpus contains unsupported "
-                f"fields: {', '.join(unknown)}"
+            raise ConflictAdjudicationError(
+                "checkpoint-conflict witness adjudication corpus contains "
+                f"unsupported fields: {', '.join(unknown)}"
             )
 
         witness_document = {
-            key: value for key, value in document.items() if key in _WITNESS_FIELDS
+            key: value
+            for key, value in document.items()
+            if key in _WITNESS_FIELDS
         }
-        parsed_witness = (
-            WitnessBoundAdjudicatorCheckpointConflictCredentialRevocationCheckpointCorpusSnapshot.from_document(
-                witness_document,
-                predecessor=checkpoint_predecessor,
-            )
+        parsed_witness = _WitnessCorpus.from_document(
+            witness_document,
+            predecessor=checkpoint_predecessor,
         )
         payload = canonical_json_bytes(document)
         witness_view = replace(
@@ -163,11 +181,12 @@ class AdjudicationBoundAdjudicatorCheckpointConflictCredentialRevocationCheckpoi
             f"{_PREFIX}_predecessor_corpus_ref",
         )
         if predecessor_ref != witness_predecessor.reference():
-            raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
-                "witness adjudication predecessor differs from exact 1.8.0 corpus"
+            raise ConflictAdjudicationError(
+                "witness adjudication predecessor differs from exact 1.8.0 "
+                "corpus"
             )
         if witness_view.content_ids != witness_predecessor.content_ids:
-            raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
+            raise ConflictAdjudicationError(
                 "witness adjudication content order differs from predecessor"
             )
         if (
@@ -176,7 +195,7 @@ class AdjudicationBoundAdjudicatorCheckpointConflictCredentialRevocationCheckpoi
             or witness_view.witness_policy_ref
             != witness_predecessor.witness_policy_ref
         ):
-            raise AdjudicatorCheckpointWitnessConflictAdjudicationError(
+            raise ConflictAdjudicationError(
                 "witness adjudication must preserve the 1.8.0 witness authority"
             )
 
@@ -201,29 +220,29 @@ class AdjudicationBoundAdjudicatorCheckpointConflictCredentialRevocationCheckpoi
 
     @property
     def content_ids(self) -> tuple[str, ...]:
-        return self.corpus.content_ids
+        return cast(tuple[str, ...], self.corpus.content_ids)
 
     def reference(self) -> VersionedArtifactRef:
-        return self.corpus.reference()
+        return cast(VersionedArtifactRef, self.corpus.reference())
 
     def artifact(self) -> CanonicalArtifact:
-        return self.corpus.artifact()
+        return cast(CanonicalArtifact, self.corpus.artifact())
 
 
-def load_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_conflict_adjudication_evidence(
+def load_checkpoint_conflict_witness_adjudication_evidence(
     store: FileSystemArtifactStore,
     *,
-    corpus: AdjudicationBoundAdjudicatorCheckpointConflictCredentialRevocationCheckpointWitnessCorpusSnapshot,
+    corpus: CheckpointConflictWitnessAdjudicationCorpusSnapshot,
     witness_registry: CheckpointWitnessRegistrySnapshot,
     witness_policy: CheckpointWitnessPolicySnapshot,
     adjudicator_registry: WitnessConflictAdjudicatorRegistrySnapshot,
     adjudication_policy: WitnessConflictAdjudicationPolicySnapshot,
     adjudication: WitnessConflictAdjudicationSnapshot,
-) -> StoredAdjudicatorCheckpointWitnessConflictAdjudicationEvidence:
+) -> StoredConflictAdjudicationEvidence:
     """Load and reverify the complete 1.9.0 adjudication graph."""
 
     return cast(
-        StoredAdjudicatorCheckpointWitnessConflictAdjudicationEvidence,
+        StoredConflictAdjudicationEvidence,
         _load_evidence(
             store,
             corpus=cast(Any, corpus),
@@ -236,10 +255,10 @@ def load_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witnes
     )
 
 
-def validate_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_conflict_adjudication(
+def validate_checkpoint_conflict_witness_adjudication(
     *,
     plan: ExperimentPlan,
-    corpus: AdjudicationBoundAdjudicatorCheckpointConflictCredentialRevocationCheckpointWitnessCorpusSnapshot,
+    corpus: CheckpointConflictWitnessAdjudicationCorpusSnapshot,
     witness_registry: CheckpointWitnessRegistrySnapshot,
     witness_policy: CheckpointWitnessPolicySnapshot,
     adjudicator_registry: WitnessConflictAdjudicatorRegistrySnapshot,
@@ -247,7 +266,7 @@ def validate_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_wi
     witness_decision: AdjudicatorCheckpointWitnessDecisionReport,
     adjudication: WitnessConflictAdjudicationSnapshot,
     evaluated_at: str,
-) -> AdjudicatorCheckpointWitnessConflictAdjudicationDecisionReport:
+) -> ConflictDecisionReport:
     """Validate resolution while preserving the original witness outcome."""
 
     return _validate_adjudication(
@@ -263,12 +282,12 @@ def validate_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_wi
     )
 
 
-def persist_adjudication_bound_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_corpus(
+def persist_checkpoint_conflict_witness_adjudication_corpus(
     store: FileSystemArtifactStore,
     *,
     plan: ExperimentPlan,
-    corpus: AdjudicationBoundAdjudicatorCheckpointConflictCredentialRevocationCheckpointWitnessCorpusSnapshot,
-    predecessor_corpus: WitnessBoundAdjudicatorCheckpointConflictCredentialRevocationCheckpointCorpusSnapshot,
+    corpus: CheckpointConflictWitnessAdjudicationCorpusSnapshot,
+    predecessor_corpus: Any,
     witness_registry: CheckpointWitnessRegistrySnapshot,
     witness_policy: CheckpointWitnessPolicySnapshot,
     head_checkpoint: AdjudicatorCredentialRevocationLedgerCheckpointSnapshot,
@@ -277,11 +296,11 @@ def persist_adjudication_bound_adjudicator_checkpoint_conflict_credential_revoca
     adjudication_policy: WitnessConflictAdjudicationPolicySnapshot,
     adjudication: WitnessConflictAdjudicationSnapshot,
     evaluated_at: str,
-) -> StoredAdjudicatorCheckpointWitnessConflictAdjudicationEvidence:
+) -> StoredConflictAdjudicationEvidence:
     """Publish authority and adjudication, then the 1.9.0 manifest last."""
 
     return cast(
-        StoredAdjudicatorCheckpointWitnessConflictAdjudicationEvidence,
+        StoredConflictAdjudicationEvidence,
         _persist_corpus(
             store,
             plan=plan,
