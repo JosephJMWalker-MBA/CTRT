@@ -17,16 +17,13 @@ from ctrt.adjudicator_credential_revocation_checkpoints import (
     StoredAdjudicatorCredentialRevocationCheckpointEvidence,
 )
 from ctrt.adjudicator_credential_revocation_checkpoints import (
-    load_adjudicator_credential_revocation_checkpoint_evidence
-    as _load_checkpoint_evidence,
+    load_adjudicator_credential_revocation_checkpoint_evidence as _load_checkpoint_evidence,
 )
 from ctrt.adjudicator_credential_revocation_checkpoints import (
-    persist_checkpoint_bound_adjudicator_revocation_corpus
-    as _persist_checkpoint_corpus,
+    persist_checkpoint_bound_adjudicator_revocation_corpus as _persist_checkpoint_corpus,
 )
 from ctrt.adjudicator_credential_revocation_checkpoints import (
-    validate_adjudicator_credential_revocation_checkpoints
-    as _validate_checkpoints,
+    validate_adjudicator_credential_revocation_checkpoints as _validate_checkpoints,
 )
 from ctrt.artifact_store import FileSystemArtifactStore, StoredArtifactRef
 from ctrt.checkpoint_witness_conflict_adjudicator_credential_revocation_ledger import (
