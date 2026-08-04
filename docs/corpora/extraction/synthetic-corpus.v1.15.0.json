@@ -1,0 +1,38 @@
+{
+  "corpus_id": "corpus.synthetic-three-items.checkpoint-conflict-revocation-witness-conflict-adjudicator-credential-revocation-checkpoint-witness-conflict-adjudicator-credential-bound",
+  "corpus_version": "1.15.0",
+  "status": "frozen",
+  "content_ids": [
+    "content-001",
+    "content-002",
+    "content-003"
+  ],
+  "checkpoint_conflict_revocation_witness_conflict_adjudicator_credential_revocation_checkpoint_witness_conflict_adjudicator_credential_predecessor_corpus_ref": {
+    "artifact_id": "corpus.synthetic-three-items.checkpoint-conflict-revocation-witness-conflict-adjudicator-credential-revocation-checkpoint-witness-adjudication-bound",
+    "artifact_version": "1.14.0",
+    "artifact_hash": "sha256:a2b4ff05a5e23bcdf0d54b721b4e3cd376788a65f7464b26dc543207d9cfb74e"
+  },
+  "checkpoint_conflict_revocation_witness_conflict_adjudicator_credential_revocation_checkpoint_witness_conflict_adjudicator_credential_issuer_registry_ref": {
+    "artifact_id": "registry.synthetic-witness-conflict-adjudicator-checkpoint-witness-conflict-adjudicator-credential-issuers",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:6d6f0690afa8d0d3817e5d64e15654487e469c00abb7e215be5f22e323f07a15"
+  },
+  "checkpoint_conflict_revocation_witness_conflict_adjudicator_credential_revocation_checkpoint_witness_conflict_adjudicator_credential_policy_ref": {
+    "artifact_id": "policy.synthetic-witness-conflict-adjudicator-checkpoint-witness-conflict-adjudicator-credentials",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:b25e1aea19f4d5865fdce15a3f2739e7b45d4e028c1bbfd346d0a20cdfe66adf"
+  },
+  "checkpoint_conflict_revocation_witness_conflict_adjudicator_credential_revocation_checkpoint_witness_conflict_adjudicator_credentials": [
+    {
+      "adjudicator_id": "adjudicator.synthetic.checkpoint-conflict-revocation-witness-conflict-adjudicator-credential-revocation-checkpoint-fork",
+      "identity_revision": "synthetic-checkpoint-conflict-revocation-witness-conflict-adjudicator-credential-revocation-checkpoint-witness-conflict-adjudicator@0.1.0",
+      "credential_attestation_ref": {
+        "artifact_id": "adjudicator-credential:credential.synthetic.witness-conflict-adjudicator-checkpoint-fork.v0.1.0",
+        "artifact_hash": "sha256:e992110c0dadc3990406485d6b666977f68d74b78417b477ea255875fc3a7c0d",
+        "canonicalization_version": "ctrt-canonical-json@0.1.0",
+        "media_type": "application/json"
+      }
+    }
+  ],
+  "created_at": "2026-08-03T19:57:34Z"
+}
