@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from ctrt import (
-    checkpoint_conflict_witness_adjudicator_credential_revocation_checkpoints
-    as checkpoints,
+    checkpoint_conflict_witness_adjudicator_credential_revocation_checkpoints as checkpoints,
 )
 
 EXPECTED_NAMES = (
