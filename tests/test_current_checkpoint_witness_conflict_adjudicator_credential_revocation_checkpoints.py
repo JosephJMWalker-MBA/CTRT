@@ -19,7 +19,7 @@ from ctrt.current_checkpoint_witness_conflict_adjudicator_credential_revocation_
     AdjudicatorCredentialRevocationLedgerCheckpointSnapshot,
     CheckpointBoundCurrentCheckpointWitnessConflictAdjudicatorCredentialRevocationCorpusSnapshot,
     load_current_checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoint_evidence,
-    persist_checkpoint_bound_current_checkpoint_witness_conflict_adjudicator_credential_revocation_corpus,
+    persist_current_checkpoint_witness_conflict_adjudicator_revocation_checkpoint_corpus,
     validate_current_checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoints,
 )
 from ctrt.serialization import canonical_sha256
@@ -151,7 +151,7 @@ def prepare_checkpoint_store(
         corpus_ref=selected.reference(),
         content_ids=selected.content_ids,
     )
-    persist_checkpoint_bound_current_checkpoint_witness_conflict_adjudicator_credential_revocation_corpus(
+    persist_current_checkpoint_witness_conflict_adjudicator_revocation_checkpoint_corpus(
         store,
         plan=plan,
         corpus=selected,
