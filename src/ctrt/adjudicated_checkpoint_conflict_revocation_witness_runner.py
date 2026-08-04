@@ -10,14 +10,6 @@ from typing import Any, Protocol
 from ctrt.adjudicator_checkpoint_conflict_credential_revocation_checkpoints import (
     AdjudicatorCredentialRevocationLedgerCheckpointSnapshot,
 )
-from ctrt.adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_conflict_adjudication import (
-    CheckpointConflictWitnessAdjudicationCorpusSnapshot,
-    ConflictAdjudicationError,
-    ConflictDecisionReport,
-    StoredConflictAdjudicationEvidence,
-    load_checkpoint_conflict_witness_adjudication_evidence,
-    validate_checkpoint_conflict_witness_adjudication,
-)
 from ctrt.artifact_store import (
     ArtifactIntegrityError,
     ArtifactStoreError,
@@ -27,7 +19,15 @@ from ctrt.artifact_store import (
 from ctrt.checkpoint_conflict_revocation_witness import (
     AdjudicatorCheckpointWitnessDecisionReport,
     AdjudicatorCheckpointWitnessError,
-    validate_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_attestations,
+    validate_witnesses,
+)
+from ctrt.checkpoint_conflict_witness_adjudication import (
+    CheckpointConflictWitnessAdjudicationCorpusSnapshot,
+    ConflictAdjudicationError,
+    ConflictDecisionReport,
+    StoredConflictAdjudicationEvidence,
+    load_checkpoint_conflict_witness_adjudication_evidence,
+    validate_checkpoint_conflict_witness_adjudication,
 )
 from ctrt.checkpoint_gated_adjudicator_checkpoint_conflict_runner import (
     VerifiedCheckpointConflictAdjudicatorRevocationCheckpointReceipt,
@@ -452,7 +452,7 @@ class AdjudicatedCheckpointConflictRevocationWitnessExperimentRunner:
 
         try:
             witness_decision: AdjudicatorCheckpointWitnessDecisionReport = (
-                validate_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_attestations(
+                validate_witnesses(
                     plan=plan,
                     corpus=corpus.corpus,
                     registry=witness_registry,
