@@ -247,17 +247,14 @@ def load_checkpoint_conflict_witness_adjudication_evidence(
 ) -> StoredConflictAdjudicationEvidence:
     """Load and reverify the complete 1.9.0 adjudication graph."""
 
-    return cast(
-        StoredConflictAdjudicationEvidence,
-        _load_evidence(
-            store,
-            corpus=cast(Any, corpus),
-            witness_registry=witness_registry,
-            witness_policy=witness_policy,
-            adjudicator_registry=adjudicator_registry,
-            adjudication_policy=adjudication_policy,
-            adjudication=adjudication,
-        ),
+    return _load_evidence(
+        store,
+        corpus=cast(Any, corpus),
+        witness_registry=witness_registry,
+        witness_policy=witness_policy,
+        adjudicator_registry=adjudicator_registry,
+        adjudication_policy=adjudication_policy,
+        adjudication=adjudication,
     )
 
 
@@ -305,20 +302,17 @@ def persist_checkpoint_conflict_witness_adjudication_corpus(
 ) -> StoredConflictAdjudicationEvidence:
     """Publish authority and adjudication, then the 1.9.0 manifest last."""
 
-    return cast(
-        StoredConflictAdjudicationEvidence,
-        _persist_corpus(
-            store,
-            plan=plan,
-            corpus=cast(Any, corpus),
-            predecessor_corpus=cast(Any, predecessor_corpus),
-            witness_registry=witness_registry,
-            witness_policy=witness_policy,
-            head_checkpoint=head_checkpoint,
-            witness_attestations=witness_attestations,
-            adjudicator_registry=adjudicator_registry,
-            adjudication_policy=adjudication_policy,
-            adjudication=adjudication,
-            evaluated_at=evaluated_at,
-        ),
+    return _persist_corpus(
+        store,
+        plan=plan,
+        corpus=cast(Any, corpus),
+        predecessor_corpus=cast(Any, predecessor_corpus),
+        witness_registry=witness_registry,
+        witness_policy=witness_policy,
+        head_checkpoint=head_checkpoint,
+        witness_attestations=witness_attestations,
+        adjudicator_registry=adjudicator_registry,
+        adjudication_policy=adjudication_policy,
+        adjudication=adjudication,
+        evaluated_at=evaluated_at,
     )
