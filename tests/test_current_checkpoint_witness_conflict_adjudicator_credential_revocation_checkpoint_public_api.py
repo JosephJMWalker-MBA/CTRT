@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import ctrt.checkpoint_gated_current_checkpoint_witness_conflict_runner as runner
-import ctrt.current_checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoints as contract
+from ctrt import (
+    current_checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoints
+    as contract,
+)
 
 CONTRACT_NAMES = (
     "AdjudicatorCredentialRevocationCheckpointError",
