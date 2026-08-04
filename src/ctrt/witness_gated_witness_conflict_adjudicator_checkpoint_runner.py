@@ -508,6 +508,7 @@ class WitnessGatedWitnessConflictAdjudicatorCheckpointExperimentRunner:
         adjudication_evaluated_at: str,
         adjudication_completed_at: str,
         credential_completed_at: str,
+        revocation_completed_at: str,
         checkpoint_completed_at: str,
         completed_at: str,
     ) -> VerifiedWitnessConflictAdjudicatorCheckpointReceipt:
@@ -664,8 +665,8 @@ class WitnessGatedWitnessConflictAdjudicatorCheckpointExperimentRunner:
                     adjudication_evaluated_at=adjudication_evaluated_at,
                     adjudication_completed_at=adjudication_completed_at,
                     credential_completed_at=credential_completed_at,
-                    revocation_completed_at=checkpoint_completed_at,
-                    completed_at=completed_at,
+                    revocation_completed_at=revocation_completed_at,
+                    completed_at=checkpoint_completed_at,
                 )
             except CheckpointConflictWitnessRevocationCheckpointExperimentError as exc:
                 raise WitnessConflictAdjudicatorCheckpointExperimentError(
