@@ -91,7 +91,13 @@ def outer_conflict_case(
     CheckpointConflictWitnessAdjudicationCorpusSnapshot,
     WitnessConflictAdjudicationSnapshot,
 ]:
-    _, _, decision = adjudication_fx.conflict_case(status=status)
+    _, _, template_decision = adjudication_fx.conflict_case(status=status)
+    decision_document = json.loads(template_decision.canonical_payload.decode("utf-8"))
+    decision_document["witness_predecessor_corpus_ref"] = versioned_ref_document(
+        witness_predecessor.reference()
+    )
+    decision = WitnessConflictAdjudicationSnapshot.from_document(decision_document)
+
     document = deepcopy(load_document(adjudication_fx.CORPUS_PATH))
     document["corpus_id"] = (
         "corpus.synthetic-three-items.checkpoint-conflict-witness-"
