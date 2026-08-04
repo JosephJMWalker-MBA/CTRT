@@ -18,6 +18,6 @@ EXPECTED_PUBLIC_NAMES = {
 
 
 def test_witness_conflict_revocation_contract_is_public() -> None:
-    assert EXPECTED_PUBLIC_NAMES <= set(ctrt.__all__)
+    assert set(ctrt.__all__) >= EXPECTED_PUBLIC_NAMES
     for name in EXPECTED_PUBLIC_NAMES:
         assert getattr(ctrt, name) is not None
