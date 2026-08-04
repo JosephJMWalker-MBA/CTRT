@@ -362,9 +362,15 @@ class RevocationGatedCurrentCheckpointWitnessConflictExperimentRunner:
         *,
         plan: ExperimentPlan,
         corpus: RevocationBoundCurrentCheckpointWitnessConflictAdjudicatorCredentialCorpusSnapshot,
-        credential_corpus: CredentialBoundCurrentCheckpointWitnessConflictCorpusSnapshot,
-        current_revocation_policy: AdjudicatorCredentialRevocationPolicySnapshot,
-        current_revocation_ledger: AdjudicatorCredentialRevocationLedgerSnapshot,
+        current_conflict_credential_corpus: (
+            CredentialBoundCurrentCheckpointWitnessConflictCorpusSnapshot
+        ),
+        current_conflict_adjudicator_revocation_policy: (
+            AdjudicatorCredentialRevocationPolicySnapshot
+        ),
+        current_conflict_adjudicator_revocation_ledger: (
+            AdjudicatorCredentialRevocationLedgerSnapshot
+        ),
         experiment_run_id: str,
         current_conflict_adjudicator_revocation_evaluated_at: str,
         conflict_credential_evaluated_at: str,
@@ -378,13 +384,22 @@ class RevocationGatedCurrentCheckpointWitnessConflictExperimentRunner:
             raise ValueError("revocation-gated current conflict requires frozen plan")
         if plan.corpus_ref != corpus.reference() or plan.content_ids != corpus.content_ids:
             raise ValueError("plan must match revocation-bound corpus exactly")
-        if corpus.predecessor_corpus_ref != credential_corpus.reference():
+        if (
+            corpus.predecessor_corpus_ref
+            != current_conflict_credential_corpus.reference()
+        ):
             raise ValueError("revocation corpus must bind exact 1.20.0 predecessor")
-        if corpus.corpus.reference() != credential_corpus.reference():
+        if corpus.corpus.reference() != current_conflict_credential_corpus.reference():
             raise ValueError("revocation corpus carries different 1.20.0 predecessor")
-        if corpus.revocation_policy_ref != current_revocation_policy.reference():
+        if (
+            corpus.revocation_policy_ref
+            != current_conflict_adjudicator_revocation_policy.reference()
+        ):
             raise ValueError("current conflict-adjudicator revocation policy differs")
-        if corpus.revocation_ledger_ref != current_revocation_ledger.reference():
+        if (
+            corpus.revocation_ledger_ref
+            != current_conflict_adjudicator_revocation_ledger.reference()
+        ):
             raise ValueError("current conflict-adjudicator revocation ledger differs")
         successor_time = _parse_timestamp(corpus.created_at, "corpus.created_at")
         revocation_time = _parse_timestamp(
@@ -433,9 +448,15 @@ class RevocationGatedCurrentCheckpointWitnessConflictExperimentRunner:
         final: CurrentCheckpointWitnessConflictAdjudicatorRevocationFinalManifest,
         final_ref: StoredArtifactRef,
         corpus: RevocationBoundCurrentCheckpointWitnessConflictAdjudicatorCredentialCorpusSnapshot,
-        credential_corpus: CredentialBoundCurrentCheckpointWitnessConflictCorpusSnapshot,
-        policy: AdjudicatorCredentialRevocationPolicySnapshot,
-        ledger: AdjudicatorCredentialRevocationLedgerSnapshot,
+        current_conflict_credential_corpus: (
+            CredentialBoundCurrentCheckpointWitnessConflictCorpusSnapshot
+        ),
+        current_conflict_adjudicator_revocation_policy: (
+            AdjudicatorCredentialRevocationPolicySnapshot
+        ),
+        current_conflict_adjudicator_revocation_ledger: (
+            AdjudicatorCredentialRevocationLedgerSnapshot
+        ),
         revocation_evidence: StoredAdjudicatorCredentialRevocationEvidence,
         credential_evidence: StoredCredentialEvidence,
         decision: AdjudicatorCredentialRevocationDecisionReport,
@@ -452,20 +473,22 @@ class RevocationGatedCurrentCheckpointWitnessConflictExperimentRunner:
         ).payload != corpus.artifact().payload:
             raise ArtifactIntegrityError("stored 1.21.0 revocation corpus differs")
         predecessor = self._store.get(
-            credential_corpus.reference().artifact_id,
-            expected_hash=credential_corpus.reference().artifact_hash,
+            current_conflict_credential_corpus.reference().artifact_id,
+            expected_hash=(
+                current_conflict_credential_corpus.reference().artifact_hash
+            ),
         )
-        if predecessor.payload != credential_corpus.artifact().payload:
+        if predecessor.payload != current_conflict_credential_corpus.artifact().payload:
             raise ArtifactIntegrityError("stored 1.20.0 credential corpus differs")
         if self._store.get(
             final.revocation_policy_ref.artifact_id,
             expected_hash=final.revocation_policy_ref.artifact_hash,
-        ).payload != policy.canonical_payload:
+        ).payload != current_conflict_adjudicator_revocation_policy.canonical_payload:
             raise ArtifactIntegrityError("stored current revocation policy differs")
         if self._store.get(
             final.revocation_ledger_ref.artifact_id,
             expected_hash=final.revocation_ledger_ref.artifact_hash,
-        ).payload != ledger.canonical_payload:
+        ).payload != current_conflict_adjudicator_revocation_ledger.canonical_payload:
             raise ArtifactIntegrityError("stored current revocation ledger differs")
         for reference in (
             *revocation_evidence.event_refs,
@@ -496,15 +519,21 @@ class RevocationGatedCurrentCheckpointWitnessConflictExperimentRunner:
         *,
         plan: ExperimentPlan,
         corpus: RevocationBoundCurrentCheckpointWitnessConflictAdjudicatorCredentialCorpusSnapshot,
-        credential_corpus: CredentialBoundCurrentCheckpointWitnessConflictCorpusSnapshot,
+        current_conflict_credential_corpus: (
+            CredentialBoundCurrentCheckpointWitnessConflictCorpusSnapshot
+        ),
         conflict_adjudicator_registry: WitnessConflictAdjudicatorRegistrySnapshot,
         conflict_credential_issuer_registry: CredentialIssuerRegistrySnapshot,
         conflict_credential_policy: CredentialPolicySnapshot,
         conflict_credentials: tuple[CredentialAttestationSnapshot, ...],
         conflict_adjudication: WitnessConflictAdjudicationSnapshot,
-        current_revocation_policy: AdjudicatorCredentialRevocationPolicySnapshot,
-        current_revocation_ledger: AdjudicatorCredentialRevocationLedgerSnapshot,
-        current_revocation_events: tuple[
+        current_conflict_adjudicator_revocation_policy: (
+            AdjudicatorCredentialRevocationPolicySnapshot
+        ),
+        current_conflict_adjudicator_revocation_ledger: (
+            AdjudicatorCredentialRevocationLedgerSnapshot
+        ),
+        current_conflict_adjudicator_revocation_events: tuple[
             AdjudicatorCredentialRevocationEventSnapshot, ...
         ],
         experiment_run_id: str,
@@ -521,9 +550,15 @@ class RevocationGatedCurrentCheckpointWitnessConflictExperimentRunner:
             self._preflight(
                 plan=plan,
                 corpus=corpus,
-                credential_corpus=credential_corpus,
-                current_revocation_policy=current_revocation_policy,
-                current_revocation_ledger=current_revocation_ledger,
+                current_conflict_credential_corpus=(
+                    current_conflict_credential_corpus
+                ),
+                current_conflict_adjudicator_revocation_policy=(
+                    current_conflict_adjudicator_revocation_policy
+                ),
+                current_conflict_adjudicator_revocation_ledger=(
+                    current_conflict_adjudicator_revocation_ledger
+                ),
                 experiment_run_id=experiment_run_id,
                 current_conflict_adjudicator_revocation_evaluated_at=(
                     current_conflict_adjudicator_revocation_evaluated_at
@@ -544,14 +579,14 @@ class RevocationGatedCurrentCheckpointWitnessConflictExperimentRunner:
                 load_current_checkpoint_witness_conflict_adjudicator_credential_revocation_evidence(
                     self._store,
                     corpus=corpus,
-                    policy=current_revocation_policy,
-                    ledger=current_revocation_ledger,
+                    policy=current_conflict_adjudicator_revocation_policy,
+                    ledger=current_conflict_adjudicator_revocation_ledger,
                 )
             )
             credential_evidence = (
                 load_current_checkpoint_witness_conflict_credential_evidence(
                     self._store,
-                    corpus=credential_corpus,
+                    corpus=current_conflict_credential_corpus,
                     adjudicator_registry=conflict_adjudicator_registry,
                     issuer_registry=conflict_credential_issuer_registry,
                     credential_policy=conflict_credential_policy,
@@ -578,11 +613,13 @@ class RevocationGatedCurrentCheckpointWitnessConflictExperimentRunner:
                     adjudicator_registry=conflict_adjudicator_registry,
                     issuer_registry=conflict_credential_issuer_registry,
                     credential_policy=conflict_credential_policy,
-                    revocation_policy=current_revocation_policy,
-                    ledger=current_revocation_ledger,
+                    revocation_policy=(
+                        current_conflict_adjudicator_revocation_policy
+                    ),
+                    ledger=current_conflict_adjudicator_revocation_ledger,
                     attestations=credential_evidence.attestations,
                     adjudication=conflict_adjudication,
-                    events=current_revocation_events,
+                    events=current_conflict_adjudicator_revocation_events,
                     evaluated_at=(
                         current_conflict_adjudicator_revocation_evaluated_at
                     ),
@@ -614,13 +651,13 @@ class RevocationGatedCurrentCheckpointWitnessConflictExperimentRunner:
         if decision.outcome is CredentialDecisionOutcome.EXECUTE:
             credential_plan = replace(
                 plan,
-                corpus_ref=credential_corpus.reference(),
-                content_ids=credential_corpus.content_ids,
+                corpus_ref=current_conflict_credential_corpus.reference(),
+                content_ids=current_conflict_credential_corpus.content_ids,
             )
             try:
                 delegated_receipt = self._runner.run(
                     plan=credential_plan,
-                    corpus=credential_corpus,
+                    corpus=current_conflict_credential_corpus,
                     conflict_adjudicator_registry=conflict_adjudicator_registry,
                     conflict_credential_issuer_registry=(
                         conflict_credential_issuer_registry
@@ -781,9 +818,15 @@ class RevocationGatedCurrentCheckpointWitnessConflictExperimentRunner:
                 final=final,
                 final_ref=final_ref,
                 corpus=corpus,
-                credential_corpus=credential_corpus,
-                policy=current_revocation_policy,
-                ledger=current_revocation_ledger,
+                current_conflict_credential_corpus=(
+                    current_conflict_credential_corpus
+                ),
+                current_conflict_adjudicator_revocation_policy=(
+                    current_conflict_adjudicator_revocation_policy
+                ),
+                current_conflict_adjudicator_revocation_ledger=(
+                    current_conflict_adjudicator_revocation_ledger
+                ),
                 revocation_evidence=revocation_evidence,
                 credential_evidence=credential_evidence,
                 decision=decision,
