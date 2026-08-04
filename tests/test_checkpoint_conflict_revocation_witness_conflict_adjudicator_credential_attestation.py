@@ -120,7 +120,7 @@ def validate(
     selected: CredentialBoundCheckpointConflictWitnessAdjudicationCorpusSnapshot
     | None = None,
     selected_credential: AdjudicatorCredentialAttestationSnapshot | None = None,
-    evaluated_at: str = "2026-08-03T19:58:00Z",
+    evaluated_at: str = "2026-08-03T19:55:00Z",
 ):
     bound = selected or corpus()
     return validate_checkpoint_conflict_witness_adjudicator_credentials(
@@ -174,7 +174,7 @@ def prepare_credential_store(tmp_path: Path) -> tuple[Any, ...]:
         credential_policy=credential_policy(),
         attestations=(credential(),),
         adjudication=adjudication_fx.adjudication(),
-        evaluated_at="2026-08-03T19:58:00Z",
+        evaluated_at="2026-08-03T19:55:00Z",
     )
     return (*prepared[:-2], plan, selected)
 
@@ -183,7 +183,7 @@ def test_fixed_graph_schemas_and_active_credential() -> None:
     selected = corpus()
     report = validate()
     assert selected.reference().artifact_hash == (
-        "sha256:22c9be7dd3d4eddd848c54d0f5707368ee88284e2b38e8db2cfae72c7e0ade37"
+        "sha256:1ef073d0b8af20d4ea511f7828a0f90d753d532a1c46b3d6bd36e8a90df21b0f"
     )
     assert selected.predecessor_corpus_ref == adjudication_fx.corpus().reference()
     assert report.outcome is CredentialDecisionOutcome.EXECUTE
@@ -199,7 +199,7 @@ def test_fixed_graph_schemas_and_active_credential() -> None:
 
 
 def test_expired_credential_abstains_without_rewriting_adjudication() -> None:
-    report = validate(evaluated_at="2027-08-03T19:57:00Z")
+    report = validate(evaluated_at="2027-08-03T19:54:30Z")
     assert report.outcome is CredentialDecisionOutcome.ABSTAIN
     assert report.credentials[0].abstention.triggered
     assert "credential-expired" in report.credentials[0].abstention.reasons
