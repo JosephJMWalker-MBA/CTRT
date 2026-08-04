@@ -156,7 +156,7 @@ class CheckpointBoundCheckpointConflictWitnessAdjudicatorCredentialRevocationCor
         document: Mapping[str, object],
         *,
         predecessor: RevocationBoundCheckpointConflictWitnessAdjudicatorCredentialCorpusSnapshot,
-    ) -> "CheckpointBoundCheckpointConflictWitnessAdjudicatorCredentialRevocationCorpusSnapshot":
+    ) -> CheckpointBoundCheckpointConflictWitnessAdjudicatorCredentialRevocationCorpusSnapshot:
         prefix = (
             "checkpoint_conflict_revocation_witness_conflict_adjudicator_"
             "credential_revocation_checkpoint"
