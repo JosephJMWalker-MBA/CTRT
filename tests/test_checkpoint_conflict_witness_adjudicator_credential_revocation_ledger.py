@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import replace
+from importlib import import_module
 from pathlib import Path
 from typing import Any, cast
 
 import pytest
-import test_checkpoint_conflict_revocation_witness_conflict_adjudicator_credential_attestation as credential_fx
 from test_adjudicator_checkpoint_witness_conflict_adjudication import load_document
 from test_credential_revocation_checkpoints import validate_schema
 
@@ -28,6 +28,11 @@ from ctrt.checkpoint_conflict_witness_adjudicator_credential_revocation_ledger i
 )
 from ctrt.experiments import VersionedArtifactRef
 from ctrt.reviewer_credential_attestation import CredentialDecisionOutcome
+
+credential_fx = import_module(
+    "test_checkpoint_conflict_revocation_witness_conflict_"
+    "adjudicator_credential_attestation"
+)
 
 ROOT = Path(__file__).parents[1]
 POLICY_PATH = ROOT / "docs" / "candidates" / (
@@ -84,9 +89,11 @@ def revocation_corpus(
     predecessor: CredentialBoundCheckpointConflictWitnessAdjudicationCorpusSnapshot
     | None = None,
 ) -> RevocationBoundCheckpointConflictWitnessAdjudicatorCredentialCorpusSnapshot:
-    return RevocationBoundCheckpointConflictWitnessAdjudicatorCredentialCorpusSnapshot.from_document(
-        document or load_document(CORPUS_PATH),
-        predecessor=predecessor or credential_fx.corpus(),
+    return (
+        RevocationBoundCheckpointConflictWitnessAdjudicatorCredentialCorpusSnapshot.from_document(
+            document or load_document(CORPUS_PATH),
+            predecessor=predecessor or credential_fx.corpus(),
+        )
     )
 
 
