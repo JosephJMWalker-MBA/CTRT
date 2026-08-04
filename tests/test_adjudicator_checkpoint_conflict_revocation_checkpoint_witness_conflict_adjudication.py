@@ -44,19 +44,17 @@ adjudication_contracts = import_module(
     "witness_conflict_adjudication"
 )
 AdjudicationCorpus = (
-    adjudication_contracts.AdjudicationBoundAdjudicatorCheckpointConflictCredentialRevocationCheckpointWitnessCorpusSnapshot
+    adjudication_contracts.CheckpointConflictWitnessAdjudicationCorpusSnapshot
 )
-AdjudicatorCheckpointWitnessConflictAdjudicationError = (
-    adjudication_contracts.AdjudicatorCheckpointWitnessConflictAdjudicationError
-)
+ConflictAdjudicationError = adjudication_contracts.ConflictAdjudicationError
 load_adjudication_evidence = (
-    adjudication_contracts.load_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_conflict_adjudication_evidence
+    adjudication_contracts.load_checkpoint_conflict_witness_adjudication_evidence
 )
 persist_adjudication_corpus = (
-    adjudication_contracts.persist_adjudication_bound_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_corpus
+    adjudication_contracts.persist_checkpoint_conflict_witness_adjudication_corpus
 )
 validate_adjudication = (
-    adjudication_contracts.validate_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_conflict_adjudication
+    adjudication_contracts.validate_checkpoint_conflict_witness_adjudication
 )
 
 
@@ -169,7 +167,11 @@ def validate(
 def conflict_case(
     *,
     status: str = "resolved",
-) -> tuple[Any, tuple[CheckpointWitnessAttestationSnapshot, ...], WitnessConflictAdjudicationSnapshot]:
+) -> tuple[
+    Any,
+    tuple[CheckpointWitnessAttestationSnapshot, ...],
+    WitnessConflictAdjudicationSnapshot,
+]:
     documents = tuple(load_document(path) for path in ATTESTATION_PATHS)
     changed_documents = tuple(deepcopy(item) for item in documents)
     changed_documents[2]["observed_head_ref"]["artifact_hash"] = "sha256:" + "0" * 64
