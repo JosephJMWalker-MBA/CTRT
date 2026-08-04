@@ -124,15 +124,21 @@ def execute(
     receipt = runner.run(
         plan=prepared[1],
         corpus=prepared[2],
-        credential_corpus=prepared[3],
+        current_conflict_credential_corpus=prepared[3],
         conflict_adjudicator_registry=current_fx.conflict_adjudicator_registry(),
         conflict_credential_issuer_registry=credential_fx.issuer_registry(),
         conflict_credential_policy=credential_fx.credential_policy(),
         conflict_credentials=(credential_fx.credential(),),
         conflict_adjudication=current_fx.conflict_adjudication(),
-        current_revocation_policy=revocation_fx.revocation_policy(),
-        current_revocation_ledger=revocation_fx.revocation_ledger(),
-        current_revocation_events=(revocation_fx.suspension_event(),),
+        current_conflict_adjudicator_revocation_policy=(
+            revocation_fx.revocation_policy()
+        ),
+        current_conflict_adjudicator_revocation_ledger=(
+            revocation_fx.revocation_ledger()
+        ),
+        current_conflict_adjudicator_revocation_events=(
+            revocation_fx.suspension_event(),
+        ),
         experiment_run_id=run_id,
         current_conflict_adjudicator_revocation_evaluated_at=(
             current_conflict_adjudicator_revocation_evaluated_at
