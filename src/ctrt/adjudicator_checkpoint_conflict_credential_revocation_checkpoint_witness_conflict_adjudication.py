@@ -6,7 +6,7 @@ import hashlib
 from collections.abc import Mapping
 from dataclasses import dataclass, replace
 from importlib import import_module
-from typing import Any, cast
+from typing import Any, TypeAlias, cast
 
 from ctrt.adjudicator_checkpoint_conflict_credential_revocation_checkpoints import (
     AdjudicatorCredentialRevocationLedgerCheckpointSnapshot,
@@ -18,8 +18,14 @@ from ctrt.adjudicator_checkpoint_witness_conflict_adjudication import (
     AdjudicatorCheckpointWitnessConflictAdjudicationDecisionReport,
     AdjudicatorCheckpointWitnessConflictAdjudicationError,
     StoredAdjudicatorCheckpointWitnessConflictAdjudicationEvidence,
+)
+from ctrt.adjudicator_checkpoint_witness_conflict_adjudication import (
     load_adjudicator_checkpoint_witness_conflict_adjudication_evidence as _load_evidence,
+)
+from ctrt.adjudicator_checkpoint_witness_conflict_adjudication import (
     persist_adjudication_bound_adjudicator_checkpoint_witness_corpus as _persist_corpus,
+)
+from ctrt.adjudicator_checkpoint_witness_conflict_adjudication import (
     validate_adjudicator_checkpoint_witness_conflict_adjudication as _validate_adjudication,
 )
 from ctrt.artifact_store import FileSystemArtifactStore, StoredArtifactRef
@@ -36,11 +42,11 @@ from ctrt.witness_conflict_adjudication import (
     WitnessConflictAdjudicatorRegistrySnapshot,
 )
 
-ConflictDecisionReport = (
+ConflictDecisionReport: TypeAlias = (
     AdjudicatorCheckpointWitnessConflictAdjudicationDecisionReport
 )
 ConflictAdjudicationError = AdjudicatorCheckpointWitnessConflictAdjudicationError
-StoredConflictAdjudicationEvidence = (
+StoredConflictAdjudicationEvidence: TypeAlias = (
     StoredAdjudicatorCheckpointWitnessConflictAdjudicationEvidence
 )
 
