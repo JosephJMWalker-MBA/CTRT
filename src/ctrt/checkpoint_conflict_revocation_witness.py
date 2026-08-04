@@ -11,6 +11,10 @@ from .adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_a
     validate_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_attestations,
 )
 
+validate_witnesses = (
+    validate_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_attestations
+)
+
 __all__ = (
     "AdjudicatorCheckpointWitnessDecisionReport",
     "AdjudicatorCheckpointWitnessError",
@@ -20,4 +24,5 @@ __all__ = (
     "load_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_evidence",
     "persist_witness_bound_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_corpus",
     "validate_adjudicator_checkpoint_conflict_credential_revocation_checkpoint_witness_attestations",
+    "validate_witnesses",
 )
