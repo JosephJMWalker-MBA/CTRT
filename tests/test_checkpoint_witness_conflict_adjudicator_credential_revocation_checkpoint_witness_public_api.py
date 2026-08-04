@@ -1,7 +1,12 @@
 from __future__ import annotations
 
-import ctrt.checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoint_witness as contract
-import ctrt.witness_gated_current_checkpoint_runner as runner
+from importlib import import_module
+
+contract = import_module(
+    "ctrt.checkpoint_witness_conflict_adjudicator_credential_revocation_"
+    "checkpoint_witness"
+)
+runner = import_module("ctrt.witness_gated_current_checkpoint_runner")
 
 
 def test_current_checkpoint_witness_contract_public_api() -> None:
