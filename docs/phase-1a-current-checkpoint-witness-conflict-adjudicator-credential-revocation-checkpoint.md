@@ -131,7 +131,7 @@ Public operations:
 ```text
 load_current_checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoint_evidence
 validate_current_checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoints
-persist_checkpoint_bound_current_checkpoint_witness_conflict_adjudicator_credential_revocation_corpus
+persist_current_checkpoint_witness_conflict_adjudicator_revocation_checkpoint_corpus
 ```
 
 The adapter delegates policy, sequence, ancestry, ordered-prefix, event-population, log-head, verification-report, and storage behavior to the provider-neutral adjudicator-credential revocation checkpoint grammar. It adds only exact `1.21.0` binding, compact `1.22.0` parsing, context chronology, and manifest-last persistence.
