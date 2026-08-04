@@ -53,20 +53,26 @@ _witness = import_module(
     "ctrt.current_checkpoint_witness_conflict_adjudicator_credential_"
     "revocation_checkpoint_witness"
 )
-load_witness_evidence = getattr(
+
+
+def _module_attribute(module: Any, name: str) -> Any:
+    return vars(module)[name]
+
+
+load_witness_evidence = _module_attribute(
     _witness,
     "load_current_conflict_adjudicator_revocation_checkpoint_witness_evidence",
 )
-validate_witnesses = getattr(
+validate_witnesses = _module_attribute(
     _witness,
     "validate_current_conflict_adjudicator_revocation_checkpoint_witnesses",
 )
-load_checkpoint_evidence = getattr(
+load_checkpoint_evidence = _module_attribute(
     cp,
     "load_current_checkpoint_witness_conflict_adjudicator_credential_"
     "revocation_checkpoint_evidence",
 )
-validate_checkpoints = getattr(
+validate_checkpoints = _module_attribute(
     cp,
     "validate_current_checkpoint_witness_conflict_adjudicator_credential_"
     "revocation_checkpoints",
