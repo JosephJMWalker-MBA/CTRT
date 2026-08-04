@@ -1,0 +1,32 @@
+{
+  "artifact_id": "checkpoint-witness-attestation:attestation.synthetic.witness-conflict-adjudicator-checkpoint-witness-conflict-adjudicator-credential-revocation-checkpoint-gamma.v0.1.0",
+  "attestation_id": "attestation.synthetic.witness-conflict-adjudicator-checkpoint-witness-conflict-adjudicator-credential-revocation-checkpoint-gamma.v0.1.0",
+  "witness_id": "witness.synthetic.witness-conflict-adjudicator-checkpoint-witness-conflict-gamma",
+  "witness_identity_revision": "synthetic-witness-conflict-adjudicator-checkpoint-witness-conflict-adjudicator-credential-revocation-checkpoint-witness@0.1.0",
+  "checkpoint_corpus_ref": {
+    "artifact_id": "corpus.synthetic-three-items.checkpoint-conflict-revocation-witness-conflict-adjudicator-credential-revocation-checkpoint-witness-conflict-adjudicator-credential-revocation-checkpoint-bound",
+    "artifact_version": "1.17.0",
+    "artifact_hash": "sha256:e801447e9d897baa442effd11f2a1d059624e05d7286ad7ec2bc3761e328849d"
+  },
+  "checkpoint_log_ref": {
+    "artifact_id": "log.synthetic-witness-conflict-adjudicator-checkpoint-witness-conflict-adjudicator-credential-revocation-checkpoints",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:45e9330da82ddf1295a07cd0f763c1447a9cbfccc716b20f590d94113409aa24"
+  },
+  "expected_head_ref": {
+    "artifact_id": "adjudicator-credential-revocation-checkpoint:checkpoint.synthetic.witness-conflict-adjudicator-checkpoint-witness-conflict-adjudicator-credential-revocations.0000",
+    "artifact_hash": "sha256:245efb3279bc1b10c5ffafa337665a947a8dd86e9693590cccf09a6021d829a2",
+    "canonicalization_version": "ctrt-canonical-json@0.1.0",
+    "media_type": "application/json"
+  },
+  "observed_head_ref": {
+    "artifact_id": "adjudicator-credential-revocation-checkpoint:checkpoint.synthetic.witness-conflict-adjudicator-checkpoint-witness-conflict-adjudicator-credential-revocations.0000",
+    "artifact_hash": "sha256:245efb3279bc1b10c5ffafa337665a947a8dd86e9693590cccf09a6021d829a2",
+    "canonicalization_version": "ctrt-canonical-json@0.1.0",
+    "media_type": "application/json"
+  },
+  "observation_kind": "matches_head",
+  "observed_at": "2026-08-03T19:57:49Z",
+  "received_at": "2026-08-03T19:57:50Z",
+  "note": "Synthetic witness observed the declared checkpoint-fork adjudicator credential revocation checkpoint head."
+}
