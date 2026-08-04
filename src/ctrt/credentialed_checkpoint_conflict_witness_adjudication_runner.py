@@ -26,9 +26,6 @@ from ctrt.artifact_store import (
     FileSystemArtifactStore,
     StoredArtifactRef,
 )
-from ctrt.checkpoint_conflict_revocation_witness import (
-    AdjudicatorCheckpointWitnessDecisionReport,
-)
 from ctrt.checkpoint_conflict_witness_adjudication import (
     CheckpointConflictWitnessAdjudicationCorpusSnapshot,
 )
