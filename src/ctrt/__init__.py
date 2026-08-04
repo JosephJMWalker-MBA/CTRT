@@ -133,6 +133,12 @@ from ctrt.checkpoint_conflict_witness_adjudicator_credential import (
     persist_checkpoint_conflict_witness_adjudicator_credential_corpus,
     validate_checkpoint_conflict_witness_adjudicator_credentials,
 )
+from ctrt.checkpoint_conflict_witness_adjudicator_credential_revocation_checkpoints import (
+    CheckpointBoundCheckpointConflictWitnessAdjudicatorCredentialRevocationCorpusSnapshot,
+    load_checkpoint_conflict_witness_adjudicator_credential_revocation_checkpoint_evidence,
+    persist_checkpoint_bound_checkpoint_conflict_witness_adjudicator_credential_revocation_corpus,
+    validate_checkpoint_conflict_witness_adjudicator_credential_revocation_checkpoints,
+)
 from ctrt.checkpoint_conflict_witness_adjudicator_credential_revocation_ledger import (
     RevocationBoundCheckpointConflictWitnessAdjudicatorCredentialCorpusSnapshot,
     load_checkpoint_conflict_witness_adjudicator_credential_revocation_evidence,
@@ -156,6 +162,15 @@ from ctrt.checkpoint_gated_adjudicator_revocation_runner import (
     AdjudicatorCheckpointGatedRunnerStatus,
     CheckpointGatedAdjudicatorRevocationExperimentRunner,
     VerifiedAdjudicatorCheckpointGatedReceipt,
+)
+from ctrt.checkpoint_gated_checkpoint_conflict_witness_adjudication_runner import (
+    CHECKPOINT_CONFLICT_WITNESS_REVOCATION_CHECKPOINT_VERIFIED_CHECKS,
+    CheckpointConflictWitnessRevocationCheckpointExperimentError,
+    CheckpointConflictWitnessRevocationCheckpointFinalManifest,
+    CheckpointConflictWitnessRevocationCheckpointRunnerStage,
+    CheckpointConflictWitnessRevocationCheckpointRunnerStatus,
+    CheckpointGatedCheckpointConflictWitnessAdjudicationExperimentRunner,
+    VerifiedCheckpointConflictWitnessRevocationCheckpointReceipt,
 )
 from ctrt.credentialed_adjudicated_witness_runner import (
     CREDENTIALED_ADJUDICATOR_VERIFIED_CHECKS,
@@ -223,6 +238,17 @@ from ctrt.witness_gated_adjudicator_checkpoint_conflict_runner import (
 
 __all__ = [
     *_public_api_base.__all__,
+    "CHECKPOINT_CONFLICT_WITNESS_REVOCATION_CHECKPOINT_VERIFIED_CHECKS",
+    "CheckpointBoundCheckpointConflictWitnessAdjudicatorCredentialRevocationCorpusSnapshot",
+    "CheckpointConflictWitnessRevocationCheckpointExperimentError",
+    "CheckpointConflictWitnessRevocationCheckpointFinalManifest",
+    "CheckpointConflictWitnessRevocationCheckpointRunnerStage",
+    "CheckpointConflictWitnessRevocationCheckpointRunnerStatus",
+    "CheckpointGatedCheckpointConflictWitnessAdjudicationExperimentRunner",
+    "VerifiedCheckpointConflictWitnessRevocationCheckpointReceipt",
+    "load_checkpoint_conflict_witness_adjudicator_credential_revocation_checkpoint_evidence",
+    "persist_checkpoint_bound_checkpoint_conflict_witness_adjudicator_credential_revocation_corpus",
+    "validate_checkpoint_conflict_witness_adjudicator_credential_revocation_checkpoints",
     "ADJUDICATED_ADJUDICATOR_CHECKPOINT_WITNESS_VERIFIED_CHECKS",
     "CHECKPOINT_CONFLICT_ADJUDICATOR_REVOCATION_CHECKPOINT_VERIFIED_CHECKS",
     "CHECKPOINT_CONFLICT_ADJUDICATOR_REVOCATION_VERIFIED_CHECKS",
