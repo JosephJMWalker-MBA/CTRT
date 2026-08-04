@@ -57,7 +57,7 @@
         "media_type": "application/json"
       },
       "observed_head_ref": {
-        "artifact_id": "adjudicator-credential-revocation-checkpoint:checkpoint.synthetic.checkpoint-conflict-revocation-witness-conflict-adjudicator-credential-revocation-checkpoints.conflict",
+        "artifact_id": "adjudicator-credential-revocation-checkpoint:checkpoint.synthetic.checkpoint-conflict-revocation-witness-conflict-adjudicator-credential-revocations.conflict",
         "artifact_hash": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
         "canonicalization_version": "ctrt-canonical-json@0.1.0",
         "media_type": "application/json"
@@ -74,7 +74,7 @@
         "media_type": "application/json"
       },
       "observed_head_ref": {
-        "artifact_id": "adjudicator-credential-revocation-checkpoint:checkpoint.synthetic.checkpoint-conflict-revocation-witness-conflict-adjudicator-credential-revocation-checkpoints.conflict",
+        "artifact_id": "adjudicator-credential-revocation-checkpoint:checkpoint.synthetic.checkpoint-conflict-revocation-witness-conflict-adjudicator-credential-revocations.conflict",
         "artifact_hash": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
         "canonicalization_version": "ctrt-canonical-json@0.1.0",
         "media_type": "application/json"
