@@ -15,8 +15,7 @@ from ctrt.adjudicator_checkpoint_witness_conflict_adjudication import (
     StoredAdjudicatorCheckpointWitnessConflictAdjudicationEvidence,
 )
 from ctrt.adjudicator_checkpoint_witness_conflict_adjudication import (
-    validate_adjudicator_checkpoint_witness_conflict_adjudication
-    as _validate_conflict_adjudication,
+    validate_adjudicator_checkpoint_witness_conflict_adjudication as _validate_conflict_adjudication,
 )
 from ctrt.artifact_store import (
     ArtifactIntegrityError,
