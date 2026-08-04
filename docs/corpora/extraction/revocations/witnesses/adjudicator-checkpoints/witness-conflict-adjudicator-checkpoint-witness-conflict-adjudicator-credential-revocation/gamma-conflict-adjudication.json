@@ -1,0 +1,87 @@
+{
+  "artifact_id": "witness-conflict-adjudication:adjudication.synthetic.witness-conflict-adjudicator-checkpoint-witness-conflict-adjudicator-credential-revocation-checkpoint-gamma-conflict.v0.1.0",
+  "adjudication_id": "adjudication.synthetic.witness-conflict-adjudicator-checkpoint-witness-conflict-adjudicator-credential-revocation-checkpoint-gamma-conflict.v0.1.0",
+  "witness_predecessor_corpus_ref": {
+    "artifact_id": "corpus.synthetic-three-items.checkpoint-conflict-revocation-witness-conflict-adjudicator-credential-revocation-checkpoint-witness-conflict-adjudicator-credential-revocation-checkpoint-bound-witness-bound",
+    "artifact_version": "1.18.0",
+    "artifact_hash": "sha256:772d4989ccb1670676f17784a372028949ecc5d0d080261b412fa7c25733f3f2"
+  },
+  "witness_registry_ref": {
+    "artifact_id": "registry.synthetic-witness-conflict-adjudicator-checkpoint-witness-conflict-adjudicator-credential-revocation-checkpoint-witnesses",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:53be7d043a958e6d7c5ae281524ddc2e88700535bc9487863fdc192556f79526"
+  },
+  "witness_policy_ref": {
+    "artifact_id": "policy.synthetic-witness-conflict-adjudicator-checkpoint-witness-conflict-adjudicator-credential-revocation-checkpoint-witnesses",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:f9d0e889087b08e7e6e8c70e57b56dac3ea1993b7bdc82d254257f34f8c156ac"
+  },
+  "adjudicator_registry_ref": {
+    "artifact_id": "registry.synthetic-witness-conflict-adjudicator-checkpoint-witness-conflict-adjudicator-credential-revocation-checkpoint-witness-conflict-adjudicators",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:e2acef5f118157df9f77419a939b1920bfa83ea7a34d508d921fe41927909ead"
+  },
+  "adjudication_policy_ref": {
+    "artifact_id": "policy.synthetic-witness-conflict-adjudicator-checkpoint-witness-conflict-adjudicator-credential-revocation-checkpoint-witness-conflict-adjudication",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:fb1adf97e37340fac363dfac3f5598d9810a5ff991050b5b3580bbb0bc3cf05e"
+  },
+  "checkpoint_head_ref": {
+    "artifact_id": "adjudicator-credential-revocation-checkpoint:checkpoint.synthetic.witness-conflict-adjudicator-checkpoint-witness-conflict-adjudicator-credential-revocations.0000",
+    "artifact_hash": "sha256:245efb3279bc1b10c5ffafa337665a947a8dd86e9693590cccf09a6021d829a2",
+    "canonicalization_version": "ctrt-canonical-json@0.1.0",
+    "media_type": "application/json"
+  },
+  "status": "resolved",
+  "adjudicator_id": "adjudicator.synthetic.witness-conflict-adjudicator-checkpoint-witness-conflict-adjudicator-credential-revocation-checkpoint-fork",
+  "adjudicator_identity_revision": "synthetic-witness-conflict-adjudicator-checkpoint-witness-conflict-adjudicator-credential-revocation-checkpoint-witness-conflict-adjudicator@0.1.0",
+  "selected_head_ref": {
+    "artifact_id": "adjudicator-credential-revocation-checkpoint:checkpoint.synthetic.witness-conflict-adjudicator-checkpoint-witness-conflict-adjudicator-credential-revocations.0000",
+    "artifact_hash": "sha256:245efb3279bc1b10c5ffafa337665a947a8dd86e9693590cccf09a6021d829a2",
+    "canonicalization_version": "ctrt-canonical-json@0.1.0",
+    "media_type": "application/json"
+  },
+  "fork_evidence": [
+    {
+      "witness_id": "witness.synthetic.witness-conflict-adjudicator-checkpoint-witness-conflict-gamma",
+      "attestation_ref": {
+        "artifact_id": "checkpoint-witness-attestation:attestation.synthetic.witness-conflict-adjudicator-checkpoint-witness-conflict-adjudicator-credential-revocation-checkpoint-gamma.conflict.v0.1.0",
+        "artifact_hash": "sha256:067f8962419550f6df976c14f96e1d084bcddae5ec521b77bebfc75a37e2cece",
+        "canonicalization_version": "ctrt-canonical-json@0.1.0",
+        "media_type": "application/json"
+      },
+      "expected_head_ref": {
+        "artifact_id": "adjudicator-credential-revocation-checkpoint:checkpoint.synthetic.witness-conflict-adjudicator-checkpoint-witness-conflict-adjudicator-credential-revocations.0000",
+        "artifact_hash": "sha256:245efb3279bc1b10c5ffafa337665a947a8dd86e9693590cccf09a6021d829a2",
+        "canonicalization_version": "ctrt-canonical-json@0.1.0",
+        "media_type": "application/json"
+      },
+      "observed_head_ref": {
+        "artifact_id": "adjudicator-credential-revocation-checkpoint:checkpoint.synthetic.witness-conflict-adjudicator-checkpoint-witness-conflict-adjudicator-credential-revocations.conflict",
+        "artifact_hash": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+        "canonicalization_version": "ctrt-canonical-json@0.1.0",
+        "media_type": "application/json"
+      }
+    }
+  ],
+  "preserved_dissent": [
+    {
+      "witness_id": "witness.synthetic.witness-conflict-adjudicator-checkpoint-witness-conflict-gamma",
+      "attestation_ref": {
+        "artifact_id": "checkpoint-witness-attestation:attestation.synthetic.witness-conflict-adjudicator-checkpoint-witness-conflict-adjudicator-credential-revocation-checkpoint-gamma.conflict.v0.1.0",
+        "artifact_hash": "sha256:067f8962419550f6df976c14f96e1d084bcddae5ec521b77bebfc75a37e2cece",
+        "canonicalization_version": "ctrt-canonical-json@0.1.0",
+        "media_type": "application/json"
+      },
+      "observed_head_ref": {
+        "artifact_id": "adjudicator-credential-revocation-checkpoint:checkpoint.synthetic.witness-conflict-adjudicator-checkpoint-witness-conflict-adjudicator-credential-revocations.conflict",
+        "artifact_hash": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+        "canonicalization_version": "ctrt-canonical-json@0.1.0",
+        "media_type": "application/json"
+      },
+      "note": "Gamma's conflicting current checkpoint observation remains visible after operational resolution."
+    }
+  ],
+  "rationale": "The adjudicator selected the exact checkpoint head independently verified by the frozen 1.17.0 checkpoint chain while preserving gamma's conflicting observation as dissent.",
+  "decided_at": "2026-08-03T19:57:59Z"
+}
