@@ -92,9 +92,11 @@ def revocation_corpus(
     *,
     predecessor: CredentialBoundCheckpointWitnessConflictCorpusSnapshot | None = None,
 ) -> RevocationBoundCheckpointWitnessConflictAdjudicatorCredentialCorpusSnapshot:
-    return RevocationBoundCheckpointWitnessConflictAdjudicatorCredentialCorpusSnapshot.from_document(
-        document or load_document(CORPUS_PATH),
-        predecessor=predecessor or credential_fx.corpus(),
+    return (
+        RevocationBoundCheckpointWitnessConflictAdjudicatorCredentialCorpusSnapshot.from_document(
+            document or load_document(CORPUS_PATH),
+            predecessor=predecessor or credential_fx.corpus(),
+        )
     )
 
 
