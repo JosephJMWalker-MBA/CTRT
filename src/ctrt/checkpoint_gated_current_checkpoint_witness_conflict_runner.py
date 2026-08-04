@@ -583,7 +583,9 @@ class CheckpointGatedCurrentCheckpointWitnessConflictExperimentRunner:
             current_conflict_adjudicator_credential_outcome=(
                 delegated_receipt.current_conflict_adjudicator_credential_outcome
             ),
-            conflicting_witness_outcome=delegated_receipt.conflicting_witness_outcome,
+            conflicting_witness_outcome=(
+                delegated_receipt.conflicting_witness_outcome
+            ),
             current_resolution_status=delegated_receipt.current_resolution_status,
             current_conflict_adjudication_outcome=(
                 delegated_receipt.current_conflict_adjudication_outcome
@@ -603,12 +605,18 @@ class CheckpointGatedCurrentCheckpointWitnessConflictExperimentRunner:
             lower_predecessor_witness_outcome=(
                 delegated_receipt.lower_predecessor_witness_outcome
             ),
-            inherited_revocation_outcome=delegated_receipt.inherited_revocation_outcome,
-            inherited_credential_outcome=delegated_receipt.inherited_credential_outcome,
+            inherited_revocation_outcome=(
+                delegated_receipt.inherited_revocation_outcome
+            ),
+            inherited_credential_outcome=(
+                delegated_receipt.inherited_credential_outcome
+            ),
             inherited_checkpoint_witness_outcome=(
                 delegated_receipt.inherited_checkpoint_witness_outcome
             ),
-            inherited_resolution_status=delegated_receipt.inherited_resolution_status,
+            inherited_resolution_status=(
+                delegated_receipt.inherited_resolution_status
+            ),
             inherited_adjudication_outcome=(
                 delegated_receipt.inherited_adjudication_outcome
             ),
@@ -621,7 +629,7 @@ class CheckpointGatedCurrentCheckpointWitnessConflictExperimentRunner:
             checkpoint_policy_ref=evidence.checkpoint_policy_ref,
             checkpoint_log_ref=evidence.checkpoint_log_ref,
             checkpoint_refs=evidence.checkpoint_refs,
-            checkpoint_head_ref=evidence.checkpoint_head_ref,
+            checkpoint_head_ref=evidence.checkpoint_refs[-1],
             checkpoint_verification_ref=report_ref,
             revocation_final_ref=delegated_receipt.final_manifest_ref,
             verified_checks=(
@@ -687,7 +695,9 @@ class CheckpointGatedCurrentCheckpointWitnessConflictExperimentRunner:
             current_conflict_adjudicator_credential_outcome=(
                 delegated_receipt.current_conflict_adjudicator_credential_outcome
             ),
-            conflicting_witness_outcome=delegated_receipt.conflicting_witness_outcome,
+            conflicting_witness_outcome=(
+                delegated_receipt.conflicting_witness_outcome
+            ),
             current_resolution_status=delegated_receipt.current_resolution_status,
             current_conflict_adjudication_outcome=(
                 delegated_receipt.current_conflict_adjudication_outcome
@@ -707,12 +717,18 @@ class CheckpointGatedCurrentCheckpointWitnessConflictExperimentRunner:
             lower_predecessor_witness_outcome=(
                 delegated_receipt.lower_predecessor_witness_outcome
             ),
-            inherited_revocation_outcome=delegated_receipt.inherited_revocation_outcome,
-            inherited_credential_outcome=delegated_receipt.inherited_credential_outcome,
+            inherited_revocation_outcome=(
+                delegated_receipt.inherited_revocation_outcome
+            ),
+            inherited_credential_outcome=(
+                delegated_receipt.inherited_credential_outcome
+            ),
             inherited_checkpoint_witness_outcome=(
                 delegated_receipt.inherited_checkpoint_witness_outcome
             ),
-            inherited_resolution_status=delegated_receipt.inherited_resolution_status,
+            inherited_resolution_status=(
+                delegated_receipt.inherited_resolution_status
+            ),
             inherited_adjudication_outcome=(
                 delegated_receipt.inherited_adjudication_outcome
             ),
@@ -725,7 +741,7 @@ class CheckpointGatedCurrentCheckpointWitnessConflictExperimentRunner:
             checkpoint_policy_ref=evidence.checkpoint_policy_ref,
             checkpoint_log_ref=evidence.checkpoint_log_ref,
             checkpoint_refs=evidence.checkpoint_refs,
-            checkpoint_head_ref=evidence.checkpoint_head_ref,
+            checkpoint_head_ref=evidence.checkpoint_refs[-1],
             checkpoint_verification_ref=report_ref,
             revocation_receipt=delegated_receipt,
             final_manifest_ref=final_ref,
