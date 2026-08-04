@@ -3,11 +3,11 @@ from __future__ import annotations
 import json
 from copy import deepcopy
 from dataclasses import replace
+from importlib import import_module
 from pathlib import Path
 from typing import Any, cast
 
 import test_adjudicator_checkpoint_conflict_revocation_checkpoint_witness_attestation as witness_fx
-import test_adjudicator_checkpoint_conflict_revocation_checkpoint_witness_conflict_adjudication as adjudication_fx
 from test_adjudicator_checkpoint_conflict_credential_attestation import frozen_plan
 from test_adjudicator_checkpoint_conflict_credential_revocation_checkpoints import (
     checkpoint,
@@ -39,6 +39,11 @@ from ctrt.witness_conflict_adjudication import (
     WitnessConflictAdjudicationOutcome,
     WitnessConflictAdjudicationSnapshot,
     WitnessConflictResolutionStatus,
+)
+
+adjudication_fx = import_module(
+    "test_adjudicator_checkpoint_conflict_revocation_checkpoint_"
+    "witness_conflict_adjudication"
 )
 
 ROOT = Path(__file__).parents[1]
