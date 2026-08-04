@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Self, cast
 
+import ctrt.checkpoint_conflict_witness_adjudicator_credential_revocation_checkpoints as cp
 from ctrt.adjudicator_checkpoint_witness_attestation import (
     AdjudicatorCheckpointWitnessDecisionReport,
     AdjudicatorCheckpointWitnessError,
@@ -24,13 +25,6 @@ from ctrt.adjudicator_checkpoint_witness_attestation import (
     validate_adjudicator_checkpoint_witness_attestations as _validate_witnesses,
 )
 from ctrt.artifact_store import FileSystemArtifactStore, StoredArtifactRef
-from ctrt.checkpoint_conflict_witness_adjudicator_credential_revocation_checkpoints import (
-    AdjudicatorCredentialRevocationLedgerCheckpointSnapshot as CheckpointSnapshot,
-)
-from ctrt.checkpoint_conflict_witness_adjudicator_credential_revocation_checkpoints import (
-    CheckpointBoundCheckpointConflictWitnessAdjudicatorCredentialRevocationCorpusSnapshot
-    as CheckpointCorpus,
-)
 from ctrt.checkpoint_witness_attestation import (
     CheckpointWitnessAttestationSnapshot,
     CheckpointWitnessPolicySnapshot,
@@ -38,6 +32,11 @@ from ctrt.checkpoint_witness_attestation import (
 )
 from ctrt.experiments import ExperimentPlan, VersionedArtifactRef
 from ctrt.serialization import CanonicalArtifact, canonical_json_bytes
+
+CheckpointSnapshot = cp.AdjudicatorCredentialRevocationLedgerCheckpointSnapshot
+CheckpointCorpus = (
+    cp.CheckpointBoundCheckpointConflictWitnessAdjudicatorCredentialRevocationCorpusSnapshot
+)
 
 __all__ = (
     "AdjudicatorCheckpointWitnessDecisionReport",
