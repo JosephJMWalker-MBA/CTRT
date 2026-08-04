@@ -10,10 +10,10 @@ import pytest
 from test_credential_revocation_checkpoints import validate_schema
 
 from ctrt.artifact_store import ArtifactNotFoundError, FileSystemArtifactStore
-from ctrt.checkpoint_witness_attestation import CheckpointWitnessDecisionOutcome
 from ctrt.checkpoint_conflict_witness_adjudicator_credential_revocation_ledger import (
     persist_checkpoint_conflict_witness_adjudicator_credential_revocation_bound_corpus,
 )
+from ctrt.checkpoint_witness_attestation import CheckpointWitnessDecisionOutcome
 from ctrt.extraction_review_adjudication import ReviewDecisionOutcome
 from ctrt.reviewer_credential_attestation import CredentialDecisionOutcome
 from ctrt.revocation_gated_checkpoint_conflict_witness_adjudication_runner import (
