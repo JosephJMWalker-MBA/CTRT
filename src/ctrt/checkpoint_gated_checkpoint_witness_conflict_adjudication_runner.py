@@ -47,9 +47,10 @@ from ctrt.checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoi
     AdjudicatorCredentialRevocationLedgerCheckpointSnapshot,
     CheckpointBoundCheckpointWitnessConflictAdjudicatorCredentialRevocationCorpusSnapshot,
     StoredAdjudicatorCredentialRevocationCheckpointEvidence,
-    load_checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoint_evidence
-    as load_current_checkpoint_evidence,
     validate_checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoints,
+)
+from ctrt.checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoints import (
+    load_checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoint_evidence as load_current_checkpoint_evidence,
 )
 from ctrt.checkpoint_witness_conflict_adjudicator_credential_revocation_ledger import (
     RevocationBoundCheckpointWitnessConflictAdjudicatorCredentialCorpusSnapshot,
@@ -524,13 +525,11 @@ class CheckpointGatedCheckpointWitnessConflictAdjudicationExperimentRunner:
             ) from exc
 
         try:
-            evidence = (
-                load_current_checkpoint_evidence(
-                    self._store,
-                    corpus=corpus,
-                    policy=current_checkpoint_policy,
-                    log=current_checkpoint_log,
-                )
+            evidence = load_current_checkpoint_evidence(
+                self._store,
+                corpus=corpus,
+                policy=current_checkpoint_policy,
+                log=current_checkpoint_log,
             )
         except (
             ArtifactStoreError,
