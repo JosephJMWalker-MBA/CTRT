@@ -89,9 +89,13 @@ def revocation_ledger(
 def revocation_corpus(
     document: dict[str, Any] | None = None,
     *,
-    predecessor: CredentialBoundCurrentCheckpointWitnessConflictCorpusSnapshot | None = None,
+    predecessor: CredentialBoundCurrentCheckpointWitnessConflictCorpusSnapshot
+    | None = None,
 ) -> RevocationBoundCurrentCheckpointWitnessConflictAdjudicatorCredentialCorpusSnapshot:
-    return RevocationBoundCurrentCheckpointWitnessConflictAdjudicatorCredentialCorpusSnapshot.from_document(
+    snapshot = (
+        RevocationBoundCurrentCheckpointWitnessConflictAdjudicatorCredentialCorpusSnapshot
+    )
+    return snapshot.from_document(
         document or load_document(CORPUS_PATH),
         predecessor=predecessor or credential_fx.corpus(),
     )
@@ -257,7 +261,10 @@ def test_manifest_last_persistence_and_exact_reconstruction(tmp_path: Path) -> N
         corpus_ref=selected.reference(),
         content_ids=selected.content_ids,
     )
-    first = persist_current_checkpoint_witness_conflict_adjudicator_credential_revocation_bound_corpus(
+    persist = (
+        persist_current_checkpoint_witness_conflict_adjudicator_credential_revocation_bound_corpus
+    )
+    first = persist(
         store,
         plan=plan,
         corpus=selected,
