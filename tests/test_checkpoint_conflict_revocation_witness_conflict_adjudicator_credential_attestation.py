@@ -99,6 +99,7 @@ def corpus(
         document or load_document(CORPUS_PATH),
         checkpoint_predecessor=checkpoint_corpus(),
         witness_predecessor=witness_corpus(),
+        adjudication_predecessor=adjudication_fx.corpus(),
     )
 
 
