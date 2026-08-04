@@ -50,6 +50,12 @@ CheckpointLog = cp.AdjudicatorCredentialRevocationCheckpointLogSnapshot
 CheckpointSnapshot = cp.AdjudicatorCredentialRevocationLedgerCheckpointSnapshot
 CheckpointReport = cp.AdjudicatorCredentialRevocationCheckpointVerificationReport
 CheckpointEvidence = cp.StoredAdjudicatorCredentialRevocationCheckpointEvidence
+load_checkpoint_evidence = (
+    cp.load_checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoint_evidence
+)
+validate_checkpoints = (
+    cp.validate_checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoints
+)
 
 _ARTIFACT_PREFIX = (
     "checkpoint-conflict-revocation-witness-conflict-adjudicator-credential-"
@@ -580,7 +586,7 @@ class WitnessGatedCurrentCheckpointExperimentRunner:
                 registry=current_witness_registry,
                 policy=current_witness_policy,
             )
-            checkpoint_evidence = cp.load_checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoint_evidence(
+            checkpoint_evidence = load_checkpoint_evidence(
                 self._store,
                 corpus=checkpoint_corpus,
                 policy=current_checkpoint_policy,
@@ -599,7 +605,7 @@ class WitnessGatedCurrentCheckpointExperimentRunner:
             ) from exc
 
         try:
-            checkpoint_report = cp.validate_checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoints(
+            checkpoint_report = validate_checkpoints(
                 plan=checkpoint_plan,
                 corpus=checkpoint_corpus,
                 policy=current_checkpoint_policy,
