@@ -1,0 +1,18 @@
+{
+  "policy_id": "policy.synthetic-checkpoint-conflict-adjudicator-revocation-checkpoint-witness-conflict-adjudication",
+  "policy_version": "0.1.0",
+  "status": "accepted",
+  "adjudicator_registry_ref": {
+    "artifact_id": "registry.synthetic-checkpoint-conflict-adjudicator-revocation-checkpoint-witness-conflict-adjudicators",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:44e1bad4db6061c3dc37b8b33fb673958e51ba3c84388ea2a9ec32bf54cd1fde"
+  },
+  "required_adjudicator_ids": [
+    "adjudicator.synthetic.checkpoint-conflict-revocation-checkpoint-witness-conflict"
+  ],
+  "abstain_on_pending": true,
+  "abstain_on_unresolved": true,
+  "resolution_must_select_declared_head": true,
+  "forbid_vote_aggregation": true,
+  "created_at": "2026-08-03T19:54:30Z"
+}
