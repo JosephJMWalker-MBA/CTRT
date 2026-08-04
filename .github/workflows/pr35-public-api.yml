@@ -1,0 +1,71 @@
+name: PR35 public API
+
+on:
+  push:
+    branches:
+      - phase1/checkpoint-conflict-revocation-witness-conflict-adjudicator-credential-revocation-checkpoint-witness
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: phase1/checkpoint-conflict-revocation-witness-conflict-adjudicator-credential-revocation-checkpoint-witness
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('src/ctrt/__init__.py')
+          text = path.read_text()
+          anchor = 'from ctrt.witness_gated_adjudicator_checkpoint_conflict_runner import (\n'
+          imports = '''from ctrt.witness_conflict_adjudicator_checkpoint_witness import (
+    WitnessBoundCheckpointCorpusSnapshot,
+    load_witness_evidence,
+    persist_witness_corpus,
+    validate_witness_attestations,
+)
+from ctrt.witness_gated_witness_conflict_adjudicator_checkpoint_runner import (
+    WITNESS_CONFLICT_ADJUDICATOR_CHECKPOINT_VERIFIED_CHECKS,
+    VerifiedWitnessConflictAdjudicatorCheckpointReceipt,
+    WitnessConflictAdjudicatorCheckpointExperimentError,
+    WitnessConflictAdjudicatorCheckpointFinalManifest,
+    WitnessConflictAdjudicatorCheckpointRunnerStage,
+    WitnessConflictAdjudicatorCheckpointRunnerStatus,
+    WitnessGatedWitnessConflictAdjudicatorCheckpointExperimentRunner,
+)
+'''
+          if imports not in text:
+              text = text.replace(anchor, imports + anchor)
+          names = '''    "WITNESS_CONFLICT_ADJUDICATOR_CHECKPOINT_VERIFIED_CHECKS",
+    "VerifiedWitnessConflictAdjudicatorCheckpointReceipt",
+    "WitnessBoundCheckpointCorpusSnapshot",
+    "WitnessConflictAdjudicatorCheckpointExperimentError",
+    "WitnessConflictAdjudicatorCheckpointFinalManifest",
+    "WitnessConflictAdjudicatorCheckpointRunnerStage",
+    "WitnessConflictAdjudicatorCheckpointRunnerStatus",
+    "WitnessGatedWitnessConflictAdjudicatorCheckpointExperimentRunner",
+    "load_witness_evidence",
+    "persist_witness_corpus",
+    "validate_witness_attestations",
+'''
+          all_anchor = '    *_public_api_base.__all__,\n'
+          if names not in text:
+              text = text.replace(all_anchor, all_anchor + names)
+          path.write_text(text)
+          PY
+      - run: python -m pip install ruff==0.16.1
+      - run: python -m ruff check --fix src/ctrt/__init__.py
+      - run: |
+          if git diff --quiet; then exit 0; fi
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add src/ctrt/__init__.py
+          git commit -m "Export named checkpoint witness API"
+          git push
