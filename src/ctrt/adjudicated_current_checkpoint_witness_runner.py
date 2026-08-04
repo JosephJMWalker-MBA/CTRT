@@ -19,6 +19,12 @@ from ctrt.checkpoint_witness_attestation import (
     CheckpointWitnessPolicySnapshot,
     CheckpointWitnessRegistrySnapshot,
 )
+from ctrt.checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoint_witness import (
+    AdjudicatorCheckpointWitnessDecisionReport,
+    AdjudicatorCheckpointWitnessError,
+    WitnessBoundCheckpointWitnessConflictAdjudicatorCredentialRevocationCorpusSnapshot,
+    validate_current_checkpoint_witness_attestations,
+)
 from ctrt.current_checkpoint_witness_conflict_adjudication import (
     AdjudicationBoundCurrentCheckpointWitnessCorpusSnapshot,
     ConflictAdjudicationDecisionReport,
@@ -37,12 +43,6 @@ from ctrt.witness_conflict_adjudication import (
     WitnessConflictAdjudicationSnapshot,
     WitnessConflictAdjudicatorRegistrySnapshot,
     WitnessConflictResolutionStatus,
-)
-from ctrt.checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoint_witness import (
-    AdjudicatorCheckpointWitnessDecisionReport,
-    AdjudicatorCheckpointWitnessError,
-    WitnessBoundCheckpointWitnessConflictAdjudicatorCredentialRevocationCorpusSnapshot,
-    validate_current_checkpoint_witness_attestations,
 )
 from ctrt.witness_gated_current_checkpoint_runner import (
     CurrentCheckpointWitnessExperimentError,
