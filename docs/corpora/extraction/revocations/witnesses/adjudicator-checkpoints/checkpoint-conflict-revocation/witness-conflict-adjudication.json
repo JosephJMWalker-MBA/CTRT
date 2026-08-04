@@ -1,0 +1,43 @@
+{
+  "artifact_id": "witness-conflict-adjudication:adjudication.synthetic.checkpoint-conflict-revocation-checkpoint-witnesses.v0.1.0",
+  "adjudication_id": "adjudication.synthetic.checkpoint-conflict-revocation-checkpoint-witnesses.v0.1.0",
+  "witness_predecessor_corpus_ref": {
+    "artifact_id": "corpus.synthetic-three-items.adjudicator-checkpoint-conflict-adjudicator-credential-revocation-checkpoint-witness-bound",
+    "artifact_version": "1.8.0",
+    "artifact_hash": "sha256:3d48f367ce1b1101dd7044bb846da42786e3eb9af55c6de7d9bc9e5545f2479a"
+  },
+  "witness_registry_ref": {
+    "artifact_id": "registry.synthetic-checkpoint-conflict-adjudicator-revocation-checkpoint-witnesses",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:b1913fc0755e92d266f22683f4cfb4e804be7f79eb2af291232eea06169b38b7"
+  },
+  "witness_policy_ref": {
+    "artifact_id": "policy.synthetic-checkpoint-conflict-adjudicator-revocation-checkpoint-witnesses",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:05d42931c5a1df1d6390c331e199b76b6d303f77f771950ed913c6a13ebeb5a2"
+  },
+  "adjudicator_registry_ref": {
+    "artifact_id": "registry.synthetic-checkpoint-conflict-adjudicator-revocation-checkpoint-witness-conflict-adjudicators",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:44e1bad4db6061c3dc37b8b33fb673958e51ba3c84388ea2a9ec32bf54cd1fde"
+  },
+  "adjudication_policy_ref": {
+    "artifact_id": "policy.synthetic-checkpoint-conflict-adjudicator-revocation-checkpoint-witness-conflict-adjudication",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:19a81edbcc0eff61c0f197edf4fd21bfa83aae332329f51957135e8462294400"
+  },
+  "checkpoint_head_ref": {
+    "artifact_id": "adjudicator-credential-revocation-checkpoint:checkpoint.synthetic.adjudicator-checkpoint-conflict-adjudicator-credential-revocations.0000",
+    "artifact_hash": "sha256:ccf31947e678160514a5ac6f59eec7f3718c56e7800c973f23c0770895629422",
+    "canonicalization_version": "ctrt-canonical-json@0.1.0",
+    "media_type": "application/json"
+  },
+  "status": "not_required",
+  "adjudicator_id": null,
+  "adjudicator_identity_revision": null,
+  "selected_head_ref": null,
+  "fork_evidence": [],
+  "preserved_dissent": [],
+  "rationale": "All required named witnesses reported the independently verified checkpoint head; conflict adjudication was not required.",
+  "decided_at": "2026-08-03T19:55:00Z"
+}
