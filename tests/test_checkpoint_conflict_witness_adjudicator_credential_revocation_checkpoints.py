@@ -103,7 +103,7 @@ def checkpoint_corpus(
 def checkpoint_plan():
     selected = checkpoint_corpus()
     return replace(
-        lower_fx.credential_runner_fx.credential_fx.frozen_plan(),
+        lower_fx.credential_runner_fx.frozen_plan(),
         corpus_ref=selected.reference(),
         content_ids=selected.content_ids,
     )
