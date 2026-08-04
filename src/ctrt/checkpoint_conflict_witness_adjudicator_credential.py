@@ -29,6 +29,7 @@ from ctrt.adjudicator_credential_attestation import (
 from ctrt.artifact_store import FileSystemArtifactStore
 from ctrt.checkpoint_conflict_witness_adjudication import (
     CheckpointConflictWitnessAdjudicationCorpusSnapshot,
+    ConflictAdjudicationError,
 )
 from ctrt.experiments import ExperimentPlan, VersionedArtifactRef
 from ctrt.reviewer_credential_attestation import CredentialIssuerRegistrySnapshot
@@ -131,17 +132,23 @@ class CredentialBoundCheckpointConflictWitnessAdjudicationCorpusSnapshot:
         *,
         checkpoint_predecessor: Any,
         witness_predecessor: Any,
+        adjudication_predecessor: CheckpointConflictWitnessAdjudicationCorpusSnapshot,
     ) -> CredentialBoundCheckpointConflictWitnessAdjudicationCorpusSnapshot:
         predecessor_document = {
             key: value
             for key, value in document.items()
             if key not in _CREDENTIAL_FIELDS
         }
-        parsed = CheckpointConflictWitnessAdjudicationCorpusSnapshot.from_document(
-            predecessor_document,
-            checkpoint_predecessor=checkpoint_predecessor,
-            witness_predecessor=witness_predecessor,
-        )
+        try:
+            parsed = CheckpointConflictWitnessAdjudicationCorpusSnapshot.from_document(
+                predecessor_document,
+                checkpoint_predecessor=checkpoint_predecessor,
+                witness_predecessor=witness_predecessor,
+            )
+        except ConflictAdjudicationError as exc:
+            raise CheckpointConflictWitnessAdjudicatorCredentialError(
+                str(exc)
+            ) from exc
         payload = canonical_json_bytes(document)
         credential_view = replace(
             parsed,
@@ -156,9 +163,35 @@ class CredentialBoundCheckpointConflictWitnessAdjudicationCorpusSnapshot:
             document.get(f"{_PREFIX}_predecessor_corpus_ref"),
             f"{_PREFIX}_predecessor_corpus_ref",
         )
-        if predecessor_ref != parsed.reference():
+        if predecessor_ref != adjudication_predecessor.reference():
             raise CheckpointConflictWitnessAdjudicatorCredentialError(
                 "credential predecessor differs from exact 1.9.0 corpus"
+            )
+        preserved_authority = (
+            parsed.content_ids,
+            parsed.predecessor_corpus_ref,
+            parsed.adjudicator_registry_ref,
+            parsed.adjudication_policy_ref,
+            parsed.adjudication_ref,
+            parsed.corpus.predecessor_corpus_ref,
+            parsed.corpus.witness_registry_ref,
+            parsed.corpus.witness_policy_ref,
+            parsed.corpus.witness_attestation_refs,
+        )
+        expected_authority = (
+            adjudication_predecessor.content_ids,
+            adjudication_predecessor.predecessor_corpus_ref,
+            adjudication_predecessor.adjudicator_registry_ref,
+            adjudication_predecessor.adjudication_policy_ref,
+            adjudication_predecessor.adjudication_ref,
+            adjudication_predecessor.corpus.predecessor_corpus_ref,
+            adjudication_predecessor.corpus.witness_registry_ref,
+            adjudication_predecessor.corpus.witness_policy_ref,
+            adjudication_predecessor.corpus.witness_attestation_refs,
+        )
+        if preserved_authority != expected_authority:
+            raise CheckpointConflictWitnessAdjudicatorCredentialError(
+                "credential corpus must preserve the exact 1.9.0 authority graph"
             )
         values = document.get(f"{_PREFIX}s")
         if not isinstance(values, list):
