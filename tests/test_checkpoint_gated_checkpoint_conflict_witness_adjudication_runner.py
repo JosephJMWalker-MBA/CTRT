@@ -8,7 +8,7 @@ from typing import Any, cast
 import pytest
 from test_credential_revocation_checkpoints import validate_schema
 
-from ctrt.artifact_store import ArtifactNotFoundError, FileSystemArtifactStore
+from ctrt.artifact_store import FileSystemArtifactStore
 from ctrt.checkpoint_gated_checkpoint_conflict_witness_adjudication_runner import (
     CHECKPOINT_CONFLICT_WITNESS_REVOCATION_CHECKPOINT_VERIFIED_CHECKS,
     CheckpointConflictWitnessRevocationCheckpointExperimentError,
@@ -161,30 +161,16 @@ def test_valid_checkpoint_preserves_later_revocation_abstention(
     validate_schema(FINAL_SCHEMA, final)
 
 
-def test_checkpoint_after_revocation_stops_pr33_before_decision(
-    tmp_path: Path,
-) -> None:
-    run_id = "checkpoint-gated-revocation-late"
+def test_checkpoint_after_revocation_stops_at_preflight(tmp_path: Path) -> None:
     with pytest.raises(
         CheckpointConflictWitnessRevocationCheckpointExperimentError,
     ) as captured:
         execute(
             tmp_path,
-            run_id=run_id,
+            run_id="checkpoint-gated-revocation-late",
             checkpoint_verified_at="2026-08-03T19:54:57Z",
         )
     assert (
         captured.value.stage
         is CheckpointConflictWitnessRevocationCheckpointRunnerStage.PREFLIGHT
     )
-    prepared = checkpoint_fx.prepare_checkpoint_store(
-        tmp_path / "absence-check",
-        run_id=f"{run_id}-absence",
-    )
-    store = cast(FileSystemArtifactStore, prepared[0])
-    decision_id = (
-        f"{run_id}:checkpoint-conflict-revocation-"
-        "witness-conflict-adjudicator-credential-revocation-decision"
-    )
-    with pytest.raises(ArtifactNotFoundError):
-        store.get(decision_id)
