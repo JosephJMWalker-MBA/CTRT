@@ -1,15 +1,18 @@
 from __future__ import annotations
 
-from ctrt.checkpoint_conflict_witness_adjudicator_credential_revocation_checkpoints import (
-    CheckpointBoundCheckpointConflictWitnessAdjudicatorCredentialRevocationCorpusSnapshot,
-    load_checkpoint_conflict_witness_adjudicator_credential_revocation_checkpoint_evidence,
-    persist_checkpoint_bound_checkpoint_conflict_witness_adjudicator_credential_revocation_corpus,
-    validate_checkpoint_conflict_witness_adjudicator_credential_revocation_checkpoints,
+from ctrt import (
+    checkpoint_conflict_witness_adjudicator_credential_revocation_checkpoints
+    as checkpoints,
+)
+
+EXPECTED_NAMES = (
+    "CheckpointBoundCheckpointConflictWitnessAdjudicatorCredentialRevocationCorpusSnapshot",
+    "load_checkpoint_conflict_witness_adjudicator_credential_revocation_checkpoint_evidence",
+    "persist_checkpoint_bound_checkpoint_conflict_witness_adjudicator_credential_revocation_corpus",
+    "validate_checkpoint_conflict_witness_adjudicator_credential_revocation_checkpoints",
 )
 
 
 def test_checkpoint_contract_symbols_are_importable() -> None:
-    assert CheckpointBoundCheckpointConflictWitnessAdjudicatorCredentialRevocationCorpusSnapshot
-    assert load_checkpoint_conflict_witness_adjudicator_credential_revocation_checkpoint_evidence
-    assert persist_checkpoint_bound_checkpoint_conflict_witness_adjudicator_credential_revocation_corpus
-    assert validate_checkpoint_conflict_witness_adjudicator_credential_revocation_checkpoints
+    for name in EXPECTED_NAMES:
+        assert getattr(checkpoints, name) is not None
