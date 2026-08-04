@@ -11,6 +11,7 @@ from test_adjudicator_checkpoint_witness_conflict_adjudication import load_docum
 from test_checkpoint_conflict_witness_adjudicator_credential_revocation_checkpoints import (
     checkpoint,
     checkpoint_corpus,
+    checkpoint_plan,
     prepare_checkpoint_store,
 )
 from test_credential_revocation_checkpoints import validate_schema
@@ -102,18 +103,10 @@ def witness_corpus(
 def witness_plan(selected: WitnessBoundCheckpointCorpusSnapshot | None = None):
     corpus = selected or witness_corpus()
     return replace(
-        checkpoint_corpus().corpus.reference() and checkpoint_plan_base(),
+        checkpoint_plan(),
         corpus_ref=corpus.reference(),
         content_ids=corpus.content_ids,
     )
-
-
-def checkpoint_plan_base():
-    from test_checkpoint_conflict_witness_adjudicator_credential_revocation_checkpoints import (
-        checkpoint_plan,
-    )
-
-    return checkpoint_plan()
 
 
 def stored_ref_document(reference: Any) -> dict[str, str]:
