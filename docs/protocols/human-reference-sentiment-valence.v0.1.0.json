@@ -1,0 +1,159 @@
+{
+  "protocol_id": "protocol.human-reference-sentiment-valence",
+  "protocol_version": "0.1.0",
+  "status": "frozen",
+  "dimension_id": "sentiment_valence",
+  "dimension_version": "0.1.0",
+  "purpose": "blinded_human_reference_collection",
+  "task_statement": "Read one short passage of English text and record how favorable or unfavorable the language in that passage is. Judge only the language that is present. Do not judge the author, the author's intent, the truth of the passage, or its effect on any reader.",
+  "instructions": [
+    "Judge only the exact text shown. Nothing outside it is available to you, and nothing outside it should influence you.",
+    "You are describing the language, not the person who wrote it.",
+    "If the passage does not give you enough context to answer responsibly, say so. Choosing 'cannot determine responsibly' is a correct and expected outcome for some items.",
+    "Do not guess in order to avoid leaving an item unanswered.",
+    "Record ambiguity and insufficient context separately from your valence judgment. An item can be clearly favorable and still be ambiguous, and it can be unambiguous and still lack context.",
+    "There is no expected answer, no answer key, and no score. Disagreement between annotators is information this study is designed to preserve.",
+    "Your rationale and supporting spans are optional. Provide them when they help explain what in the text you responded to."
+  ],
+  "valence_scale": {
+    "scale_id": "scale.sentiment-valence-favorability",
+    "scale_version": "0.1.0",
+    "scale_type": "ordered_categorical_with_abstention",
+    "numeric_encoding_note": "The ordinal_position field exists only as a declared serialization convenience for storage and display ordering. It is NOT an interval measurement. Distances between adjacent positions are not equal, not meaningful, and must never be averaged, summed, or treated as a numeric score.",
+    "options": [
+      {
+        "value": "strongly_unfavorable",
+        "display": "Strongly unfavorable",
+        "ordinal_position": 0,
+        "is_abstention": false
+      },
+      {
+        "value": "somewhat_unfavorable",
+        "display": "Somewhat unfavorable",
+        "ordinal_position": 1,
+        "is_abstention": false
+      },
+      {
+        "value": "neither_clearly_favorable_nor_unfavorable",
+        "display": "Neither clearly favorable nor unfavorable",
+        "ordinal_position": 2,
+        "is_abstention": false
+      },
+      {
+        "value": "somewhat_favorable",
+        "display": "Somewhat favorable",
+        "ordinal_position": 3,
+        "is_abstention": false
+      },
+      {
+        "value": "strongly_favorable",
+        "display": "Strongly favorable",
+        "ordinal_position": 4,
+        "is_abstention": false
+      },
+      {
+        "value": "cannot_determine_responsibly",
+        "display": "Cannot determine responsibly",
+        "ordinal_position": null,
+        "is_abstention": true
+      }
+    ]
+  },
+  "context_sufficiency_scale": {
+    "scale_id": "scale.context-sufficiency",
+    "scale_version": "0.1.0",
+    "options": ["sufficient", "insufficient", "unsure"],
+    "notes": "Whether the exact text shown gave you enough to answer. This is recorded separately from the valence judgment and separately from ambiguity."
+  },
+  "ambiguity_scale": {
+    "scale_id": "scale.perceived-ambiguity",
+    "scale_version": "0.1.0",
+    "options": ["none", "some", "high"],
+    "notes": "How open to more than one reading the passage seemed to you. Recorded separately from context sufficiency."
+  },
+  "certainty_scale": {
+    "scale_id": "scale.self-reported-certainty",
+    "scale_version": "0.1.0",
+    "options": ["low", "medium", "high"],
+    "optional": true,
+    "notes": "Your own sense of how settled your judgment feels. This is a self-report about a person. It is NOT analyzer confidence, NOT calibrated, and it must never populate any CTRT instrument-confidence field."
+  },
+  "abstention_reasons": [
+    "insufficient_context",
+    "ambiguous_between_readings",
+    "unfamiliar_vocabulary_or_reference",
+    "requires_domain_knowledge",
+    "other_recorded_in_rationale"
+  ],
+  "response_fields": [
+    {
+      "field": "valence_label",
+      "required": true,
+      "notes": "One exact value from the versioned valence scale, preserved as entered."
+    },
+    {
+      "field": "abstained",
+      "required": true,
+      "notes": "True exactly when valence_label is the abstention option. Never inferred from any other field."
+    },
+    {
+      "field": "abstention_reason",
+      "required": false,
+      "notes": "Required when abstained is true; forbidden otherwise."
+    },
+    {
+      "field": "context_sufficiency",
+      "required": true,
+      "notes": "Kept separate from valence and from ambiguity."
+    },
+    {
+      "field": "perceived_ambiguity",
+      "required": true,
+      "notes": "Kept separate from valence and from context sufficiency."
+    },
+    {
+      "field": "self_reported_certainty",
+      "required": false,
+      "notes": "Optional self-report about the annotator. Never analyzer confidence."
+    },
+    {
+      "field": "rationale",
+      "required": false,
+      "notes": "Optional free text explaining what in the passage the annotator responded to."
+    },
+    {
+      "field": "supporting_spans",
+      "required": false,
+      "notes": "Optional zero-based half-open character spans that must fall inside the exact item text."
+    },
+    {
+      "field": "protocol_acknowledgment",
+      "required": true,
+      "notes": "The exact protocol ID, version, and hash the annotator worked under."
+    }
+  ],
+  "blinding_rules": [
+    "An annotation packet must never contain a candidate name, package identity, analyzer identity, analyzer output, behavioral-characterization outcome, expectation result, or registry status.",
+    "An annotation packet must never contain a model comparison or any suggestion that a particular response is expected.",
+    "The collection interface must never display analyzer output or analytical scoring of any kind.",
+    "Annotators are not told which instrument, if any, this study will later be compared against."
+  ],
+  "privacy_rules": [
+    "Annotator identity is a locally chosen pseudonymous ID only.",
+    "CTRT does not collect legal names, email addresses, phone numbers, account identifiers, IP addresses, demographic profiles, or unrelated personal information.",
+    "Pseudonymous IDs may still be linkable to a person if whoever distributes the study keeps a separate mapping. CTRT does not create, request, or store any such mapping."
+  ],
+  "aggregation_policy": {
+    "aggregation_permitted": false,
+    "notes": "This protocol collects independent judgments only. Majority vote, average label, median label, consensus truth, adjudicated label, inter-annotator agreement statistics, merged human scores, and gold answers are all prohibited under this protocol version. Aggregation and adjudication require a separate, later, explicitly accepted protocol."
+  },
+  "non_claims": [
+    "Human-reference annotations preserve independent judgments under a declared protocol. They do not become ground truth merely because humans supplied them.",
+    "Disagreement, ambiguity, insufficient context, and abstention are evidence to preserve, not errors to erase.",
+    "This protocol produces no accuracy, agreement, calibration, or ranking measurement of any kind.",
+    "This protocol does not run, reference, evaluate, or select any analyzer candidate.",
+    "The annotation corpus is a small repository-authored pilot and does not represent any population.",
+    "Self-reported annotator certainty is a statement about a person and is never analyzer confidence."
+  ],
+  "created_at": "2026-08-05T22:00:00Z"
+}
