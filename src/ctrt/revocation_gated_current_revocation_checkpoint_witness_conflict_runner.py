@@ -687,7 +687,10 @@ class RevocationGatedCurrentRevocationCheckpointWitnessConflictExperimentRunner:
                 stage = (
                     CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationRunnerStage.CREDENTIAL_EXECUTION
                 )
-                raise CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationExperimentError(
+                error = (
+                    CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationExperimentError
+                )
+                raise error(
                     stage,
                     str(exc),
                     completed_content_ids=exc.completed_content_ids,
