@@ -1,0 +1,701 @@
+{
+  "corpus_id": "corpus.human-reference-sentiment",
+  "corpus_version": "0.1.0",
+  "status": "frozen",
+  "purpose": "human_reference_annotation",
+  "dimension_id": "sentiment_valence",
+  "dimension_version": "0.1.0",
+  "language": "en",
+  "provenance": {
+    "authorship": "repository_authored",
+    "author": "CTRT project",
+    "external_dataset": false,
+    "scraped_content": false,
+    "network_retrieval": false,
+    "personal_information": false,
+    "notes": "Every item below was written specifically for CTRT as original short-form English text. No text is copied from social media, published posts, or any external dataset, and no item contains personal information about any real person."
+  },
+  "expected_responses": {
+    "expected_labels_present": false,
+    "notes": "This corpus contains NO expected responses, no gold labels, and no correct answers. Each item carries a neutral description of the linguistic condition it includes. Design categories describe research coverage only and must never be read as the answer an annotator is supposed to give."
+  },
+  "population_claim": {
+    "represents_population": false,
+    "notes": "This is a small repository-authored pilot corpus. It is not a sample of any population of real content, authors, or platforms, and no result derived from it may be generalized as though it were."
+  },
+  "categories": [
+    "capitalization_emphasis",
+    "context_dependent_reference",
+    "contrastive_construction",
+    "conventionally_favorable_vocabulary",
+    "conventionally_unfavorable_vocabulary",
+    "diminisher_present",
+    "emoticon_or_emoji",
+    "intensifier_present",
+    "irony_or_sarcasm_risk",
+    "mixed_valence_vocabulary",
+    "negation_construction",
+    "plausible_abstention",
+    "primarily_factual_wording",
+    "punctuation_emphasis",
+    "slang_or_informal",
+    "underspecified_reference"
+  ],
+  "items": [
+    {
+      "position": 0,
+      "item_id": "hr-001",
+      "text": "The new scheduling screen saved me a lot of time today.",
+      "content_hash": "sha256:2d4fed174fec41d577c5e837ce854d499c6a5440f8aa5b8944903c7639bbb843",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "conventionally_favorable_vocabulary"
+      ],
+      "includes_condition": "Conventionally favorable vocabulary with a first-person report and no negation or contrast.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 1,
+      "item_id": "hr-002",
+      "text": "Support closed my ticket without answering the question.",
+      "content_hash": "sha256:23e7c8ffb863fae300e87a0bae8eda0970459e67788c1d62ede5c451c6ac2830",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "conventionally_unfavorable_vocabulary"
+      ],
+      "includes_condition": "Conventionally unfavorable vocabulary describing an action and its omission.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 2,
+      "item_id": "hr-003",
+      "text": "The release notes list twelve changes and three known issues.",
+      "content_hash": "sha256:9fecd913bde7ece255b03788b83e0295d4e1fc499be7444b8c7cbb2e28abfda2",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "primarily_factual_wording"
+      ],
+      "includes_condition": "Primarily factual enumeration with no evaluative vocabulary.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 3,
+      "item_id": "hr-004",
+      "text": "Setup was quick, though the documentation is out of date.",
+      "content_hash": "sha256:88759a4f5bd873f88ba4012c54c45515f94faac994c601209c20619d34dcd018",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "mixed_valence_vocabulary",
+        "contrastive_construction"
+      ],
+      "includes_condition": "Two clauses of differing valence joined by a contrastive conjunction.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 4,
+      "item_id": "hr-005",
+      "text": "The export works, but only for one file at a time.",
+      "content_hash": "sha256:1766c25ae0489c23f895da52455868634d19e45923064566cfe9530de8551f83",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "contrastive_construction"
+      ],
+      "includes_condition": "A contrastive conjunction introducing a scope limitation.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 5,
+      "item_id": "hr-006",
+      "text": "This is not what I would call an improvement.",
+      "content_hash": "sha256:8e5bb75e1f9b7a0b06c081d039a96195bbceebb4a26cd008227a734c009ccb20",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "negation_construction"
+      ],
+      "includes_condition": "Negation applied to an evaluative noun phrase at a distance.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 6,
+      "item_id": "hr-007",
+      "text": "I do not dislike the new layout.",
+      "content_hash": "sha256:931761bdd75912bf4a840392f9d4e66c0bd15cc194f4b3e49712b70349a8baa6",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "negation_construction"
+      ],
+      "includes_condition": "Negation applied to an already-negative verb.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 7,
+      "item_id": "hr-008",
+      "text": "The sync is extremely reliable now.",
+      "content_hash": "sha256:270f676418787d04a52d6fdb3c59449fbd8db04564ed77ee7ea44c7536be1f93",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "intensifier_present"
+      ],
+      "includes_condition": "A degree intensifier preceding an evaluative adjective.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 8,
+      "item_id": "hr-009",
+      "text": "The sync is slightly more reliable now.",
+      "content_hash": "sha256:cb93dba617607c5cf430d4f554dc6f6ee7b8e28609911f40cf6a855639fff722",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "diminisher_present"
+      ],
+      "includes_condition": "A degree diminisher preceding a comparative adjective.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 9,
+      "item_id": "hr-010",
+      "text": "THIS FINALLY WORKS.",
+      "content_hash": "sha256:72e8290d2b164488423ebf9790cffca0069572d09f2751a08780301671a5971c",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "capitalization_emphasis"
+      ],
+      "includes_condition": "Full capitalization used as emphasis on a short clause.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 10,
+      "item_id": "hr-011",
+      "text": "It crashed again!!!",
+      "content_hash": "sha256:3ad9e31e15abdf6a22cbd53769a8f36561c7a36411789f607e000719a760cc02",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "punctuation_emphasis"
+      ],
+      "includes_condition": "Repeated terminal punctuation used as emphasis.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 11,
+      "item_id": "hr-012",
+      "text": "the update is mid tbh",
+      "content_hash": "sha256:5faa8b1762795633e1a5187b512b1640d5f9a88a73dc438fe4da19e26c00ccf7",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "slang_or_informal"
+      ],
+      "includes_condition": "Informal abbreviation and recent slang vocabulary in lowercase.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 12,
+      "item_id": "hr-013",
+      "text": "shipped the migration :)",
+      "content_hash": "sha256:358c2ab74e12565895ae218f46aa3fc629bb88830901a842a53d54507c60f5c4",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "emoticon_or_emoji",
+        "slang_or_informal"
+      ],
+      "includes_condition": "A Western emoticon appended to a short informal clause.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 13,
+      "item_id": "hr-014",
+      "text": "Two hours of downtime 🎉",
+      "content_hash": "sha256:97fd6d64d1282e6c95cc17b6ae9335213fd4634233f26c2839a6b852d093fc2c",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "emoticon_or_emoji",
+        "irony_or_sarcasm_risk"
+      ],
+      "includes_condition": "A celebratory emoji appended to a factual statement about an interruption.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 14,
+      "item_id": "hr-015",
+      "text": "Great, another mandatory password reset.",
+      "content_hash": "sha256:c301ae70293711353e296204ec4601033c6a9e8ff02a9ee4717925632b81f7ae",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "irony_or_sarcasm_risk"
+      ],
+      "includes_condition": "An evaluative interjection followed by a routine event, a construction associated with irony risk.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 15,
+      "item_id": "hr-016",
+      "text": "The queue depth dropped to zero overnight.",
+      "content_hash": "sha256:5ffdf93f7bdd04a7e360c5f8b25771c97b53df7f86c5f2a0949f6d55ed88eedb",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "context_dependent_reference",
+        "primarily_factual_wording"
+      ],
+      "includes_condition": "A measurement change whose reading depends on domain context absent from the text.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 16,
+      "item_id": "hr-017",
+      "text": "They removed the feature I used most.",
+      "content_hash": "sha256:f8e7670af429fd8367880e2de11b5b8d00b2f9faab8674df3aa4a4c0bb8a938e",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "context_dependent_reference"
+      ],
+      "includes_condition": "A described action whose reading depends on the speaker's situation.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 17,
+      "item_id": "hr-018",
+      "text": "It does what it says.",
+      "content_hash": "sha256:a19c74d99d265669bb6927e41c770d075597bee8626fd9a8da7fea62ea2e6b3d",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "underspecified_reference"
+      ],
+      "includes_condition": "An evaluative-sounding statement with no stated referent.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 18,
+      "item_id": "hr-019",
+      "text": "Fine.",
+      "content_hash": "sha256:06ddfbea2f6fd7ed52f3abb5bb3ba71486fe2c9504d7bd7ee1a859a5721a7cae",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "underspecified_reference",
+        "plausible_abstention"
+      ],
+      "includes_condition": "A single ambiguous word with no surrounding context.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 19,
+      "item_id": "hr-020",
+      "text": "Per the attached.",
+      "content_hash": "sha256:3f3298ff50922a312d50cf1068d68b166a7df7f9f3ff192ac6dc8c620da8f19f",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "underspecified_reference",
+        "plausible_abstention"
+      ],
+      "includes_condition": "A fragment referring to material that is not present.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 20,
+      "item_id": "hr-021",
+      "text": "The build passed on the third attempt.",
+      "content_hash": "sha256:56bf1f29fee569ee3b860e317c25c387a7b964e895e40e01826b590cd4189000",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "primarily_factual_wording",
+        "context_dependent_reference"
+      ],
+      "includes_condition": "A factual outcome qualified by a repetition count.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 21,
+      "item_id": "hr-022",
+      "text": "Nothing broke this time.",
+      "content_hash": "sha256:d665f521296024189ee2c20bef097ae4dd3e1228739737b4978e53ae050a651d",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "negation_construction",
+        "context_dependent_reference"
+      ],
+      "includes_condition": "A negative quantifier applied to an unfavorable verb.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 22,
+      "item_id": "hr-023",
+      "text": "I have never seen a rollout go this smoothly.",
+      "content_hash": "sha256:51bc94e4e64b31c792cd820bca5bd71c7e126acc0497115f0dd9d3c5d300194f",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "negation_construction",
+        "conventionally_favorable_vocabulary"
+      ],
+      "includes_condition": "A negation token combined with conventionally favorable vocabulary.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 23,
+      "item_id": "hr-024",
+      "text": "Absolutely terrible timing for a maintenance window.",
+      "content_hash": "sha256:c6dc9c7e537509d93a61e5631a8d7aa74ac257d1e1d976d3b0d7a88da3f41d1c",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "intensifier_present",
+        "conventionally_unfavorable_vocabulary"
+      ],
+      "includes_condition": "A degree intensifier preceding conventionally unfavorable vocabulary.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 24,
+      "item_id": "hr-025",
+      "text": "somewhat useful, somewhat confusing",
+      "content_hash": "sha256:71742f584eac5e0a046b4b8faa8300c6da6ea73acd4bc71d666908e9d221b954",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "mixed_valence_vocabulary",
+        "diminisher_present"
+      ],
+      "includes_condition": "Two hedged evaluative adjectives of differing valence in one fragment.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 25,
+      "item_id": "hr-026",
+      "text": "The onboarding flow is clean and the error messages are helpful.",
+      "content_hash": "sha256:3d9878836901278ba1f788b5decde30b6f450760cdd9fe823b09eb0eafaaf153",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "conventionally_favorable_vocabulary"
+      ],
+      "includes_condition": "Two conventionally favorable adjectives joined without contrast.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 26,
+      "item_id": "hr-027",
+      "text": "Latency doubled after the patch.",
+      "content_hash": "sha256:f2b07eff7004af601f3154f83b012810aacb128c9f3a9e9fd700cc8dfd2c4dff",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "primarily_factual_wording",
+        "context_dependent_reference"
+      ],
+      "includes_condition": "A quantitative change whose reading depends on which direction is desirable.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 27,
+      "item_id": "hr-028",
+      "text": "no notes",
+      "content_hash": "sha256:629d20aa3cc6d5b70cba15e8238a3ad92dd9072709e72e458f921ab3b29bfbfc",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "slang_or_informal",
+        "underspecified_reference"
+      ],
+      "includes_condition": "A two-word informal idiom with no stated referent.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 28,
+      "item_id": "hr-029",
+      "text": "It's fine I guess.",
+      "content_hash": "sha256:d5b245a00d7fc8b96db5344832b76b2587706221bf5f7d7d885ef9921d1d194d",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "diminisher_present",
+        "underspecified_reference"
+      ],
+      "includes_condition": "A hedged evaluative adjective followed by an epistemic qualifier.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 29,
+      "item_id": "hr-030",
+      "text": "WHY IS THIS STILL BROKEN",
+      "content_hash": "sha256:4dba9d486e3143f2b105274bc8d3b8df6d45f9116b3620febc84869a55ba5e85",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "capitalization_emphasis",
+        "conventionally_unfavorable_vocabulary"
+      ],
+      "includes_condition": "Full capitalization applied to an interrogative containing unfavorable vocabulary.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 30,
+      "item_id": "hr-031",
+      "text": "Thanks for nothing.",
+      "content_hash": "sha256:680a64d3ae967ad71246b02a6a40b7efc579b663cc46a3ae0ecca8c5bc78075a",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "irony_or_sarcasm_risk",
+        "negation_construction"
+      ],
+      "includes_condition": "A conventional expression of gratitude combined with a negative quantifier.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 31,
+      "item_id": "hr-032",
+      "text": "The team shipped ahead of schedule and under budget.",
+      "content_hash": "sha256:05cd7348a6a348bd7b8850503abf01d243a8773e77d01f89c644e81738903d5c",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "conventionally_favorable_vocabulary",
+        "primarily_factual_wording"
+      ],
+      "includes_condition": "Two factual comparisons commonly associated with favorable reading.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 32,
+      "item_id": "hr-033",
+      "text": "Documentation exists.",
+      "content_hash": "sha256:649e548a8514ad911136eb57bba5ea73fe512f1b8583c31a240ed41c638a82a7",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "underspecified_reference",
+        "irony_or_sarcasm_risk"
+      ],
+      "includes_condition": "A minimal existential statement about a commonly discussed artifact.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 33,
+      "item_id": "hr-034",
+      "text": "I would not recommend upgrading yet.",
+      "content_hash": "sha256:3d9ffd2e3ae935b4ae6cdfff683bc3c78d9f9b622bf53e2de41a837d2ae3edd4",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "negation_construction"
+      ],
+      "includes_condition": "Negation applied to a recommendation verb with a temporal qualifier.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 34,
+      "item_id": "hr-035",
+      "text": "Works on my machine 🙃",
+      "content_hash": "sha256:f275a37373ebf08c14cc55a6641e48ca430ab649df4033e74c19d6e51ad2ca49",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "emoticon_or_emoji",
+        "irony_or_sarcasm_risk"
+      ],
+      "includes_condition": "A well-known engineering phrase followed by an inverted-face emoji.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 35,
+      "item_id": "hr-036",
+      "text": "The dashboard loads in under a second now.",
+      "content_hash": "sha256:00bc54d97525511d3d294fc26158030f56d6d53d7fcc4b710006794dd089db1c",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "primarily_factual_wording",
+        "conventionally_favorable_vocabulary"
+      ],
+      "includes_condition": "A quantitative performance statement with a temporal marker.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 36,
+      "item_id": "hr-037",
+      "text": "Another day, another outage.",
+      "content_hash": "sha256:fe491839add8a0ce71001ebd43be9d23d4c4e99704189000ec23154d155d568a",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "irony_or_sarcasm_risk"
+      ],
+      "includes_condition": "A repetitive parallel construction describing a recurring interruption.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 37,
+      "item_id": "hr-038",
+      "text": "The API is powerful but the errors are cryptic.",
+      "content_hash": "sha256:8d32cfc02d925148e23753ce80cfc97bf342d16c4210a63643854b48c5c76c3b",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "contrastive_construction",
+        "mixed_valence_vocabulary"
+      ],
+      "includes_condition": "Two evaluative clauses of differing valence joined by a contrastive conjunction.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 38,
+      "item_id": "hr-039",
+      "text": "Really really solid work on this one.",
+      "content_hash": "sha256:3069a9ba6f1a0dcdea4082d111f6671a5d9cc86be3377d2605d76c500c2aba18",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "intensifier_present",
+        "conventionally_favorable_vocabulary"
+      ],
+      "includes_condition": "A repeated degree intensifier preceding favorable vocabulary.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 39,
+      "item_id": "hr-040",
+      "text": "kinda broken ngl",
+      "content_hash": "sha256:8c3497e6dc046ad481540df466b24e5c8c53efb922c92fe47b17f30d94090fc0",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "slang_or_informal",
+        "conventionally_unfavorable_vocabulary"
+      ],
+      "includes_condition": "An informal diminisher, unfavorable vocabulary, and a slang abbreviation.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 40,
+      "item_id": "hr-041",
+      "text": "The meeting has been moved to Thursday.",
+      "content_hash": "sha256:5d971f3e9fa27a177e97f60474fb2d3312c7c2f391a45dc946d889614ff30120",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "primarily_factual_wording"
+      ],
+      "includes_condition": "A scheduling statement with no evaluative vocabulary.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 41,
+      "item_id": "hr-042",
+      "text": "Sure, that'll work.",
+      "content_hash": "sha256:7652c79ed7a5fad93f22d89572426d7f626e01c5fbc15121b52451e9343628d2",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "irony_or_sarcasm_risk",
+        "underspecified_reference"
+      ],
+      "includes_condition": "A short affirmation whose reading depends on delivery and context.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 42,
+      "item_id": "hr-043",
+      "text": "The fix landed, the tests are green, and the alert cleared.",
+      "content_hash": "sha256:5c111a703a3b97110976fed9a022bb33cdb3a19156102f82db0e885b18fcc782",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "conventionally_favorable_vocabulary",
+        "primarily_factual_wording"
+      ],
+      "includes_condition": "Three factual outcome statements in sequence.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 43,
+      "item_id": "hr-044",
+      "text": "I cannot tell whether this is intentional.",
+      "content_hash": "sha256:739d3242a648777c5f5571659b40117cf0d3ea4b92f7f0a881582960ec95b0fa",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "underspecified_reference",
+        "plausible_abstention"
+      ],
+      "includes_condition": "An explicit statement of the speaker's own uncertainty.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 44,
+      "item_id": "hr-045",
+      "text": "Barely usable on mobile.",
+      "content_hash": "sha256:57d6a2bdf528917df6d88de7e67481dc2c33338df629676bd27716d1f4931994",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "diminisher_present",
+        "conventionally_unfavorable_vocabulary"
+      ],
+      "includes_condition": "A minimizing adverb preceding a capability adjective.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 45,
+      "item_id": "hr-046",
+      "text": "It's not bad.",
+      "content_hash": "sha256:5bff8770f7ef722ce477b396a4e752f0d2661a9c4bf0e26067b054f030e58dc3",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "negation_construction",
+        "diminisher_present"
+      ],
+      "includes_condition": "Negation applied to a short unfavorable adjective.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 46,
+      "item_id": "hr-047",
+      "text": "See thread.",
+      "content_hash": "sha256:3c9c3810102dc0d54d7faa9f5f857a354349a0a1dd1235bd2860968d3860ea97",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "underspecified_reference",
+        "plausible_abstention"
+      ],
+      "includes_condition": "A two-word pointer to material that is not present.",
+      "not_an_expected_response": true
+    },
+    {
+      "position": 47,
+      "item_id": "hr-048",
+      "text": "The rollback took eleven minutes.",
+      "content_hash": "sha256:dba38d02b9266c25848d3a296586a8a2aea06d9dd36605ef1ecf55b5b381ba81",
+      "language": "en",
+      "source_type": "raw_text",
+      "categories": [
+        "primarily_factual_wording",
+        "context_dependent_reference"
+      ],
+      "includes_condition": "A duration measurement of a recovery action.",
+      "not_an_expected_response": true
+    }
+  ],
+  "created_at": "2026-08-05T22:00:00Z"
+}
