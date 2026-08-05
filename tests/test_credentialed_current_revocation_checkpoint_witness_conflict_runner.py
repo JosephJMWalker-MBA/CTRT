@@ -1,14 +1,11 @@
 from __future__ import annotations
 
 import json
-from copy import deepcopy
-from dataclasses import replace
 from pathlib import Path
 from typing import Any, cast
 
 import pytest
 import test_adjudicated_current_revocation_checkpoint_witness_runner as pr46_fx
-import test_current_revocation_checkpoint_witness_conflict_adjudication as adjudication_fx
 import test_current_revocation_checkpoint_witness_conflict_adjudicator_credential as credential_fx
 from test_credential_revocation_checkpoints import validate_schema
 
@@ -69,39 +66,6 @@ def suspended_adjudication_receipt(tmp_path: Path, *, run_id: str):
     return receipt
 
 
-def prepare(
-    tmp_path: Path,
-    *,
-    run_id: str,
-    selected_credential: Any | None = None,
-) -> tuple[Any, ...]:
-    if selected_credential is None:
-        return credential_fx.prepare_credential_store(tmp_path, run_id=run_id)
-
-    prepared = adjudication_fx.prepare_adjudication_store(tmp_path, run_id=run_id)
-    store = cast(FileSystemArtifactStore, prepared[0])
-    predecessor = prepared[2]
-    selected = credential_fx.bound_to(selected_credential)
-    plan = replace(
-        prepared[1],
-        corpus_ref=selected.reference(),
-        content_ids=selected.content_ids,
-    )
-    credential_fx.persist_current_revocation_checkpoint_witness_conflict_credential_corpus(
-        store,
-        plan=plan,
-        corpus=selected,
-        predecessor_corpus=predecessor,
-        adjudicator_registry=adjudication_fx.conflict_adjudicator_registry(),
-        issuer_registry=credential_fx.issuer_registry(),
-        credential_policy=credential_fx.credential_policy(),
-        attestations=(selected_credential,),
-        adjudication=adjudication_fx.conflict_adjudication(),
-        evaluated_at="2026-08-03T19:58:42Z",
-    )
-    return (store, plan, selected, *prepared[2:])
-
-
 def final_document(receipt: Any, store: FileSystemArtifactStore) -> dict[str, Any]:
     return cast(
         dict[str, Any],
@@ -114,17 +78,12 @@ def execute(
     *,
     run_id: str,
     adjudication_receipt: Any,
-    selected_credential: Any | None = None,
     credential_evaluated_at: str = "2026-08-03T19:58:42Z",
     conflict_witness_evaluated_at: str = "2026-08-03T19:58:43Z",
     prior_completed_at: str = "2026-08-04T00:00:30Z",
     completed_at: str = "2026-08-04T00:00:31Z",
 ):
-    prepared = prepare(
-        tmp_path,
-        run_id=run_id,
-        selected_credential=selected_credential,
-    )
+    prepared = credential_fx.prepare_credential_store(tmp_path, run_id=run_id)
     store = cast(FileSystemArtifactStore, prepared[0])
     runner = CredentialedCurrentRevocationCheckpointWitnessConflictExperimentRunner(
         artifact_store=store
@@ -136,12 +95,14 @@ def execute(
         corpus=prepared[2],
         adjudication_corpus=prepared[3],
         conflict_adjudicator_registry=(
-            adjudication_fx.conflict_adjudicator_registry()
+            credential_fx.adjudication_fx.conflict_adjudicator_registry()
         ),
         credential_issuer_registry=credential_fx.issuer_registry(),
         credential_policy=credential_fx.credential_policy(),
-        credentials=(selected_credential or credential_fx.credential(),),
-        conflict_adjudication=adjudication_fx.conflict_adjudication(),
+        credentials=(credential_fx.credential(),),
+        conflict_adjudication=(
+            credential_fx.adjudication_fx.conflict_adjudication()
+        ),
         experiment_run_id=run_id,
         credential_evaluated_at=credential_evaluated_at,
         conflict_witness_evaluated_at=conflict_witness_evaluated_at,
@@ -186,16 +147,16 @@ def test_active_credential_delegates_exact_pr46(tmp_path: Path) -> None:
     validate_schema(FINAL_SCHEMA, final_document(receipt, store))
 
 
-def test_suspended_credential_stops_before_pr46(tmp_path: Path) -> None:
-    document = deepcopy(credential_fx.load_document(credential_fx.CREDENTIAL_PATH))
-    document["status"] = "suspended"
-    selected = credential_fx.credential(document)
-    run_id = "current-revocation-conflict-credential-suspended"
+def test_expired_credential_stops_before_pr46(tmp_path: Path) -> None:
+    run_id = "current-revocation-conflict-credential-expired"
     receipt, store, stub, _ = execute(
         tmp_path,
         run_id=run_id,
         adjudication_receipt=None,
-        selected_credential=selected,
+        credential_evaluated_at="2027-08-03T19:58:40Z",
+        conflict_witness_evaluated_at="2027-08-03T19:58:41Z",
+        prior_completed_at="2027-08-03T20:00:00Z",
+        completed_at="2027-08-03T20:00:01Z",
     )
     assert (
         receipt.current_revocation_checkpoint_conflict_adjudicator_credential_outcome
