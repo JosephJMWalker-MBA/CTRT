@@ -213,3 +213,5 @@ After this interface is accepted, the next useful work is not another synthetic 
 - Can provenance remain accessible without overwhelming the primary reading path?
 
 Those findings should shape a minimal browser surface before any real analyzer is admitted.
+
+That surface now exists as a thin wrapper around this same execution path. See [ADR-0062](adr/0062-wrap-creator-preflight-in-a-loopback-only-browser-surface.md) and [the browser preflight guide](phase-1b-browser-creator-preflight.md). It adds no second analysis path; this module remains the only way a draft reaches an analyzer.
