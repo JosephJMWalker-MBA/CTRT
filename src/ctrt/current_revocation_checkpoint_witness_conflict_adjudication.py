@@ -1,4 +1,4 @@
-"""Adjudicate conflicts over the exact current revocation-checkpoint witness population."""
+"""Adjudicate conflicts over the current revocation-checkpoint witnesses."""
 
 from __future__ import annotations
 
@@ -6,6 +6,7 @@ import hashlib
 from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import datetime
+from importlib import import_module
 from typing import Any, Self, cast
 
 import ctrt.adjudicator_checkpoint_witness_conflict_adjudication as base
@@ -20,12 +21,6 @@ from ctrt.checkpoint_witness_attestation import (
     CheckpointWitnessPolicySnapshot,
     CheckpointWitnessRegistrySnapshot,
 )
-from ctrt.current_checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoint_witness import (
-    AdjudicatorCheckpointWitnessDecisionReport,
-    WitnessBoundCurrentConflictAdjudicatorRevocationCheckpointCorpusSnapshot,
-    load_current_conflict_adjudicator_revocation_checkpoint_witness_evidence,
-    validate_current_conflict_adjudicator_revocation_checkpoint_witnesses,
-)
 from ctrt.experiments import ExperimentPlan, VersionedArtifactRef
 from ctrt.serialization import CanonicalArtifact, canonical_json_bytes
 from ctrt.witness_conflict_adjudication import (
@@ -34,11 +29,31 @@ from ctrt.witness_conflict_adjudication import (
     WitnessConflictAdjudicatorRegistrySnapshot,
 )
 
+_witness = import_module(
+    "ctrt.current_checkpoint_witness_conflict_adjudicator_credential_"
+    "revocation_checkpoint_witness"
+)
+
+
+def _module_attribute(name: str) -> Any:
+    return vars(_witness)[name]
+
+
+AdjudicatorCheckpointWitnessDecisionReport = _module_attribute(
+    "AdjudicatorCheckpointWitnessDecisionReport"
+)
+load_witness_evidence = _module_attribute(
+    "load_current_conflict_adjudicator_revocation_checkpoint_witness_evidence"
+)
+validate_witnesses = _module_attribute(
+    "validate_current_conflict_adjudicator_revocation_checkpoint_witnesses"
+)
+
 CheckpointSnapshot = cp.AdjudicatorCredentialRevocationLedgerCheckpointSnapshot
 CheckpointCorpus = (
     cp.CheckpointBoundCurrentCheckpointWitnessConflictAdjudicatorCredentialRevocationCorpusSnapshot
 )
-WitnessCorpus = WitnessBoundCurrentConflictAdjudicatorRevocationCheckpointCorpusSnapshot
+WitnessCorpus = Any
 ConflictAdjudicationDecisionReport = (
     base.AdjudicatorCheckpointWitnessConflictAdjudicationDecisionReport
 )
@@ -76,7 +91,9 @@ def _mapping(value: object, field_name: str) -> Mapping[str, object]:
 
 def _string(value: object, field_name: str) -> str:
     if not isinstance(value, str) or not value.strip():
-        raise ConflictAdjudicationError(f"{field_name} must be a non-empty string")
+        raise ConflictAdjudicationError(
+            f"{field_name} must be a non-empty string"
+        )
     return value
 
 
@@ -89,14 +106,19 @@ def _parse_timestamp(value: str, field_name: str) -> datetime:
             f"{field_name} must be an ISO-8601 timestamp"
         ) from exc
     if parsed.tzinfo is None:
-        raise ConflictAdjudicationError(f"{field_name} must include a timezone")
+        raise ConflictAdjudicationError(
+            f"{field_name} must include a timezone"
+        )
     return parsed
 
 
 def _versioned_ref(value: object, field_name: str) -> VersionedArtifactRef:
     document = _mapping(value, field_name)
     return VersionedArtifactRef(
-        artifact_id=_string(document.get("artifact_id"), f"{field_name}.artifact_id"),
+        artifact_id=_string(
+            document.get("artifact_id"),
+            f"{field_name}.artifact_id",
+        ),
         artifact_version=_string(
             document.get("artifact_version"),
             f"{field_name}.artifact_version",
@@ -128,7 +150,7 @@ def _allowed_fields() -> set[str]:
 
 @dataclass(frozen=True, slots=True)
 class ConflictingCurrentRevocationCheckpointWitnessCorpusSnapshot:
-    """One payload preserving the conflicting current revocation-checkpoint witnesses."""
+    """The exact conflicting witness population over the 1.22.0 head."""
 
     corpus: CheckpointCorpus
     corpus_id: str
@@ -214,7 +236,10 @@ class ConflictingCurrentRevocationCheckpointWitnessCorpusSnapshot:
         return cls(
             corpus=predecessor,
             corpus_id=_string(document.get("corpus_id"), "corpus_id"),
-            corpus_version=_string(document.get("corpus_version"), "corpus_version"),
+            corpus_version=_string(
+                document.get("corpus_version"),
+                "corpus_version",
+            ),
             status=_string(document.get("status"), "status"),
             declared_content_ids=tuple(
                 _string(value, "content_id") for value in content_ids
@@ -233,7 +258,10 @@ class ConflictingCurrentRevocationCheckpointWitnessCorpusSnapshot:
             ),
             witness_attestation_refs=tuple(
                 StoredArtifactRef.from_document(
-                    _mapping(item, "current revocation-checkpoint attestation ref")
+                    _mapping(
+                        item,
+                        "current revocation-checkpoint attestation ref",
+                    )
                 )
                 for item in refs
             ),
@@ -263,7 +291,7 @@ class ConflictingCurrentRevocationCheckpointWitnessCorpusSnapshot:
 
 @dataclass(frozen=True, slots=True)
 class AdjudicationBoundCurrentRevocationCheckpointWitnessCorpusSnapshot:
-    """The exact conflicting population plus accepted adjudication authority."""
+    """The conflicting population plus exact adjudication authority."""
 
     corpus: ConflictingCurrentRevocationCheckpointWitnessCorpusSnapshot
     witness_predecessor: WitnessCorpus
@@ -295,11 +323,17 @@ class AdjudicationBoundCurrentRevocationCheckpointWitnessCorpusSnapshot:
             raise ConflictAdjudicationError(
                 "adjudication changed the current witness registry"
             )
-        if self.corpus.witness_policy_ref != self.witness_predecessor.witness_policy_ref:
+        if (
+            self.corpus.witness_policy_ref
+            != self.witness_predecessor.witness_policy_ref
+        ):
             raise ConflictAdjudicationError(
                 "adjudication changed the current witness policy"
             )
-        if _parse_timestamp(self.corpus.created_at, "created_at") < _parse_timestamp(
+        if _parse_timestamp(
+            self.corpus.created_at,
+            "created_at",
+        ) < _parse_timestamp(
             self.witness_predecessor.created_at,
             "witness_predecessor.created_at",
         ):
@@ -325,15 +359,21 @@ class AdjudicationBoundCurrentRevocationCheckpointWitnessCorpusSnapshot:
             corpus=witness_corpus,
             witness_predecessor=witness_predecessor,
             predecessor_corpus_ref=_versioned_ref(
-                document.get(f"{_PREFIX}_adjudication_predecessor_corpus_ref"),
+                document.get(
+                    f"{_PREFIX}_adjudication_predecessor_corpus_ref"
+                ),
                 f"{_PREFIX}_adjudication_predecessor_corpus_ref",
             ),
             adjudicator_registry_ref=_versioned_ref(
-                document.get(f"{_PREFIX}_conflict_adjudicator_registry_ref"),
+                document.get(
+                    f"{_PREFIX}_conflict_adjudicator_registry_ref"
+                ),
                 f"{_PREFIX}_conflict_adjudicator_registry_ref",
             ),
             adjudication_policy_ref=_versioned_ref(
-                document.get(f"{_PREFIX}_conflict_adjudication_policy_ref"),
+                document.get(
+                    f"{_PREFIX}_conflict_adjudication_policy_ref"
+                ),
                 f"{_PREFIX}_conflict_adjudication_policy_ref",
             ),
             adjudication_ref=StoredArtifactRef.from_document(
@@ -392,19 +432,20 @@ def load_current_revocation_checkpoint_conflict_adjudication_evidence(
             "stored current revocation-checkpoint adjudication policy differs"
         )
     stored_adjudication = WitnessConflictAdjudicationSnapshot.from_artifact(
-        store.get(adjudication.artifact_id, expected_hash=adjudication.artifact_hash)
+        store.get(
+            adjudication.artifact_id,
+            expected_hash=adjudication.artifact_hash,
+        )
     )
     if stored_adjudication.reference() != corpus.adjudication_ref:
         raise ArtifactIntegrityError(
             "stored current revocation-checkpoint adjudication differs from corpus"
         )
-    witness_evidence = (
-        load_current_conflict_adjudicator_revocation_checkpoint_witness_evidence(
-            store,
-            corpus=cast(Any, corpus.corpus),
-            registry=witness_registry,
-            policy=witness_policy,
-        )
+    witness_evidence = load_witness_evidence(
+        store,
+        corpus=cast(Any, corpus.corpus),
+        registry=witness_registry,
+        policy=witness_policy,
     )
     return StoredConflictAdjudicationEvidence(
         corpus_ref=store.reference(corpus.reference().artifact_id),
@@ -423,7 +464,7 @@ def validate_current_revocation_checkpoint_conflict_adjudication(
     witness_policy: CheckpointWitnessPolicySnapshot,
     adjudicator_registry: WitnessConflictAdjudicatorRegistrySnapshot,
     adjudication_policy: WitnessConflictAdjudicationPolicySnapshot,
-    witness_decision: AdjudicatorCheckpointWitnessDecisionReport,
+    witness_decision: Any,
     adjudication: WitnessConflictAdjudicationSnapshot,
     evaluated_at: str,
 ) -> ConflictAdjudicationDecisionReport:
@@ -457,7 +498,7 @@ def persist_current_revocation_checkpoint_adjudication_bound_corpus(
     adjudication: WitnessConflictAdjudicationSnapshot,
     evaluated_at: str,
 ) -> StoredConflictAdjudicationEvidence:
-    """Append dependencies, then publish the compact 1.24.0 manifest last."""
+    """Append dependencies, then publish the 1.24.0 manifest last."""
 
     if witness_predecessor.reference() != corpus.predecessor_corpus_ref:
         raise ConflictAdjudicationError(
@@ -473,16 +514,14 @@ def persist_current_revocation_checkpoint_adjudication_bound_corpus(
     )
     if predecessor.payload != witness_predecessor.artifact().payload:
         raise ArtifactIntegrityError("stored 1.23.0 witness predecessor differs")
-    witness_decision = (
-        validate_current_conflict_adjudicator_revocation_checkpoint_witnesses(
-            plan=plan,
-            corpus=cast(Any, corpus.corpus),
-            registry=witness_registry,
-            policy=witness_policy,
-            head_checkpoint=head_checkpoint,
-            attestations=witness_attestations,
-            evaluated_at=evaluated_at,
-        )
+    witness_decision = validate_witnesses(
+        plan=plan,
+        corpus=cast(Any, corpus.corpus),
+        registry=witness_registry,
+        policy=witness_policy,
+        head_checkpoint=head_checkpoint,
+        attestations=witness_attestations,
+        evaluated_at=evaluated_at,
     )
     validate_current_revocation_checkpoint_conflict_adjudication(
         plan=plan,
