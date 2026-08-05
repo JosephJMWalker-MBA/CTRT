@@ -203,7 +203,7 @@ class ContentAnalysisWorkbench:
         expected_target = AnalysisTarget.for_content_item(
             content_id=content.content_id,
             content_length=len(content.text),
-            extraction_ref=f"content-item:{content.content_id}",
+            extraction_ref=content.canonical_extraction_ref,
         )
         self._validate_results(
             content=content,
