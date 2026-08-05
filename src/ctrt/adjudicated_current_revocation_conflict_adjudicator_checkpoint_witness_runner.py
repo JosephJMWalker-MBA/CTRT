@@ -6,6 +6,7 @@ from dataclasses import make_dataclass, replace
 from datetime import datetime
 from enum import StrEnum
 from importlib import import_module
+from operator import attrgetter
 from typing import Any
 
 from ctrt.artifact_store import (
@@ -75,6 +76,28 @@ _ARTIFACT_PREFIX = (
     "current-revocation-checkpoint-witness-conflict-adjudicator-"
     "credential-revocation-checkpoint-witness-conflict-adjudication"
 )
+_CONFLICTING_FIELD = (
+    "conflicting_current_revocation_conflict_adjudicator_checkpoint_"
+    "witness_outcome"
+)
+_RESOLUTION_FIELD = (
+    "current_revocation_conflict_adjudicator_checkpoint_resolution_status"
+)
+_ADJUDICATION_OUTCOME_FIELD = (
+    "current_revocation_conflict_adjudicator_checkpoint_"
+    "conflict_adjudication_outcome"
+)
+_RESOLVED_FIELD = (
+    "resolved_current_revocation_conflict_adjudicator_checkpoint_"
+    "witness_outcome"
+)
+_DELEGATED_WITNESS_FIELD = (
+    "current_revocation_conflict_adjudicator_checkpoint_witness_outcome"
+)
+_get_conflicting = attrgetter(_CONFLICTING_FIELD)
+_get_adjudication_outcome = attrgetter(_ADJUDICATION_OUTCOME_FIELD)
+_get_resolved = attrgetter(_RESOLVED_FIELD)
+_get_delegated_witness = attrgetter(_DELEGATED_WITNESS_FIELD)
 
 VERIFIED_CHECKS = (
     "exact-1.28.0-current-revocation-conflict-adjudicator-witness-"
@@ -148,12 +171,7 @@ def _delegated_outcomes(value: Any) -> tuple[Any, ...]:
 
 def _expected_final_id(value: Any) -> str:
     prefix = f"{value.experiment_run_id}:{_ARTIFACT_PREFIX}-"
-    outcome = getattr(
-        value,
-        "current_revocation_conflict_adjudicator_checkpoint_"
-        "conflict_adjudication_outcome",
-    )
-    if outcome is WitnessConflictAdjudicationOutcome.ABSTAIN:
+    if _get_adjudication_outcome(value) is WitnessConflictAdjudicationOutcome.ABSTAIN:
         return prefix + "abstention"
     suffix = (
         "completion"
@@ -166,12 +184,7 @@ def _expected_final_id(value: Any) -> str:
 def _validate_common(value: Any) -> None:
     if value.status is not AdjudicationRunnerStatus.VERIFIED:
         raise ValueError("adjudicated current witness conflict must be verified")
-    conflicting = getattr(
-        value,
-        "conflicting_current_revocation_conflict_adjudicator_checkpoint_"
-        "witness_outcome",
-    )
-    if conflicting is not CheckpointWitnessDecisionOutcome.ABSTAIN:
+    if _get_conflicting(value) is not CheckpointWitnessDecisionOutcome.ABSTAIN:
         raise ValueError("preserved conflicting witness outcome must be abstain")
     if not value.witness_attestation_refs:
         raise ValueError("adjudicated current conflict requires attestations")
@@ -186,18 +199,9 @@ def _validate_common(value: Any) -> None:
 
 def _final_post_init(self: Any) -> None:
     _validate_common(self)
-    resolved = getattr(
-        self,
-        "resolved_current_revocation_conflict_adjudicator_checkpoint_"
-        "witness_outcome",
-    )
+    resolved = _get_resolved(self)
     downstream = (resolved, *_delegated_outcomes(self))
-    outcome = getattr(
-        self,
-        "current_revocation_conflict_adjudicator_checkpoint_"
-        "conflict_adjudication_outcome",
-    )
-    if outcome is WitnessConflictAdjudicationOutcome.ABSTAIN:
+    if _get_adjudication_outcome(self) is WitnessConflictAdjudicationOutcome.ABSTAIN:
         if any(item is not None for item in downstream):
             raise ValueError("adjudication abstention may not claim PR #50 outcomes")
         if self.predecessor_witness_final_ref is not None:
@@ -215,18 +219,9 @@ def _final_post_init(self: Any) -> None:
 
 def _receipt_post_init(self: Any) -> None:
     _validate_common(self)
-    resolved = getattr(
-        self,
-        "resolved_current_revocation_conflict_adjudicator_checkpoint_"
-        "witness_outcome",
-    )
+    resolved = _get_resolved(self)
     downstream = (resolved, *_delegated_outcomes(self))
-    outcome = getattr(
-        self,
-        "current_revocation_conflict_adjudicator_checkpoint_"
-        "conflict_adjudication_outcome",
-    )
-    if outcome is WitnessConflictAdjudicationOutcome.ABSTAIN:
+    if _get_adjudication_outcome(self) is WitnessConflictAdjudicationOutcome.ABSTAIN:
         if self.predecessor_witness_receipt is not None:
             raise ValueError("adjudication abstention may not contain PR #50 receipt")
         if any(item is not None for item in downstream):
@@ -237,12 +232,7 @@ def _receipt_post_init(self: Any) -> None:
             raise ValueError("adjudication execution requires PR #50 receipt")
         if delegated.experiment_run_id != self.experiment_run_id:
             raise ValueError("PR #50 receipt belongs to another run")
-        delegated_witness = getattr(
-            delegated,
-            "current_revocation_conflict_adjudicator_checkpoint_witness_"
-            "outcome",
-        )
-        if delegated_witness is not resolved:
+        if _get_delegated_witness(delegated) is not resolved:
             raise ValueError("resolved witness outcome differs from PR #50")
         if _delegated_outcomes(delegated) != _delegated_outcomes(self):
             raise ValueError("PR #50 outcomes differ from adjudicated receipt")
@@ -255,25 +245,10 @@ def _receipt_post_init(self: Any) -> None:
 _COMMON_FIELDS: list[tuple[str, Any]] = [
     ("experiment_run_id", str),
     ("status", AdjudicationRunnerStatus),
-    (
-        "conflicting_current_revocation_conflict_adjudicator_checkpoint_"
-        "witness_outcome",
-        CheckpointWitnessDecisionOutcome,
-    ),
-    (
-        "current_revocation_conflict_adjudicator_checkpoint_resolution_status",
-        WitnessConflictResolutionStatus,
-    ),
-    (
-        "current_revocation_conflict_adjudicator_checkpoint_conflict_"
-        "adjudication_outcome",
-        WitnessConflictAdjudicationOutcome,
-    ),
-    (
-        "resolved_current_revocation_conflict_adjudicator_checkpoint_"
-        "witness_outcome",
-        CheckpointWitnessDecisionOutcome | None,
-    ),
+    (_CONFLICTING_FIELD, CheckpointWitnessDecisionOutcome),
+    (_RESOLUTION_FIELD, WitnessConflictResolutionStatus),
+    (_ADJUDICATION_OUTCOME_FIELD, WitnessConflictAdjudicationOutcome),
+    (_RESOLVED_FIELD, CheckpointWitnessDecisionOutcome | None),
     *[(name, Any) for name in DELEGATED_OUTCOME_FIELDS],
     ("terminal_outcome", ReviewDecisionOutcome),
     ("experiment_id", str),
@@ -748,10 +723,8 @@ class AdjudicatedCurrentRevocationConflictAdjudicatorCheckpointWitnessExperiment
             predecessor_final_ref = None
             suffix = "abstention"
         else:
-            resolved_witness_outcome = getattr(
-                predecessor_receipt,
-                "current_revocation_conflict_adjudicator_checkpoint_witness_"
-                "outcome",
+            resolved_witness_outcome = _get_delegated_witness(
+                predecessor_receipt
             )
             values = _delegated_outcomes(predecessor_receipt)
             terminal_outcome = predecessor_receipt.terminal_outcome
@@ -765,14 +738,10 @@ class AdjudicatedCurrentRevocationConflictAdjudicatorCheckpointWitnessExperiment
         common = {
             "experiment_run_id": experiment_run_id,
             "status": AdjudicationRunnerStatus.VERIFIED,
-            "conflicting_current_revocation_conflict_adjudicator_checkpoint_"
-            "witness_outcome": witness_decision.outcome,
-            "current_revocation_conflict_adjudicator_checkpoint_resolution_"
-            "status": adjudication_decision.resolution_status,
-            "current_revocation_conflict_adjudicator_checkpoint_conflict_"
-            "adjudication_outcome": adjudication_decision.outcome,
-            "resolved_current_revocation_conflict_adjudicator_checkpoint_"
-            "witness_outcome": resolved_witness_outcome,
+            _CONFLICTING_FIELD: witness_decision.outcome,
+            _RESOLUTION_FIELD: adjudication_decision.resolution_status,
+            _ADJUDICATION_OUTCOME_FIELD: adjudication_decision.outcome,
+            _RESOLVED_FIELD: resolved_witness_outcome,
             **dict(zip(DELEGATED_OUTCOME_FIELDS, values, strict=True)),
             "terminal_outcome": terminal_outcome,
             "experiment_id": plan.experiment_id,
