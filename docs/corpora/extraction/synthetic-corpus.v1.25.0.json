@@ -1,0 +1,38 @@
+{
+  "corpus_id": "corpus.synthetic-three-items.current-revocation-checkpoint-witness-conflict-adjudicator-credential-bound",
+  "corpus_version": "1.25.0",
+  "status": "frozen",
+  "content_ids": [
+    "content-001",
+    "content-002",
+    "content-003"
+  ],
+  "current_revocation_checkpoint_witness_conflict_adjudicator_credential_predecessor_corpus_ref": {
+    "artifact_id": "corpus.synthetic-three-items.current-checkpoint-witness-conflict-adjudicator-credential-revocation-checkpoint-witness-conflict-adjudication-bound",
+    "artifact_version": "1.24.0",
+    "artifact_hash": "sha256:a98bcdc6c6c146de7d688ea708285f8d4b82bd93a8486ac5e37e76bf3acaa5fb"
+  },
+  "current_revocation_checkpoint_witness_conflict_adjudicator_credential_issuer_registry_ref": {
+    "artifact_id": "registry.synthetic-current-revocation-checkpoint-witness-conflict-adjudicator-credential-issuers",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:374aa9e74626fbad3d713c7314b52ba3216c5f83967d42b5cab8850f25e41c9e"
+  },
+  "current_revocation_checkpoint_witness_conflict_adjudicator_credential_policy_ref": {
+    "artifact_id": "policy.synthetic-current-revocation-checkpoint-witness-conflict-adjudicator-credentials",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:ca068064ee98571231ec8bf56ab35f54f35fedeacd2536c49ef02f48f5882f98"
+  },
+  "current_revocation_checkpoint_witness_conflict_adjudicator_credentials": [
+    {
+      "adjudicator_id": "adjudicator.synthetic.current-checkpoint-witness-conflict-adjudicator-credential-revocation-checkpoint-fork",
+      "identity_revision": "synthetic-current-checkpoint-witness-conflict-adjudicator-credential-revocation-checkpoint-witness-conflict-adjudicator@0.1.0",
+      "credential_attestation_ref": {
+        "artifact_id": "adjudicator-credential:credential.synthetic.current-revocation-checkpoint-witness-conflict-adjudicator.v0.1.0",
+        "artifact_hash": "sha256:e80e03f9112abe7ff8e482e532a6eea5ac636cefe147794e554200a428732092",
+        "canonicalization_version": "ctrt-canonical-json@0.1.0",
+        "media_type": "application/json"
+      }
+    }
+  ],
+  "created_at": "2026-08-03T19:58:41Z"
+}
