@@ -11,7 +11,6 @@ from ctrt.evidence_view import (
     ContentEvidenceView,
     EvidenceArtifactReference,
     InstrumentEvidenceView,
-    StoredContentEvidenceView,
     build_stored_content_evidence_view,
 )
 from ctrt.stored_content_runner import VerifiedStoredContentExperimentReceipt
