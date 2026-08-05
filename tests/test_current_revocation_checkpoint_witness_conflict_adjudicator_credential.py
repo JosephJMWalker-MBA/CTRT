@@ -6,10 +6,10 @@ from pathlib import Path
 from typing import Any, cast
 
 import pytest
+import test_current_revocation_checkpoint_witness_conflict_adjudication as adjudication_fx
 from jsonschema import ValidationError
 from test_adjudicator_checkpoint_witness_conflict_adjudication import load_document
 from test_credential_revocation_checkpoints import validate_schema
-import test_current_revocation_checkpoint_witness_conflict_adjudication as adjudication_fx
 
 from ctrt.adjudicator_credential_attestation import (
     AdjudicatorCredentialAttestationSnapshot,
