@@ -24,7 +24,10 @@ CREATOR_PREFLIGHT_NOTICES = (
         "No overall CTRT score, content verdict, publish recommendation, restriction, or "
         "production-readiness claim is produced."
     ),
-    "The creator remains responsible for whether to publish, revise, pause, or seek human feedback.",
+    (
+        "The creator remains responsible for whether to publish, revise, pause, or seek "
+        "human feedback."
+    ),
 )
 CREATOR_CONTROLLED_ACTIONS = (
     "Publish as written.",
@@ -221,13 +224,10 @@ def _measurement_text(measurement: InstrumentEvidenceView) -> str:
         f"{item.excerpt!r} [{item.start}:{item.end}]"
         for item in measurement.evidence_spans
     )
-    if not values:
-        values = "no normalized measurement"
-    if not excerpts:
-        excerpts = "no local evidence excerpt"
     return (
         f"{measurement.analyzer_id} returned status {measurement.status} and recorded "
-        f"{values}. Exact supporting evidence: {excerpts}."
+        f"{values or 'no normalized measurement'}. Exact supporting evidence: "
+        f"{excerpts or 'no local evidence excerpt'}."
     )
 
 
@@ -399,7 +399,6 @@ def _reflection_prompts(
                 refs=(content_ref, *result_refs, comparison_ref),
             )
         )
-
     if any(item.evidence_spans for item in content.measurements):
         values.append(
             _prompt(
@@ -465,7 +464,6 @@ def _reflection_prompts(
                 refs=(comparison_ref, *result_refs),
             )
         )
-
     if any(item.calibration_status != "validated" for item in content.measurements):
         values.append(
             _prompt(
