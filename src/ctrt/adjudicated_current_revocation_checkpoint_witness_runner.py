@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 from datetime import datetime
 from enum import StrEnum
+from importlib import import_module
 from typing import Any, cast
 
 from ctrt.artifact_store import (
@@ -18,12 +19,6 @@ from ctrt.checkpoint_witness_attestation import (
     CheckpointWitnessDecisionOutcome,
     CheckpointWitnessPolicySnapshot,
     CheckpointWitnessRegistrySnapshot,
-)
-from ctrt.current_checkpoint_witness_conflict_adjudicator_credential_revocation_checkpoint_witness import (
-    AdjudicatorCheckpointWitnessDecisionReport,
-    AdjudicatorCheckpointWitnessError,
-    WitnessBoundCurrentConflictAdjudicatorRevocationCheckpointCorpusSnapshot,
-    validate_current_conflict_adjudicator_revocation_checkpoint_witnesses,
 )
 from ctrt.current_revocation_checkpoint_witness_conflict_adjudication import (
     AdjudicationBoundCurrentRevocationCheckpointWitnessCorpusSnapshot,
@@ -50,7 +45,24 @@ from ctrt.witness_gated_current_revocation_checkpoint_runner import (
     WitnessGatedCurrentRevocationCheckpointExperimentRunner,
 )
 
-WitnessCorpus = WitnessBoundCurrentConflictAdjudicatorRevocationCheckpointCorpusSnapshot
+_witness = import_module(
+    "ctrt.current_checkpoint_witness_conflict_adjudicator_credential_"
+    "revocation_checkpoint_witness"
+)
+
+
+def _module_attribute(name: str) -> Any:
+    return vars(_witness)[name]
+
+
+AdjudicatorCheckpointWitnessError = cast(
+    type[Exception],
+    _module_attribute("AdjudicatorCheckpointWitnessError"),
+)
+validate_witnesses = _module_attribute(
+    "validate_current_conflict_adjudicator_revocation_checkpoint_witnesses"
+)
+WitnessCorpus = Any
 
 _ARTIFACT_PREFIX = (
     "current-checkpoint-witness-conflict-adjudicator-credential-revocation-"
@@ -102,7 +114,8 @@ ADJUDICATED_CURRENT_REVOCATION_CHECKPOINT_WITNESS_VERIFIED_CHECKS = (
     "current-revocation-checkpoint-fork-evidence-reverified",
     "current-revocation-checkpoint-dissent-preserved",
     "resolved-head-restricted-to-exact-1.22.0-checkpoint-head",
-    "current-revocation-checkpoint-adjudication-and-pr45-outcomes-finalized-separately",
+    "current-revocation-checkpoint-adjudication-and-pr45-outcomes-finalized-"
+    "separately",
 )
 
 
@@ -175,7 +188,9 @@ class AdjudicatedCurrentRevocationCheckpointWitnessFinalManifest:
             AdjudicatedCurrentRevocationCheckpointWitnessRunnerStatus.VERIFIED
         )
         if self.status is not expected_status:
-            raise ValueError("adjudicated current revocation-checkpoint must be verified")
+            raise ValueError(
+                "adjudicated current revocation-checkpoint must be verified"
+            )
         if not self.witness_attestation_refs:
             raise ValueError("adjudicated current conflict requires attestations")
         if len(self.witness_attestation_refs) != len(
@@ -220,7 +235,9 @@ class AdjudicatedCurrentRevocationCheckpointWitnessFinalManifest:
             expected_id = prefix + "abstention"
         else:
             if self.predecessor_witness_final_ref is None:
-                raise ValueError("current adjudication execution requires PR #45 final")
+                raise ValueError(
+                    "current adjudication execution requires PR #45 final"
+                )
             if self.resolved_current_revocation_checkpoint_witness_outcome is None:
                 raise ValueError(
                     "current adjudication execution requires resolved witness outcome"
@@ -297,7 +314,9 @@ class VerifiedAdjudicatedCurrentRevocationCheckpointWitnessReceipt:
             AdjudicatedCurrentRevocationCheckpointWitnessRunnerStatus.VERIFIED
         )
         if self.status is not expected_status:
-            raise ValueError("verified adjudicated current revocation-checkpoint required")
+            raise ValueError(
+                "verified adjudicated current revocation-checkpoint required"
+            )
         downstream = (
             self.resolved_current_revocation_checkpoint_witness_outcome,
             self.current_conflict_adjudicator_revocation_outcome,
@@ -329,13 +348,16 @@ class VerifiedAdjudicatedCurrentRevocationCheckpointWitnessReceipt:
                 )
             if any(item is not None for item in downstream):
                 raise ValueError(
-                    "current adjudication abstention may not contain downstream outcomes"
+                    "current adjudication abstention may not contain downstream "
+                    "outcomes"
                 )
             expected_id = prefix + "abstention"
         else:
             delegated = self.predecessor_witness_receipt
             if delegated is None:
-                raise ValueError("current adjudication execution requires PR #45 receipt")
+                raise ValueError(
+                    "current adjudication execution requires PR #45 receipt"
+                )
             if delegated.experiment_run_id != self.experiment_run_id:
                 raise ValueError("PR #45 receipt belongs to another experiment run")
             if (
@@ -458,7 +480,10 @@ class AdjudicatedCurrentRevocationCheckpointWitnessExperimentRunner:
             raise ValueError("conflict adjudication policy differs from corpus")
         if corpus.adjudication_ref != conflict_adjudication.reference():
             raise ValueError("conflict adjudication record differs from corpus")
-        successor_time = _parse_timestamp(corpus.corpus.created_at, "corpus.created_at")
+        successor_time = _parse_timestamp(
+            corpus.corpus.created_at,
+            "corpus.created_at",
+        )
         conflict_witness_time = _parse_timestamp(
             conflict_witness_evaluated_at,
             "conflict_witness_evaluated_at",
@@ -491,7 +516,10 @@ class AdjudicatedCurrentRevocationCheckpointWitnessExperimentRunner:
             current_checkpoint_completed_at,
             "current_checkpoint_completed_at",
         )
-        prior_completed = _parse_timestamp(prior_completed_at, "prior_completed_at")
+        prior_completed = _parse_timestamp(
+            prior_completed_at,
+            "prior_completed_at",
+        )
         completed = _parse_timestamp(completed_at, "completed_at")
         if not (
             successor_time
@@ -514,7 +542,7 @@ class AdjudicatedCurrentRevocationCheckpointWitnessExperimentRunner:
         self,
         *,
         experiment_run_id: str,
-        decision: AdjudicatorCheckpointWitnessDecisionReport,
+        decision: Any,
     ) -> StoredArtifactRef:
         artifact_id = f"{experiment_run_id}:{_ARTIFACT_PREFIX}-witness-decision"
         artifact = serialize_artifact(artifact_id, decision)
@@ -555,7 +583,7 @@ class AdjudicatedCurrentRevocationCheckpointWitnessExperimentRunner:
         conflict_adjudicator_registry: WitnessConflictAdjudicatorRegistrySnapshot,
         conflict_adjudication_policy: WitnessConflictAdjudicationPolicySnapshot,
         conflict_adjudication: WitnessConflictAdjudicationSnapshot,
-        witness_decision: AdjudicatorCheckpointWitnessDecisionReport,
+        witness_decision: Any,
         adjudication_decision: ConflictAdjudicationDecisionReport,
     ) -> None:
         expected = serialize_artifact(final.final_id, final)
@@ -586,7 +614,10 @@ class AdjudicatedCurrentRevocationCheckpointWitnessExperimentRunner:
         ).payload != witness_policy.canonical_payload:
             raise ArtifactIntegrityError("stored current witness policy differs")
         for reference in evidence.witness_evidence.attestation_refs:
-            self._store.get(reference.artifact_id, expected_hash=reference.artifact_hash)
+            self._store.get(
+                reference.artifact_id,
+                expected_hash=reference.artifact_hash,
+            )
         if self._store.get(
             final.conflict_adjudicator_registry_ref.artifact_id,
             expected_hash=final.conflict_adjudicator_registry_ref.artifact_hash,
@@ -720,16 +751,14 @@ class AdjudicatedCurrentRevocationCheckpointWitnessExperimentRunner:
             ) from exc
 
         try:
-            witness_decision = (
-                validate_current_conflict_adjudicator_revocation_checkpoint_witnesses(
-                    plan=plan,
-                    corpus=cast(Any, corpus.corpus),
-                    registry=witness_registry,
-                    policy=witness_policy,
-                    head_checkpoint=current_checkpoints[-1],
-                    attestations=evidence.witness_evidence.attestations,
-                    evaluated_at=conflict_witness_evaluated_at,
-                )
+            witness_decision = validate_witnesses(
+                plan=plan,
+                corpus=cast(Any, corpus.corpus),
+                registry=witness_registry,
+                policy=witness_policy,
+                head_checkpoint=current_checkpoints[-1],
+                attestations=evidence.witness_evidence.attestations,
+                evaluated_at=conflict_witness_evaluated_at,
             )
         except (AdjudicatorCheckpointWitnessError, ValueError) as exc:
             raise AdjudicatedCurrentRevocationCheckpointWitnessExperimentError(
@@ -932,7 +961,9 @@ class AdjudicatedCurrentRevocationCheckpointWitnessExperimentRunner:
             ),
             conflicting_witness_outcome=conflicting_witness_outcome,
             current_resolution_status=current_resolution_status,
-            current_conflict_adjudication_outcome=current_conflict_adjudication_outcome,
+            current_conflict_adjudication_outcome=(
+                current_conflict_adjudication_outcome
+            ),
             resolved_current_witness_outcome=resolved_current_witness_outcome,
             current_revocation_outcome=current_revocation_outcome,
             current_credential_outcome=current_credential_outcome,
@@ -1040,7 +1071,9 @@ class AdjudicatedCurrentRevocationCheckpointWitnessExperimentRunner:
             ),
             conflicting_witness_outcome=conflicting_witness_outcome,
             current_resolution_status=current_resolution_status,
-            current_conflict_adjudication_outcome=current_conflict_adjudication_outcome,
+            current_conflict_adjudication_outcome=(
+                current_conflict_adjudication_outcome
+            ),
             resolved_current_witness_outcome=resolved_current_witness_outcome,
             current_revocation_outcome=current_revocation_outcome,
             current_credential_outcome=current_credential_outcome,
