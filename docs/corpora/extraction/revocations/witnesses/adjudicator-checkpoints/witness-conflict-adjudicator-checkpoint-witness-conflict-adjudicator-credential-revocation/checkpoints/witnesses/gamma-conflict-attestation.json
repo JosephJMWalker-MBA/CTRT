@@ -1,0 +1,32 @@
+{
+  "artifact_id": "checkpoint-witness-attestation:attestation.synthetic.current-checkpoint-witness-conflict-adjudicator-credential-revocation-checkpoint-gamma.conflict.v0.1.0",
+  "attestation_id": "attestation.synthetic.current-checkpoint-witness-conflict-adjudicator-credential-revocation-checkpoint-gamma.conflict.v0.1.0",
+  "witness_id": "witness.synthetic.current-checkpoint-witness-conflict-adjudicator-credential-revocation-checkpoint-gamma",
+  "witness_identity_revision": "synthetic-current-checkpoint-witness-conflict-adjudicator-credential-revocation-checkpoint-witness@0.1.0",
+  "checkpoint_corpus_ref": {
+    "artifact_id": "corpus.synthetic-three-items.current-checkpoint-witness-conflict-adjudicator-credential-revocation-checkpoint-bound",
+    "artifact_version": "1.22.0",
+    "artifact_hash": "sha256:3ef12c528781ddec9976323b8a23670f3592839ce2145afed60cda39170c0304"
+  },
+  "checkpoint_log_ref": {
+    "artifact_id": "log.synthetic-current-checkpoint-witness-conflict-adjudicator-credential-revocation-checkpoints",
+    "artifact_version": "0.1.0",
+    "artifact_hash": "sha256:5f9dde79fcffcafd0372229262b5e6cd9fdc148ff63750134f6467d77497b48b"
+  },
+  "expected_head_ref": {
+    "artifact_id": "adjudicator-credential-revocation-checkpoint:checkpoint.synthetic.current-checkpoint-witness-conflict-adjudicator-credential-revocations.0000",
+    "artifact_hash": "sha256:546847de7b5557ae3a12c9e7b7d222b5bca0212168e793c09ce68363b0029d6b",
+    "canonicalization_version": "ctrt-canonical-json@0.1.0",
+    "media_type": "application/json"
+  },
+  "observed_head_ref": {
+    "artifact_id": "adjudicator-credential-revocation-checkpoint:checkpoint.synthetic.current-checkpoint-witness-conflict-adjudicator-credential-revocations.conflict",
+    "artifact_hash": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+    "canonicalization_version": "ctrt-canonical-json@0.1.0",
+    "media_type": "application/json"
+  },
+  "observation_kind": "conflicting_head",
+  "observed_at": "2026-08-03T19:58:30Z",
+  "received_at": "2026-08-03T19:58:31Z",
+  "note": "Synthetic gamma witness reported an alternate current conflict-adjudicator credential revocation checkpoint head."
+}
