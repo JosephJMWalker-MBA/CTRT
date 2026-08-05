@@ -67,8 +67,8 @@ The twelve constitutional articles establish the following controlling requireme
 - Explanations may communicate canonical measurements but may not invent motives or alter scores.
 - Claims must be falsifiable, with negative results and regressions preserved.
 - Experimental outputs are non-consequential by default.
-- material specifications and artifacts are versioned, and reprocessing creates new records rather than rewriting history.
-- scope limits cannot be concealed behind implementation progress.
+- Material specifications and artifacts are versioned, and reprocessing creates new records rather than rewriting history.
+- Scope limits cannot be concealed behind implementation progress.
 
 The [Phase 1A constitutional invariant matrix](../phase-1a-constitutional-invariant-matrix.md) organizes these requirements under twelve review headings. The headings are a proof aid, not replacement constitutional language:
 
@@ -586,7 +586,7 @@ Interpretation:
 | [0016](../adr/0016-extraction-manifest-binding.md) | Bind source, extraction, mapping, and content evidence |
 | [0017](../adr/0017-extraction-method-eligibility.md) | Authorize extraction methods exactly |
 | [0018](../adr/0018-extraction-quality-evidence.md) | Preserve independent extraction-quality evidence |
-| [0049](../adr/0049-current-revocation-checkpoint-witness-conflict-adjudicator-credentials.md) | Bind current conflict-adjudicator credentials |
+| [0049](../adr/0049-current-revocation-checkpoint-witness-conflicts-require-authorized-adjudication.md) | Require authorized adjudication for current revocation-checkpoint witness conflicts |
 | [0057](../adr/0057-close-current-governance-branch-with-immutable-revocation-checkpoint.md) | Close automatic governance recursion at `1.32.0` |
 | [0058](../adr/0058-make-constitutional-invariants-the-primary-phase-1a-proof-gate.md) | Establish the constitutional invariant gate |
 
