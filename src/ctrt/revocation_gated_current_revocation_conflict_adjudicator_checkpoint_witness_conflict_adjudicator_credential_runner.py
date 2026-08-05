@@ -713,8 +713,8 @@ class RevocationGatedExperimentRunner:
             "predecessor_credential_corpus_ref": (
                 credential_corpus.reference()
             ),
-            "revocation_policy_ref": revocation_evidence.policy_ref,
-            "revocation_ledger_ref": revocation_evidence.ledger_ref,
+            "revocation_policy_ref": revocation_evidence.revocation_policy_ref,
+            "revocation_ledger_ref": revocation_evidence.revocation_ledger_ref,
             "revocation_event_refs": revocation_evidence.event_refs,
             "adjudication_ref": credential_evidence.adjudication_ref,
             "revocation_decision_ref": decision_ref,
