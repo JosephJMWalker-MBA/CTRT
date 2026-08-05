@@ -7,6 +7,9 @@ from pathlib import Path
 from typing import Any, cast
 
 import pytest
+import test_current_revocation_checkpoint_witness as witness_fx
+import test_current_revocation_checkpoint_witness_conflict_adjudication as contract_fx
+import test_witness_gated_current_revocation_checkpoint_runner as pr45_fx
 from test_credential_revocation_checkpoints import validate_schema
 
 from ctrt.adjudicated_current_revocation_checkpoint_witness_runner import (
@@ -25,10 +28,6 @@ from ctrt.witness_conflict_adjudication import (
     WitnessConflictAdjudicationSnapshot,
     WitnessConflictResolutionStatus,
 )
-
-import test_current_revocation_checkpoint_witness as witness_fx
-import test_current_revocation_checkpoint_witness_conflict_adjudication as contract_fx
-import test_witness_gated_current_revocation_checkpoint_runner as pr45_fx
 
 ROOT = Path(__file__).parents[1]
 FINAL_SCHEMA = ROOT / "schemas" / (
