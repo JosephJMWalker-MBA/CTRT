@@ -1,0 +1,302 @@
+from __future__ import annotations
+
+from copy import deepcopy
+from dataclasses import replace
+from pathlib import Path
+from typing import Any, cast
+
+import pytest
+from jsonschema import ValidationError
+from test_adjudicator_checkpoint_witness_conflict_adjudication import load_document
+from test_credential_revocation_checkpoints import validate_schema
+import test_current_revocation_checkpoint_witness_conflict_adjudication as adjudication_fx
+
+from ctrt.adjudicator_credential_attestation import (
+    AdjudicatorCredentialAttestationSnapshot,
+    AdjudicatorCredentialPolicySnapshot,
+)
+from ctrt.artifact_store import FileSystemArtifactStore
+from ctrt.current_revocation_checkpoint_witness_conflict_adjudicator_credential import (
+    CredentialBoundCurrentRevocationCheckpointWitnessConflictCorpusSnapshot,
+    CredentialError,
+    load_current_revocation_checkpoint_witness_conflict_credential_evidence,
+    persist_current_revocation_checkpoint_witness_conflict_credential_corpus,
+    validate_current_revocation_checkpoint_witness_conflict_credentials,
+)
+from ctrt.reviewer_credential_attestation import (
+    CredentialDecisionOutcome,
+    CredentialIssuerRegistrySnapshot,
+)
+
+ROOT = Path(__file__).parents[1]
+ISSUER_PATH = ROOT / "docs" / "candidates" / (
+    "synthetic-current-revocation-checkpoint-witness-conflict-adjudicator-"
+    "credential-issuer-registry.v0.1.0.json"
+)
+POLICY_PATH = ROOT / "docs" / "candidates" / (
+    "synthetic-current-revocation-checkpoint-witness-conflict-adjudicator-"
+    "credential-policy.v0.1.0.json"
+)
+CREDENTIAL_PATH = ROOT / "docs" / "corpora" / "extraction" / "revocations" / (
+    "witnesses/adjudicator-checkpoints/witness-conflict-adjudicator-checkpoint-"
+    "witness-conflict-adjudicator-credential-revocation/checkpoints/witnesses/"
+    "current-revocation-checkpoint-witness-conflict-adjudicator-credential.json"
+)
+CORPUS_PATH = ROOT / "docs" / "corpora" / "extraction" / (
+    "synthetic-corpus.v1.25.0.json"
+)
+ISSUER_SCHEMA = ROOT / "schemas" / "adjudicator-credential-issuer-registry.schema.json"
+POLICY_SCHEMA = ROOT / "schemas" / "adjudicator-credential-policy.schema.json"
+CREDENTIAL_SCHEMA = ROOT / "schemas" / "adjudicator-credential-attestation.schema.json"
+CORPUS_SCHEMA = ROOT / "schemas" / (
+    "current-revocation-checkpoint-witness-conflict-adjudicator-credential-"
+    "bound-corpus.schema.json"
+)
+CREDENTIAL_KEY = (
+    "current_revocation_checkpoint_witness_conflict_adjudicator_credentials"
+)
+PREDECESSOR_KEY = (
+    "current_revocation_checkpoint_witness_conflict_adjudicator_credential_"
+    "predecessor_corpus_ref"
+)
+
+
+def issuer_registry(
+    document: dict[str, Any] | None = None,
+) -> CredentialIssuerRegistrySnapshot:
+    return CredentialIssuerRegistrySnapshot.from_document(
+        document or load_document(ISSUER_PATH)
+    )
+
+
+def credential_policy(
+    document: dict[str, Any] | None = None,
+) -> AdjudicatorCredentialPolicySnapshot:
+    return AdjudicatorCredentialPolicySnapshot.from_document(
+        document or load_document(POLICY_PATH)
+    )
+
+
+def credential(
+    document: dict[str, Any] | None = None,
+) -> AdjudicatorCredentialAttestationSnapshot:
+    return AdjudicatorCredentialAttestationSnapshot.from_document(
+        document or load_document(CREDENTIAL_PATH)
+    )
+
+
+def corpus(
+    document: dict[str, Any] | None = None,
+    *,
+    predecessor: Any | None = None,
+) -> CredentialBoundCurrentRevocationCheckpointWitnessConflictCorpusSnapshot:
+    snapshot = CredentialBoundCurrentRevocationCheckpointWitnessConflictCorpusSnapshot
+    return snapshot.from_document(
+        document or load_document(CORPUS_PATH),
+        predecessor=predecessor or adjudication_fx.adjudication_corpus(),
+    )
+
+
+def stored_ref_document(reference: Any) -> dict[str, str]:
+    return {
+        "artifact_id": reference.artifact_id,
+        "artifact_hash": reference.artifact_hash,
+        "canonicalization_version": reference.canonicalization_version,
+        "media_type": reference.media_type,
+    }
+
+
+def bound_to(
+    selected_credential: AdjudicatorCredentialAttestationSnapshot,
+    *,
+    identity_revision: str | None = None,
+) -> CredentialBoundCurrentRevocationCheckpointWitnessConflictCorpusSnapshot:
+    document = deepcopy(load_document(CORPUS_PATH))
+    document["corpus_id"] += ".test"
+    document["corpus_version"] = "1.25.1-test"
+    entry = document[CREDENTIAL_KEY][0]
+    entry["credential_attestation_ref"] = stored_ref_document(
+        selected_credential.reference()
+    )
+    if identity_revision is not None:
+        entry["identity_revision"] = identity_revision
+    return corpus(document)
+
+
+def frozen_plan(
+    selected: (
+        CredentialBoundCurrentRevocationCheckpointWitnessConflictCorpusSnapshot
+        | None
+    ) = None,
+):
+    bound = selected or corpus()
+    return replace(
+        adjudication_fx.plan_for(bound.corpus),
+        corpus_ref=bound.reference(),
+        content_ids=bound.content_ids,
+    )
+
+
+def validate(
+    *,
+    selected_credential: AdjudicatorCredentialAttestationSnapshot | None = None,
+    selected_corpus: (
+        CredentialBoundCurrentRevocationCheckpointWitnessConflictCorpusSnapshot
+        | None
+    ) = None,
+    evaluated_at: str = "2026-08-03T19:58:42Z",
+):
+    selected = selected_credential or credential()
+    bound = selected_corpus or corpus()
+    if bound.credential_entries[0].credential_attestation_ref != selected.reference():
+        bound = bound_to(selected)
+    return validate_current_revocation_checkpoint_witness_conflict_credentials(
+        plan=frozen_plan(bound),
+        corpus=bound,
+        adjudicator_registry=adjudication_fx.conflict_adjudicator_registry(),
+        issuer_registry=issuer_registry(),
+        credential_policy=credential_policy(),
+        attestations=(selected,),
+        adjudication=adjudication_fx.conflict_adjudication(),
+        evaluated_at=evaluated_at,
+    )
+
+
+def prepare_credential_store(
+    tmp_path: Path,
+    *,
+    run_id: str = "current-revocation-conflict-credential-reconstruction",
+) -> tuple[Any, ...]:
+    prepared = adjudication_fx.prepare_adjudication_store(tmp_path, run_id=run_id)
+    store = cast(FileSystemArtifactStore, prepared[0])
+    predecessor = prepared[2]
+    selected = corpus(predecessor=predecessor)
+    plan = replace(
+        prepared[1],
+        corpus_ref=selected.reference(),
+        content_ids=selected.content_ids,
+    )
+    persist_current_revocation_checkpoint_witness_conflict_credential_corpus(
+        store,
+        plan=plan,
+        corpus=selected,
+        predecessor_corpus=predecessor,
+        adjudicator_registry=adjudication_fx.conflict_adjudicator_registry(),
+        issuer_registry=issuer_registry(),
+        credential_policy=credential_policy(),
+        attestations=(credential(),),
+        adjudication=adjudication_fx.conflict_adjudication(),
+        evaluated_at="2026-08-03T19:58:42Z",
+    )
+    return (store, plan, selected, *prepared[2:])
+
+
+def test_fixed_credential_graph_and_schemas() -> None:
+    selected = corpus()
+    report = validate()
+    assert issuer_registry().artifact_hash == (
+        "sha256:374aa9e74626fbad3d713c7314b52ba3216c5f83967d42b5cab8850f25e41c9e"
+    )
+    assert credential_policy().artifact_hash == (
+        "sha256:ca068064ee98571231ec8bf56ab35f54f35fedeacd2536c49ef02f48f5882f98"
+    )
+    assert credential().artifact_hash == (
+        "sha256:e80e03f9112abe7ff8e482e532a6eea5ac636cefe147794e554200a428732092"
+    )
+    assert selected.artifact_hash == (
+        "sha256:b43a185d7b21879b3a234fe84233f324ae66a07a034b9ae3b7cd3577c226dca0"
+    )
+    assert (
+        selected.predecessor_corpus_ref
+        == adjudication_fx.adjudication_corpus().reference()
+    )
+    assert report.outcome is CredentialDecisionOutcome.EXECUTE
+    assert report.adjudication_ref == adjudication_fx.conflict_adjudication().reference()
+    validate_schema(ISSUER_SCHEMA, load_document(ISSUER_PATH))
+    validate_schema(POLICY_SCHEMA, load_document(POLICY_PATH))
+    validate_schema(CREDENTIAL_SCHEMA, load_document(CREDENTIAL_PATH))
+    validate_schema(CORPUS_SCHEMA, load_document(CORPUS_PATH))
+
+
+def test_not_yet_valid_credential_abstains() -> None:
+    report = validate(evaluated_at="2026-08-03T19:58:39Z")
+    assert report.outcome is CredentialDecisionOutcome.ABSTAIN
+    assert report.credentials[0].abstention.reasons == (
+        "credential-not-yet-valid",
+    )
+
+
+def test_expired_credential_abstains_at_half_open_boundary() -> None:
+    report = validate(evaluated_at="2027-08-03T19:58:40Z")
+    assert report.outcome is CredentialDecisionOutcome.ABSTAIN
+    assert report.credentials[0].abstention.reasons == ("credential-expired",)
+
+
+def test_suspended_credential_abstains_without_rewriting_adjudication() -> None:
+    document = deepcopy(load_document(CREDENTIAL_PATH))
+    document["status"] = "suspended"
+    selected = credential(document)
+    report = validate(selected_credential=selected)
+    assert report.outcome is CredentialDecisionOutcome.ABSTAIN
+    assert report.credentials[0].abstention.reasons == (
+        "credential-status:suspended",
+    )
+    assert report.adjudication_ref == adjudication_fx.conflict_adjudication().reference()
+
+
+def test_substituted_identity_revision_is_structural_failure() -> None:
+    document = deepcopy(load_document(CREDENTIAL_PATH))
+    revision = "synthetic-substituted-current-revocation-adjudicator@9.9.9"
+    document["identity_revision"] = revision
+    document["subject_reference"] = (
+        "witness-conflict-adjudicator:"
+        f"{document['adjudicator_id']}@{revision}"
+    )
+    selected = credential(document)
+    selected_corpus = bound_to(selected, identity_revision=revision)
+    with pytest.raises(CredentialError, match="credential entry identity differs"):
+        validate(
+            selected_credential=selected,
+            selected_corpus=selected_corpus,
+        )
+
+
+def test_predecessor_drift_is_rejected() -> None:
+    document = deepcopy(load_document(CORPUS_PATH))
+    document[PREDECESSOR_KEY]["artifact_hash"] = "sha256:" + "0" * 64
+    with pytest.raises(CredentialError, match="exact 1.24.0"):
+        corpus(document)
+
+
+def test_manifest_last_persistence_and_reconstruction(tmp_path: Path) -> None:
+    prepared = prepare_credential_store(tmp_path)
+    store = cast(FileSystemArtifactStore, prepared[0])
+    selected = cast(
+        CredentialBoundCurrentRevocationCheckpointWitnessConflictCorpusSnapshot,
+        prepared[2],
+    )
+    first = load_current_revocation_checkpoint_witness_conflict_credential_evidence(
+        store,
+        corpus=selected,
+        adjudicator_registry=adjudication_fx.conflict_adjudicator_registry(),
+        issuer_registry=issuer_registry(),
+        credential_policy=credential_policy(),
+        adjudication=adjudication_fx.conflict_adjudication(),
+    )
+    second = load_current_revocation_checkpoint_witness_conflict_credential_evidence(
+        store,
+        corpus=selected,
+        adjudicator_registry=adjudication_fx.conflict_adjudicator_registry(),
+        issuer_registry=issuer_registry(),
+        credential_policy=credential_policy(),
+        adjudication=adjudication_fx.conflict_adjudication(),
+    )
+    assert first == second
+    assert first.attestations == (credential(),)
+
+
+def test_schema_rejects_confidence_field() -> None:
+    document = deepcopy(load_document(CORPUS_PATH))
+    document["confidence"] = 1.0
+    with pytest.raises(ValidationError):
+        validate_schema(CORPUS_SCHEMA, document)
