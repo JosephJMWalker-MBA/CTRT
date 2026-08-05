@@ -90,7 +90,7 @@ class PositionalSentimentFixture:
         target = AnalysisTarget.for_content_item(
             content_id=content.content_id,
             content_length=len(content.text),
-            extraction_ref=f"content-item:{content.content_id}",
+            extraction_ref=content.canonical_extraction_ref,
         )
         matches = tuple(re.finditer(r"\b(good|bad)\b", content.text, flags=re.IGNORECASE))
         if content.language not in {None, "en"}:
