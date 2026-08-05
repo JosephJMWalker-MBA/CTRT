@@ -237,9 +237,14 @@ class RevocationBoundCurrentRevocationCheckpointWitnessConflictAdjudicatorCreden
         )
 
 
+RevocationCorpus = (
+    RevocationBoundCurrentRevocationCheckpointWitnessConflictAdjudicatorCredentialCorpusSnapshot
+)
+
+
 def _validate_as_of_chronology(
     *,
-    corpus: RevocationBoundCurrentRevocationCheckpointWitnessConflictAdjudicatorCredentialCorpusSnapshot,
+    corpus: RevocationCorpus,
     policy: AdjudicatorCredentialRevocationPolicySnapshot,
     ledger: AdjudicatorCredentialRevocationLedgerSnapshot,
     events: tuple[AdjudicatorCredentialRevocationEventSnapshot, ...],
@@ -267,7 +272,7 @@ def _validate_as_of_chronology(
 def load_current_revocation_checkpoint_witness_conflict_adjudicator_credential_revocation_evidence(
     store: FileSystemArtifactStore,
     *,
-    corpus: RevocationBoundCurrentRevocationCheckpointWitnessConflictAdjudicatorCredentialCorpusSnapshot,
+    corpus: RevocationCorpus,
     policy: AdjudicatorCredentialRevocationPolicySnapshot,
     ledger: AdjudicatorCredentialRevocationLedgerSnapshot,
 ) -> StoredAdjudicatorCredentialRevocationEvidence:
@@ -281,10 +286,10 @@ def load_current_revocation_checkpoint_witness_conflict_adjudicator_credential_r
     )
 
 
-def validate_current_revocation_checkpoint_witness_conflict_adjudicator_credential_revocation_ledger(
+def _validate_current_revocation_credential_ledger(
     *,
     plan: ExperimentPlan,
-    corpus: RevocationBoundCurrentRevocationCheckpointWitnessConflictAdjudicatorCredentialCorpusSnapshot,
+    corpus: RevocationCorpus,
     adjudicator_registry: WitnessConflictAdjudicatorRegistrySnapshot,
     issuer_registry: CredentialIssuerRegistrySnapshot,
     credential_policy: CredentialPolicySnapshot,
@@ -319,11 +324,11 @@ def validate_current_revocation_checkpoint_witness_conflict_adjudicator_credenti
     )
 
 
-def persist_current_revocation_checkpoint_witness_conflict_adjudicator_credential_revocation_bound_corpus(
+def _persist_current_revocation_credential_corpus(
     store: FileSystemArtifactStore,
     *,
     plan: ExperimentPlan,
-    corpus: RevocationBoundCurrentRevocationCheckpointWitnessConflictAdjudicatorCredentialCorpusSnapshot,
+    corpus: RevocationCorpus,
     predecessor_corpus: CredentialBoundCurrentRevocationCheckpointWitnessConflictCorpusSnapshot,
     adjudicator_registry: WitnessConflictAdjudicatorRegistrySnapshot,
     issuer_registry: CredentialIssuerRegistrySnapshot,
@@ -359,3 +364,11 @@ def persist_current_revocation_checkpoint_witness_conflict_adjudicator_credentia
         events=events,
         evaluated_at=evaluated_at,
     )
+
+
+(
+    validate_current_revocation_checkpoint_witness_conflict_adjudicator_credential_revocation_ledger
+) = _validate_current_revocation_credential_ledger
+(
+    persist_current_revocation_checkpoint_witness_conflict_adjudicator_credential_revocation_bound_corpus
+) = _persist_current_revocation_credential_corpus
