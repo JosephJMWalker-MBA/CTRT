@@ -20,15 +20,29 @@ from ctrt.artifact_store import FileSystemArtifactStore, StoredArtifactRef
 from ctrt.current_revocation_checkpoint_witness_conflict_adjudicator_credential import (
     CredentialBoundCurrentRevocationCheckpointWitnessConflictCorpusSnapshot,
 )
-from ctrt.current_revocation_checkpoint_witness_conflict_adjudicator_credential_revocation_ledger import (
-    RevocationBoundCurrentRevocationCheckpointWitnessConflictAdjudicatorCredentialCorpusSnapshot,
-    load_current_revocation_checkpoint_witness_conflict_adjudicator_credential_revocation_evidence,
-    persist_current_revocation_checkpoint_witness_conflict_adjudicator_credential_revocation_bound_corpus,
-    validate_current_revocation_checkpoint_witness_conflict_adjudicator_credential_revocation_ledger,
-)
 from ctrt.experiments import VersionedArtifactRef
 from ctrt.reviewer_credential_attestation import CredentialDecisionOutcome
 
+contract = import_module(
+    "ctrt.current_revocation_checkpoint_witness_conflict_adjudicator_"
+    "credential_revocation_ledger"
+)
+RevocationCorpus = vars(contract)[
+    "RevocationBoundCurrentRevocationCheckpointWitnessConflictAdjudicator"
+    "CredentialCorpusSnapshot"
+]
+load_revocation_evidence = vars(contract)[
+    "load_current_revocation_checkpoint_witness_conflict_adjudicator_"
+    "credential_revocation_evidence"
+]
+persist_revocation_corpus = vars(contract)[
+    "persist_current_revocation_checkpoint_witness_conflict_adjudicator_"
+    "credential_revocation_bound_corpus"
+]
+validate_revocation_ledger = vars(contract)[
+    "validate_current_revocation_checkpoint_witness_conflict_adjudicator_"
+    "credential_revocation_ledger"
+]
 credential_fx = import_module(
     "test_current_revocation_checkpoint_witness_conflict_adjudicator_credential"
 )
@@ -96,20 +110,14 @@ def revocation_corpus(
     *,
     predecessor: CredentialBoundCurrentRevocationCheckpointWitnessConflictCorpusSnapshot
     | None = None,
-) -> RevocationBoundCurrentRevocationCheckpointWitnessConflictAdjudicatorCredentialCorpusSnapshot:
-    snapshot = (
-        RevocationBoundCurrentRevocationCheckpointWitnessConflictAdjudicatorCredentialCorpusSnapshot
-    )
-    return snapshot.from_document(
+) -> Any:
+    return RevocationCorpus.from_document(
         document or load_document(CORPUS_PATH),
         predecessor=predecessor or credential_fx.corpus(),
     )
 
 
-def revocation_plan(
-    selected: RevocationBoundCurrentRevocationCheckpointWitnessConflictAdjudicatorCredentialCorpusSnapshot
-    | None = None,
-):
+def revocation_plan(selected: Any | None = None):
     bound = selected or revocation_corpus()
     return replace(
         credential_fx.frozen_plan(),
@@ -136,7 +144,7 @@ def versioned_ref_document(reference: VersionedArtifactRef) -> dict[str, str]:
 
 
 def validate(*, evaluated_at: str = "2026-08-03T19:58:46Z"):
-    return validate_current_revocation_checkpoint_witness_conflict_adjudicator_credential_revocation_ledger(
+    return validate_revocation_ledger(
         plan=revocation_plan(),
         corpus=revocation_corpus(),
         adjudicator_registry=credential_fx.adjudication_fx.conflict_adjudicator_registry(),
@@ -218,7 +226,7 @@ def test_event_issuer_drift_is_structural_failure() -> None:
         content_ids=altered_corpus.content_ids,
     )
     with pytest.raises(AdjudicatorCredentialRevocationError, match="issuer"):
-        validate_current_revocation_checkpoint_witness_conflict_adjudicator_credential_revocation_ledger(
+        validate_revocation_ledger(
             plan=altered_plan,
             corpus=altered_corpus,
             adjudicator_registry=(
@@ -240,7 +248,7 @@ def test_event_recorded_after_ledger_freeze_is_rejected() -> None:
     event_document["recorded_at"] = "2026-08-03T19:58:45Z"
     altered_event = suspension_event(event_document)
     with pytest.raises(AdjudicatorCredentialRevocationError, match="recording chronology"):
-        validate_current_revocation_checkpoint_witness_conflict_adjudicator_credential_revocation_ledger(
+        validate_revocation_ledger(
             plan=revocation_plan(),
             corpus=revocation_corpus(),
             adjudicator_registry=(
@@ -270,7 +278,7 @@ def test_manifest_last_persistence_and_exact_reconstruction(tmp_path: Path) -> N
         corpus_ref=selected.reference(),
         content_ids=selected.content_ids,
     )
-    first = persist_current_revocation_checkpoint_witness_conflict_adjudicator_credential_revocation_bound_corpus(
+    first = persist_revocation_corpus(
         store,
         plan=plan,
         corpus=selected,
@@ -285,7 +293,7 @@ def test_manifest_last_persistence_and_exact_reconstruction(tmp_path: Path) -> N
         events=(suspension_event(),),
         evaluated_at="2026-08-03T19:58:46Z",
     )
-    second = load_current_revocation_checkpoint_witness_conflict_adjudicator_credential_revocation_evidence(
+    second = load_revocation_evidence(
         store,
         corpus=selected,
         policy=revocation_policy(),
