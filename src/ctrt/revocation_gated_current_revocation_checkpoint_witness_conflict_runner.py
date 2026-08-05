@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 from datetime import datetime
 from enum import StrEnum
+from importlib import import_module
 from typing import Any
 
 from ctrt.adjudicator_credential_revocation_ledger import (
@@ -38,11 +39,6 @@ from ctrt.current_revocation_checkpoint_witness_conflict_adjudicator_credential 
     StoredCredentialEvidence,
     load_current_revocation_checkpoint_witness_conflict_credential_evidence,
 )
-from ctrt.current_revocation_checkpoint_witness_conflict_adjudicator_credential_revocation_ledger import (
-    RevocationBoundCurrentRevocationCheckpointWitnessConflictAdjudicatorCredentialCorpusSnapshot,
-    load_current_revocation_checkpoint_witness_conflict_adjudicator_credential_revocation_evidence,
-    validate_current_revocation_checkpoint_witness_conflict_adjudicator_credential_revocation_ledger,
-)
 from ctrt.experiments import ExperimentPlan, ExperimentPlanStatus, VersionedArtifactRef
 from ctrt.extraction_review_adjudication import ReviewDecisionOutcome
 from ctrt.reviewer_credential_attestation import (
@@ -55,6 +51,30 @@ from ctrt.witness_conflict_adjudication import (
     WitnessConflictAdjudicationSnapshot,
     WitnessConflictAdjudicatorRegistrySnapshot,
     WitnessConflictResolutionStatus,
+)
+
+_contract = import_module(
+    "ctrt.current_revocation_checkpoint_witness_conflict_adjudicator_"
+    "credential_revocation_ledger"
+)
+RevocationCorpus = vars(_contract)[
+    "RevocationBoundCurrentRevocationCheckpointWitnessConflictAdjudicator"
+    "CredentialCorpusSnapshot"
+]
+load_revocation_evidence = vars(_contract)[
+    "load_current_revocation_checkpoint_witness_conflict_adjudicator_"
+    "credential_revocation_evidence"
+]
+validate_revocation_ledger = vars(_contract)[
+    "validate_current_revocation_checkpoint_witness_conflict_adjudicator_"
+    "credential_revocation_ledger"
+]
+
+CredentialCorpus = (
+    CredentialBoundCurrentRevocationCheckpointWitnessConflictCorpusSnapshot
+)
+AdjudicationCorpus = (
+    AdjudicationBoundCurrentRevocationCheckpointWitnessCorpusSnapshot
 )
 
 _ARTIFACT_PREFIX = (
@@ -127,6 +147,35 @@ def _parse_timestamp(value: str, field_name: str) -> datetime:
     return parsed
 
 
+def _delegated_outcomes(value: Any) -> tuple[Any, ...]:
+    """Return every PR #47 and inherited outcome without aggregation."""
+
+    return (
+        value.current_revocation_checkpoint_conflict_adjudicator_credential_outcome,
+        value.conflicting_current_revocation_checkpoint_witness_outcome,
+        value.current_revocation_checkpoint_resolution_status,
+        value.current_revocation_checkpoint_conflict_adjudication_outcome,
+        value.resolved_current_revocation_checkpoint_witness_outcome,
+        value.current_conflict_adjudicator_revocation_outcome,
+        value.current_conflict_adjudicator_credential_outcome,
+        value.conflicting_witness_outcome,
+        value.current_resolution_status,
+        value.current_conflict_adjudication_outcome,
+        value.resolved_current_witness_outcome,
+        value.current_revocation_outcome,
+        value.current_credential_outcome,
+        value.lower_checkpoint_witness_outcome,
+        value.lower_resolution_status,
+        value.lower_conflict_adjudication_outcome,
+        value.lower_predecessor_witness_outcome,
+        value.inherited_revocation_outcome,
+        value.inherited_credential_outcome,
+        value.inherited_checkpoint_witness_outcome,
+        value.inherited_resolution_status,
+        value.inherited_adjudication_outcome,
+    )
+
+
 @dataclass(frozen=True, slots=True)
 class CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationFinalManifest:
     """Final marker preserving revocation and every delegated outcome separately."""
@@ -189,35 +238,16 @@ class CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationFinalManife
             CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationRunnerStatus.VERIFIED
         )
         if self.status is not expected_status:
-            raise ValueError("current revocation conflict-adjudicator revocation must be verified")
+            raise ValueError(
+                "current revocation conflict-adjudicator revocation must be verified"
+            )
         if not self.revocation_event_refs:
-            raise ValueError("current revocation conflict-adjudicator revocation requires events")
+            raise ValueError(
+                "current revocation conflict-adjudicator revocation requires events"
+            )
         if len(self.revocation_event_refs) != len(set(self.revocation_event_refs)):
             raise ValueError("current revocation conflict-adjudicator refs must be unique")
-        downstream = (
-            self.current_revocation_checkpoint_conflict_adjudicator_credential_outcome,
-            self.conflicting_current_revocation_checkpoint_witness_outcome,
-            self.current_revocation_checkpoint_resolution_status,
-            self.current_revocation_checkpoint_conflict_adjudication_outcome,
-            self.resolved_current_revocation_checkpoint_witness_outcome,
-            self.current_conflict_adjudicator_revocation_outcome,
-            self.current_conflict_adjudicator_credential_outcome,
-            self.conflicting_witness_outcome,
-            self.current_resolution_status,
-            self.current_conflict_adjudication_outcome,
-            self.resolved_current_witness_outcome,
-            self.current_revocation_outcome,
-            self.current_credential_outcome,
-            self.lower_checkpoint_witness_outcome,
-            self.lower_resolution_status,
-            self.lower_conflict_adjudication_outcome,
-            self.lower_predecessor_witness_outcome,
-            self.inherited_revocation_outcome,
-            self.inherited_credential_outcome,
-            self.inherited_checkpoint_witness_outcome,
-            self.inherited_resolution_status,
-            self.inherited_adjudication_outcome,
-        )
+        downstream = _delegated_outcomes(self)
         prefix = f"{self.experiment_run_id}:{_ARTIFACT_PREFIX}-"
         if (
             self.current_revocation_checkpoint_conflict_adjudicator_revocation_outcome
@@ -319,30 +349,7 @@ class VerifiedCurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationRec
         )
         if self.status is not expected_status:
             raise ValueError("verified current revocation conflict-adjudicator required")
-        downstream = (
-            self.current_revocation_checkpoint_conflict_adjudicator_credential_outcome,
-            self.conflicting_current_revocation_checkpoint_witness_outcome,
-            self.current_revocation_checkpoint_resolution_status,
-            self.current_revocation_checkpoint_conflict_adjudication_outcome,
-            self.resolved_current_revocation_checkpoint_witness_outcome,
-            self.current_conflict_adjudicator_revocation_outcome,
-            self.current_conflict_adjudicator_credential_outcome,
-            self.conflicting_witness_outcome,
-            self.current_resolution_status,
-            self.current_conflict_adjudication_outcome,
-            self.resolved_current_witness_outcome,
-            self.current_revocation_outcome,
-            self.current_credential_outcome,
-            self.lower_checkpoint_witness_outcome,
-            self.lower_resolution_status,
-            self.lower_conflict_adjudication_outcome,
-            self.lower_predecessor_witness_outcome,
-            self.inherited_revocation_outcome,
-            self.inherited_credential_outcome,
-            self.inherited_checkpoint_witness_outcome,
-            self.inherited_resolution_status,
-            self.inherited_adjudication_outcome,
-        )
+        downstream = _delegated_outcomes(self)
         prefix = f"{self.experiment_run_id}:{_ARTIFACT_PREFIX}-"
         if (
             self.current_revocation_checkpoint_conflict_adjudicator_revocation_outcome
@@ -359,31 +366,7 @@ class VerifiedCurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationRec
                 raise ValueError("revocation execution requires PR #47 receipt")
             if delegated.experiment_run_id != self.experiment_run_id:
                 raise ValueError("PR #47 receipt belongs to another experiment run")
-            delegated_values = (
-                delegated.current_revocation_checkpoint_conflict_adjudicator_credential_outcome,
-                delegated.conflicting_current_revocation_checkpoint_witness_outcome,
-                delegated.current_revocation_checkpoint_resolution_status,
-                delegated.current_revocation_checkpoint_conflict_adjudication_outcome,
-                delegated.resolved_current_revocation_checkpoint_witness_outcome,
-                delegated.current_conflict_adjudicator_revocation_outcome,
-                delegated.current_conflict_adjudicator_credential_outcome,
-                delegated.conflicting_witness_outcome,
-                delegated.current_resolution_status,
-                delegated.current_conflict_adjudication_outcome,
-                delegated.resolved_current_witness_outcome,
-                delegated.current_revocation_outcome,
-                delegated.current_credential_outcome,
-                delegated.lower_checkpoint_witness_outcome,
-                delegated.lower_resolution_status,
-                delegated.lower_conflict_adjudication_outcome,
-                delegated.lower_predecessor_witness_outcome,
-                delegated.inherited_revocation_outcome,
-                delegated.inherited_credential_outcome,
-                delegated.inherited_checkpoint_witness_outcome,
-                delegated.inherited_resolution_status,
-                delegated.inherited_adjudication_outcome,
-            )
-            if delegated_values != downstream:
+            if _delegated_outcomes(delegated) != downstream:
                 raise ValueError("PR #47 receipt differs from revocation receipt")
             if delegated.terminal_outcome is not self.terminal_outcome:
                 raise ValueError("PR #47 terminal outcome differs")
@@ -416,8 +399,8 @@ class RevocationGatedCurrentRevocationCheckpointWitnessConflictExperimentRunner:
     def _preflight(
         *,
         plan: ExperimentPlan,
-        corpus: RevocationBoundCurrentRevocationCheckpointWitnessConflictAdjudicatorCredentialCorpusSnapshot,
-        credential_corpus: CredentialBoundCurrentRevocationCheckpointWitnessConflictCorpusSnapshot,
+        corpus: Any,
+        credential_corpus: CredentialCorpus,
         revocation_policy: AdjudicatorCredentialRevocationPolicySnapshot,
         revocation_ledger: AdjudicatorCredentialRevocationLedgerSnapshot,
         experiment_run_id: str,
@@ -475,10 +458,11 @@ class RevocationGatedCurrentRevocationCheckpointWitnessConflictExperimentRunner:
         artifact_id = f"{experiment_run_id}:{_ARTIFACT_PREFIX}-decision"
         artifact = serialize_artifact(artifact_id, decision)
         reference = self._store.append(artifact)
-        if self._store.get(
+        stored = self._store.get(
             reference.artifact_id,
             expected_hash=reference.artifact_hash,
-        ).payload != artifact.payload:
+        )
+        if stored.payload != artifact.payload:
             raise ArtifactIntegrityError("stored current revocation decision differs")
         return reference
 
@@ -487,8 +471,8 @@ class RevocationGatedCurrentRevocationCheckpointWitnessConflictExperimentRunner:
         *,
         final: CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationFinalManifest,
         final_ref: StoredArtifactRef,
-        corpus: RevocationBoundCurrentRevocationCheckpointWitnessConflictAdjudicatorCredentialCorpusSnapshot,
-        credential_corpus: CredentialBoundCurrentRevocationCheckpointWitnessConflictCorpusSnapshot,
+        corpus: Any,
+        credential_corpus: CredentialCorpus,
         revocation_policy: AdjudicatorCredentialRevocationPolicySnapshot,
         revocation_ledger: AdjudicatorCredentialRevocationLedgerSnapshot,
         revocation_evidence: StoredAdjudicatorCredentialRevocationEvidence,
@@ -496,15 +480,17 @@ class RevocationGatedCurrentRevocationCheckpointWitnessConflictExperimentRunner:
         decision: AdjudicatorCredentialRevocationDecisionReport,
     ) -> None:
         expected = serialize_artifact(final.final_id, final)
-        if self._store.get(
+        stored_final = self._store.get(
             final_ref.artifact_id,
             expected_hash=final_ref.artifact_hash,
-        ).payload != expected.payload:
+        )
+        if stored_final.payload != expected.payload:
             raise ArtifactIntegrityError("stored current revocation final differs")
-        if self._store.get(
+        stored_corpus = self._store.get(
             final.revocation_corpus_ref.artifact_id,
             expected_hash=final.revocation_corpus_ref.artifact_hash,
-        ).payload != corpus.artifact().payload:
+        )
+        if stored_corpus.payload != corpus.artifact().payload:
             raise ArtifactIntegrityError("stored 1.26.0 revocation corpus differs")
         predecessor = self._store.get(
             credential_corpus.reference().artifact_id,
@@ -512,15 +498,17 @@ class RevocationGatedCurrentRevocationCheckpointWitnessConflictExperimentRunner:
         )
         if predecessor.payload != credential_corpus.artifact().payload:
             raise ArtifactIntegrityError("stored 1.25.0 credential corpus differs")
-        if self._store.get(
+        stored_policy = self._store.get(
             final.revocation_policy_ref.artifact_id,
             expected_hash=final.revocation_policy_ref.artifact_hash,
-        ).payload != revocation_policy.canonical_payload:
+        )
+        if stored_policy.payload != revocation_policy.canonical_payload:
             raise ArtifactIntegrityError("stored current revocation policy differs")
-        if self._store.get(
+        stored_ledger = self._store.get(
             final.revocation_ledger_ref.artifact_id,
             expected_hash=final.revocation_ledger_ref.artifact_hash,
-        ).payload != revocation_ledger.canonical_payload:
+        )
+        if stored_ledger.payload != revocation_ledger.canonical_payload:
             raise ArtifactIntegrityError("stored current revocation ledger differs")
         for reference in (
             *revocation_evidence.event_refs,
@@ -535,10 +523,11 @@ class RevocationGatedCurrentRevocationCheckpointWitnessConflictExperimentRunner:
             f"{final.experiment_run_id}:{_ARTIFACT_PREFIX}-decision",
             decision,
         )
-        if self._store.get(
+        stored_decision = self._store.get(
             final.revocation_decision_ref.artifact_id,
             expected_hash=final.revocation_decision_ref.artifact_hash,
-        ).payload != expected_decision.payload:
+        )
+        if stored_decision.payload != expected_decision.payload:
             raise ArtifactIntegrityError("stored current revocation decision differs")
         if final.credential_final_ref is not None:
             self._store.get(
@@ -550,9 +539,9 @@ class RevocationGatedCurrentRevocationCheckpointWitnessConflictExperimentRunner:
         self,
         *,
         plan: ExperimentPlan,
-        corpus: RevocationBoundCurrentRevocationCheckpointWitnessConflictAdjudicatorCredentialCorpusSnapshot,
-        credential_corpus: CredentialBoundCurrentRevocationCheckpointWitnessConflictCorpusSnapshot,
-        adjudication_corpus: AdjudicationBoundCurrentRevocationCheckpointWitnessCorpusSnapshot,
+        corpus: Any,
+        credential_corpus: CredentialCorpus,
+        adjudication_corpus: AdjudicationCorpus,
         conflict_adjudicator_registry: WitnessConflictAdjudicatorRegistrySnapshot,
         credential_issuer_registry: CredentialIssuerRegistrySnapshot,
         credential_policy: CredentialPolicySnapshot,
@@ -586,19 +575,20 @@ class RevocationGatedCurrentRevocationCheckpointWitnessConflictExperimentRunner:
                 completed_at=completed_at,
             )
         except ValueError as exc:
+            stage = (
+                CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationRunnerStage.PREFLIGHT
+            )
             raise CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationExperimentError(
-                CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationRunnerStage.PREFLIGHT,
+                stage,
                 str(exc),
             ) from exc
 
         try:
-            revocation_evidence = (
-                load_current_revocation_checkpoint_witness_conflict_adjudicator_credential_revocation_evidence(
-                    self._store,
-                    corpus=corpus,
-                    policy=revocation_policy,
-                    ledger=revocation_ledger,
-                )
+            revocation_evidence = load_revocation_evidence(
+                self._store,
+                corpus=corpus,
+                policy=revocation_policy,
+                ledger=revocation_ledger,
             )
             credential_evidence = (
                 load_current_revocation_checkpoint_witness_conflict_credential_evidence(
@@ -617,30 +607,34 @@ class RevocationGatedCurrentRevocationCheckpointWitnessConflictExperimentRunner:
             OSError,
             ValueError,
         ) as exc:
+            stage = (
+                CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationRunnerStage.EVIDENCE_LOADING
+            )
             raise CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationExperimentError(
-                CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationRunnerStage.EVIDENCE_LOADING,
+                stage,
                 str(exc),
             ) from exc
 
         try:
-            decision = (
-                validate_current_revocation_checkpoint_witness_conflict_adjudicator_credential_revocation_ledger(
-                    plan=plan,
-                    corpus=corpus,
-                    adjudicator_registry=conflict_adjudicator_registry,
-                    issuer_registry=credential_issuer_registry,
-                    credential_policy=credential_policy,
-                    revocation_policy=revocation_policy,
-                    ledger=revocation_ledger,
-                    attestations=credential_evidence.attestations,
-                    adjudication=conflict_adjudication,
-                    events=revocation_events,
-                    evaluated_at=revocation_evaluated_at,
-                )
+            decision = validate_revocation_ledger(
+                plan=plan,
+                corpus=corpus,
+                adjudicator_registry=conflict_adjudicator_registry,
+                issuer_registry=credential_issuer_registry,
+                credential_policy=credential_policy,
+                revocation_policy=revocation_policy,
+                ledger=revocation_ledger,
+                attestations=credential_evidence.attestations,
+                adjudication=conflict_adjudication,
+                events=revocation_events,
+                evaluated_at=revocation_evaluated_at,
             )
         except (AdjudicatorCredentialRevocationError, ValueError) as exc:
+            stage = (
+                CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationRunnerStage.REVOCATION_VALIDATION
+            )
             raise CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationExperimentError(
-                CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationRunnerStage.REVOCATION_VALIDATION,
+                stage,
                 str(exc),
             ) from exc
 
@@ -655,8 +649,11 @@ class RevocationGatedCurrentRevocationCheckpointWitnessConflictExperimentRunner:
             OSError,
             ValueError,
         ) as exc:
+            stage = (
+                CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationRunnerStage.DECISION_PERSISTENCE
+            )
             raise CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationExperimentError(
-                CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationRunnerStage.DECISION_PERSISTENCE,
+                stage,
                 str(exc),
             ) from exc
 
@@ -687,8 +684,11 @@ class RevocationGatedCurrentRevocationCheckpointWitnessConflictExperimentRunner:
                     **delegated_inputs,
                 )
             except CredentialedCurrentRevocationCheckpointWitnessConflictExperimentError as exc:
+                stage = (
+                    CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationRunnerStage.CREDENTIAL_EXECUTION
+                )
                 raise CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationExperimentError(
-                    CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationRunnerStage.CREDENTIAL_EXECUTION,
+                    stage,
                     str(exc),
                     completed_content_ids=exc.completed_content_ids,
                 ) from exc
@@ -699,30 +699,7 @@ class RevocationGatedCurrentRevocationCheckpointWitnessConflictExperimentRunner:
             credential_final_ref = None
             suffix = "abstention"
         else:
-            delegated_values = (
-                delegated_receipt.current_revocation_checkpoint_conflict_adjudicator_credential_outcome,
-                delegated_receipt.conflicting_current_revocation_checkpoint_witness_outcome,
-                delegated_receipt.current_revocation_checkpoint_resolution_status,
-                delegated_receipt.current_revocation_checkpoint_conflict_adjudication_outcome,
-                delegated_receipt.resolved_current_revocation_checkpoint_witness_outcome,
-                delegated_receipt.current_conflict_adjudicator_revocation_outcome,
-                delegated_receipt.current_conflict_adjudicator_credential_outcome,
-                delegated_receipt.conflicting_witness_outcome,
-                delegated_receipt.current_resolution_status,
-                delegated_receipt.current_conflict_adjudication_outcome,
-                delegated_receipt.resolved_current_witness_outcome,
-                delegated_receipt.current_revocation_outcome,
-                delegated_receipt.current_credential_outcome,
-                delegated_receipt.lower_checkpoint_witness_outcome,
-                delegated_receipt.lower_resolution_status,
-                delegated_receipt.lower_conflict_adjudication_outcome,
-                delegated_receipt.lower_predecessor_witness_outcome,
-                delegated_receipt.inherited_revocation_outcome,
-                delegated_receipt.inherited_credential_outcome,
-                delegated_receipt.inherited_checkpoint_witness_outcome,
-                delegated_receipt.inherited_resolution_status,
-                delegated_receipt.inherited_adjudication_outcome,
-            )
+            delegated_values = _delegated_outcomes(delegated_receipt)
             terminal_outcome = delegated_receipt.terminal_outcome
             credential_final_ref = delegated_receipt.final_manifest_ref
             suffix = (
@@ -757,71 +734,76 @@ class RevocationGatedCurrentRevocationCheckpointWitnessConflictExperimentRunner:
         ) = delegated_values
 
         final_id = f"{experiment_run_id}:{_ARTIFACT_PREFIX}-{suffix}"
-        final = CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationFinalManifest(
-            final_id=final_id,
-            experiment_run_id=experiment_run_id,
-            status=(
+        common: dict[str, Any] = {
+            "experiment_run_id": experiment_run_id,
+            "status": (
                 CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationRunnerStatus.VERIFIED
             ),
-            current_revocation_checkpoint_conflict_adjudicator_revocation_outcome=(
+            "current_revocation_checkpoint_conflict_adjudicator_revocation_outcome": (
                 decision.outcome
             ),
-            current_revocation_checkpoint_conflict_adjudicator_credential_outcome=(
+            "current_revocation_checkpoint_conflict_adjudicator_credential_outcome": (
                 current_revocation_checkpoint_conflict_adjudicator_credential_outcome
             ),
-            conflicting_current_revocation_checkpoint_witness_outcome=(
+            "conflicting_current_revocation_checkpoint_witness_outcome": (
                 conflicting_current_revocation_checkpoint_witness_outcome
             ),
-            current_revocation_checkpoint_resolution_status=(
+            "current_revocation_checkpoint_resolution_status": (
                 current_revocation_checkpoint_resolution_status
             ),
-            current_revocation_checkpoint_conflict_adjudication_outcome=(
+            "current_revocation_checkpoint_conflict_adjudication_outcome": (
                 current_revocation_checkpoint_conflict_adjudication_outcome
             ),
-            resolved_current_revocation_checkpoint_witness_outcome=(
+            "resolved_current_revocation_checkpoint_witness_outcome": (
                 resolved_current_revocation_checkpoint_witness_outcome
             ),
-            current_conflict_adjudicator_revocation_outcome=(
+            "current_conflict_adjudicator_revocation_outcome": (
                 current_conflict_adjudicator_revocation_outcome
             ),
-            current_conflict_adjudicator_credential_outcome=(
+            "current_conflict_adjudicator_credential_outcome": (
                 current_conflict_adjudicator_credential_outcome
             ),
-            conflicting_witness_outcome=conflicting_witness_outcome,
-            current_resolution_status=current_resolution_status,
-            current_conflict_adjudication_outcome=(
+            "conflicting_witness_outcome": conflicting_witness_outcome,
+            "current_resolution_status": current_resolution_status,
+            "current_conflict_adjudication_outcome": (
                 current_conflict_adjudication_outcome
             ),
-            resolved_current_witness_outcome=resolved_current_witness_outcome,
-            current_revocation_outcome=current_revocation_outcome,
-            current_credential_outcome=current_credential_outcome,
-            lower_checkpoint_witness_outcome=lower_checkpoint_witness_outcome,
-            lower_resolution_status=lower_resolution_status,
-            lower_conflict_adjudication_outcome=lower_conflict_adjudication_outcome,
-            lower_predecessor_witness_outcome=lower_predecessor_witness_outcome,
-            inherited_revocation_outcome=inherited_revocation_outcome,
-            inherited_credential_outcome=inherited_credential_outcome,
-            inherited_checkpoint_witness_outcome=(
+            "resolved_current_witness_outcome": resolved_current_witness_outcome,
+            "current_revocation_outcome": current_revocation_outcome,
+            "current_credential_outcome": current_credential_outcome,
+            "lower_checkpoint_witness_outcome": lower_checkpoint_witness_outcome,
+            "lower_resolution_status": lower_resolution_status,
+            "lower_conflict_adjudication_outcome": (
+                lower_conflict_adjudication_outcome
+            ),
+            "lower_predecessor_witness_outcome": lower_predecessor_witness_outcome,
+            "inherited_revocation_outcome": inherited_revocation_outcome,
+            "inherited_credential_outcome": inherited_credential_outcome,
+            "inherited_checkpoint_witness_outcome": (
                 inherited_checkpoint_witness_outcome
             ),
-            inherited_resolution_status=inherited_resolution_status,
-            inherited_adjudication_outcome=inherited_adjudication_outcome,
-            terminal_outcome=terminal_outcome,
-            experiment_id=plan.experiment_id,
-            experiment_version=plan.experiment_version,
-            content_ids=plan.content_ids,
-            revocation_corpus_ref=revocation_evidence.corpus_ref,
-            predecessor_credential_corpus_ref=corpus.predecessor_corpus_ref,
-            revocation_policy_ref=revocation_evidence.revocation_policy_ref,
-            revocation_ledger_ref=revocation_evidence.revocation_ledger_ref,
-            revocation_event_refs=revocation_evidence.event_refs,
-            adjudication_ref=credential_evidence.adjudication_ref,
-            revocation_decision_ref=decision_ref,
-            credential_final_ref=credential_final_ref,
-            verified_checks=(
+            "inherited_resolution_status": inherited_resolution_status,
+            "inherited_adjudication_outcome": inherited_adjudication_outcome,
+            "terminal_outcome": terminal_outcome,
+            "experiment_id": plan.experiment_id,
+            "experiment_version": plan.experiment_version,
+            "content_ids": plan.content_ids,
+            "revocation_corpus_ref": revocation_evidence.corpus_ref,
+            "predecessor_credential_corpus_ref": corpus.predecessor_corpus_ref,
+            "revocation_policy_ref": revocation_evidence.revocation_policy_ref,
+            "revocation_ledger_ref": revocation_evidence.revocation_ledger_ref,
+            "revocation_event_refs": revocation_evidence.event_refs,
+            "adjudication_ref": credential_evidence.adjudication_ref,
+            "revocation_decision_ref": decision_ref,
+            "verified_checks": (
                 CURRENT_REVOCATION_CHECKPOINT_WITNESS_CONFLICT_ADJUDICATOR_REVOCATION_VERIFIED_CHECKS
             ),
-            completed_at=completed_at,
+            "completed_at": completed_at,
+        }
+        final = CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationFinalManifest(
+            final_id=final_id,
+            credential_final_ref=credential_final_ref,
+            **common,
         )
         try:
             final_ref = self._store.append(serialize_artifact(final.final_id, final))
@@ -831,8 +813,11 @@ class RevocationGatedCurrentRevocationCheckpointWitnessConflictExperimentRunner:
             OSError,
             ValueError,
         ) as exc:
+            stage = (
+                CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationRunnerStage.FINAL_PERSISTENCE
+            )
             raise CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationExperimentError(
-                CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationRunnerStage.FINAL_PERSISTENCE,
+                stage,
                 str(exc),
                 completed_content_ids=(
                     plan.content_ids
@@ -859,8 +844,11 @@ class RevocationGatedCurrentRevocationCheckpointWitnessConflictExperimentRunner:
             OSError,
             ValueError,
         ) as exc:
+            stage = (
+                CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationRunnerStage.VERIFICATION
+            )
             raise CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationExperimentError(
-                CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationRunnerStage.VERIFICATION,
+                stage,
                 str(exc),
                 completed_content_ids=(
                     plan.content_ids
@@ -870,70 +858,9 @@ class RevocationGatedCurrentRevocationCheckpointWitnessConflictExperimentRunner:
             ) from exc
 
         return VerifiedCurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationReceipt(
-            experiment_run_id=experiment_run_id,
-            status=(
-                CurrentRevocationCheckpointWitnessConflictAdjudicatorRevocationRunnerStatus.VERIFIED
-            ),
-            current_revocation_checkpoint_conflict_adjudicator_revocation_outcome=(
-                decision.outcome
-            ),
-            current_revocation_checkpoint_conflict_adjudicator_credential_outcome=(
-                current_revocation_checkpoint_conflict_adjudicator_credential_outcome
-            ),
-            conflicting_current_revocation_checkpoint_witness_outcome=(
-                conflicting_current_revocation_checkpoint_witness_outcome
-            ),
-            current_revocation_checkpoint_resolution_status=(
-                current_revocation_checkpoint_resolution_status
-            ),
-            current_revocation_checkpoint_conflict_adjudication_outcome=(
-                current_revocation_checkpoint_conflict_adjudication_outcome
-            ),
-            resolved_current_revocation_checkpoint_witness_outcome=(
-                resolved_current_revocation_checkpoint_witness_outcome
-            ),
-            current_conflict_adjudicator_revocation_outcome=(
-                current_conflict_adjudicator_revocation_outcome
-            ),
-            current_conflict_adjudicator_credential_outcome=(
-                current_conflict_adjudicator_credential_outcome
-            ),
-            conflicting_witness_outcome=conflicting_witness_outcome,
-            current_resolution_status=current_resolution_status,
-            current_conflict_adjudication_outcome=(
-                current_conflict_adjudication_outcome
-            ),
-            resolved_current_witness_outcome=resolved_current_witness_outcome,
-            current_revocation_outcome=current_revocation_outcome,
-            current_credential_outcome=current_credential_outcome,
-            lower_checkpoint_witness_outcome=lower_checkpoint_witness_outcome,
-            lower_resolution_status=lower_resolution_status,
-            lower_conflict_adjudication_outcome=lower_conflict_adjudication_outcome,
-            lower_predecessor_witness_outcome=lower_predecessor_witness_outcome,
-            inherited_revocation_outcome=inherited_revocation_outcome,
-            inherited_credential_outcome=inherited_credential_outcome,
-            inherited_checkpoint_witness_outcome=(
-                inherited_checkpoint_witness_outcome
-            ),
-            inherited_resolution_status=inherited_resolution_status,
-            inherited_adjudication_outcome=inherited_adjudication_outcome,
-            terminal_outcome=terminal_outcome,
-            experiment_id=plan.experiment_id,
-            experiment_version=plan.experiment_version,
-            content_ids=plan.content_ids,
-            revocation_corpus_ref=revocation_evidence.corpus_ref,
-            predecessor_credential_corpus_ref=corpus.predecessor_corpus_ref,
-            revocation_policy_ref=revocation_evidence.revocation_policy_ref,
-            revocation_ledger_ref=revocation_evidence.revocation_ledger_ref,
-            revocation_event_refs=revocation_evidence.event_refs,
-            adjudication_ref=credential_evidence.adjudication_ref,
-            revocation_decision_ref=decision_ref,
             credential_receipt=delegated_receipt,
             final_manifest_ref=final_ref,
-            verified_checks=(
-                CURRENT_REVOCATION_CHECKPOINT_WITNESS_CONFLICT_ADJUDICATOR_REVOCATION_VERIFIED_CHECKS
-            ),
-            completed_at=completed_at,
+            **common,
         )
 
 
