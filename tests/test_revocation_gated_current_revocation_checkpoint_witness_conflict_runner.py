@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import json
 from dataclasses import replace
+from importlib import import_module
 from pathlib import Path
 from typing import Any, cast
 
 import pytest
 import test_credentialed_current_revocation_checkpoint_witness_conflict_runner as pr47_fx
-import test_current_revocation_checkpoint_witness_conflict_adjudicator_credential_revocation_ledger as revocation_fx
 from test_credential_revocation_checkpoints import validate_schema
 
 from ctrt.artifact_store import ArtifactStoreError, FileSystemArtifactStore
@@ -25,6 +25,10 @@ from ctrt.witness_conflict_adjudication import (
     WitnessConflictResolutionStatus,
 )
 
+revocation_fx = import_module(
+    "test_current_revocation_checkpoint_witness_conflict_adjudicator_"
+    "credential_revocation_ledger"
+)
 credential_fx = revocation_fx.credential_fx
 adjudication_fx = credential_fx.adjudication_fx
 
@@ -87,7 +91,7 @@ def prepare_revocation_store(
         corpus_ref=selected.reference(),
         content_ids=selected.content_ids,
     )
-    revocation_fx.persist_current_revocation_checkpoint_witness_conflict_adjudicator_credential_revocation_bound_corpus(
+    revocation_fx.persist_revocation_corpus(
         store,
         plan=plan,
         corpus=selected,
