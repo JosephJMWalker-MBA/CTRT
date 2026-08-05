@@ -1,0 +1,81 @@
+{
+  "registry_id": "registry.real-candidates",
+  "registry_version": "0.1.0",
+  "status": "accepted",
+  "candidates": [
+    {
+      "candidate_id": "vader.sentiment",
+      "display_name": "VADER Sentiment (vaderSentiment 3.3.2)",
+      "capability_type": "analyzer",
+      "technology_type": "rule_based_library",
+      "implementation_ref": "ctrt.vader_adapter:VaderSentimentAdapter",
+      "source_uri": "https://github.com/cjhutto/vaderSentiment",
+      "status": "eligible_for_evaluation",
+      "intended_tasks": [
+        "preregistered evaluation of lexicon-and-rule sentiment valence measurement",
+        "comparison-contract exercise with a real packaged analyzer identity"
+      ],
+      "dimensions": ["sentiment_valence"],
+      "authorized_analyzer_ids": ["vader.sentiment.polarity"],
+      "expected_output": {
+        "kind": "distribution with a separate lexicon-and-rule composite",
+        "labels": ["neg", "neu", "pos", "compound"],
+        "notes": "The three proportions and the compound value are preserved separately with their own declared bounds. They are never combined into a CTRT score, and compound is not a probability, calibrated score, or confidence value."
+      },
+      "domain_claims": [
+        "English short-form, social-media-like text, per the upstream project's own stated purpose",
+        "No claim of universal English sentiment understanding is made or implied",
+        "No CTRT corpus, protocol, or human-annotation evaluation has been performed"
+      ],
+      "language_claims": ["en"],
+      "license_review": {
+        "status": "provisionally_verified",
+        "declared_license": "MIT License",
+        "evidence_ref": "docs/phase-1b-vader-candidate-admission.md#licensing-evidence",
+        "notes": "Source-code license verified by direct inspection of the installed distribution: vaderSentiment-3.3.2.dist-info/LICENSE.txt contains verbatim MIT text, Copyright (c) 2016 C.J. Hutto, sha256 74cfe41cdbf7f6925aeb4c18c148ec8db042540edb6739fd81069aa4e3c8b118. Not verified because two questions remain open. First, the bundled resources vader_lexicon.txt (434 KB, empirically derived ratings) and emoji_utf8_lexicon.txt (122 KB) carry no separate embedded license or attribution notice, so MIT coverage of that data is not stated by the package itself. Second, requests is declared as a hard Requires-Dist and therefore installs transitively under its own Apache-2.0 terms, although the polarity_scores analysis path never imports it. Both must be resolved before any production distribution or selection."
+      },
+      "revision_policy": {
+        "pin_required": true,
+        "pinned_revision": "ctrt-vader-adapter@0.1.0",
+        "verification_date": "2026-08-05"
+      },
+      "package_binding": {
+        "distribution": "vaderSentiment",
+        "version": "3.3.2",
+        "import_name": "vaderSentiment.vaderSentiment",
+        "dependency_extra": "vader"
+      },
+      "taxonomy": {
+        "taxonomy_id": "sentiment.vader.polarity-scores",
+        "taxonomy_version": "3.3.2"
+      },
+      "configuration_hash": "sha256:5340cf6874a87273383109a1c591c7f4f32b450c99ae71454927aad480b52e15",
+      "evidence_localization": {
+        "status": "unavailable",
+        "notes": "VADER returns document-level polarity scores only. It does not identify which passage produced any value, so the adapter emits no evidence span and never implies that VADER quoted a specific passage."
+      },
+      "execution_boundary": {
+        "user_facing_execution_permitted": false,
+        "requires_selection_record": true,
+        "notes": "Candidate admission authorizes evaluation only. Creator-facing execution requires a separate accepted, domain-bounded selection record that does not yet exist."
+      },
+      "inclusion_rationale": "VADER is a small, deterministic, offline, permissively licensed lexicon-and-rule analyzer whose declared purpose is narrow and inspectable. That makes it the lowest-risk first real candidate for exercising CTRT's package pinning, evidence-localization, and confidence-separation contracts against something other than a fixture.",
+      "known_risks": [
+        "Lexicon-and-rule scoring is known to be affected by irony, sarcasm, quotation, negation scope, and target-dependent sentiment.",
+        "The compound value invites misreading as a confidence or an overall sentiment verdict.",
+        "VADER provides no evidence localization, so no output can be traced to an exact passage.",
+        "The bundled lexicons carry no separate stated terms.",
+        "The upstream distribution declares a transitive requests dependency that the analysis path does not use.",
+        "No calibration, accuracy, fairness, reliability, or domain-transfer evidence exists for this candidate in CTRT."
+      ],
+      "verification_questions": [
+        "Does the adapter preserve neg, neu, pos, and compound separately without combining them or relabeling any of them as confidence?",
+        "Does the adapter emit no evidence span while recording the absence of localization as a limitation?",
+        "Does the adapter abstain rather than measure when declared language metadata falls outside the declared domain?",
+        "Does execution fail closed when the installed distribution version or configuration hash differs from this record?"
+      ],
+      "notes": "Admission authorizes evaluation. It does not establish analytical validity and does not authorize creator-facing execution. This candidate is not registered by any creator-preflight, browser, or local CLI path."
+    }
+  ],
+  "created_at": "2026-08-05T20:00:00Z"
+}
