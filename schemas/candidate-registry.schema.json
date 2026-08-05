@@ -147,6 +147,61 @@
           "type": "array",
           "items": {"type": "string", "minLength": 1}
         },
+        "package_binding": {
+          "description": "Exact installable distribution for a real packaged candidate. Optional so first-party fixture candidates remain valid unchanged.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["distribution", "version", "import_name", "dependency_extra"],
+          "properties": {
+            "distribution": {"type": "string", "minLength": 1},
+            "version": {"type": "string", "minLength": 1},
+            "import_name": {"type": "string", "minLength": 1},
+            "dependency_extra": {"type": "string", "minLength": 1}
+          }
+        },
+        "taxonomy": {
+          "description": "Label taxonomy identity a candidate's outputs are expressed in.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["taxonomy_id", "taxonomy_version"],
+          "properties": {
+            "taxonomy_id": {"type": "string", "minLength": 1},
+            "taxonomy_version": {"type": "string", "minLength": 1}
+          }
+        },
+        "configuration_hash": {
+          "description": "Canonical hash of the candidate's complete execution configuration.",
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "evidence_localization": {
+          "description": "Whether the candidate can attribute outputs to exact input spans.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "notes"],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["native", "post-hoc", "unavailable"]
+            },
+            "notes": {"type": "string", "minLength": 1}
+          }
+        },
+        "execution_boundary": {
+          "description": "Explicit prohibition on user-facing execution before a selection record.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "user_facing_execution_permitted",
+            "requires_selection_record",
+            "notes"
+          ],
+          "properties": {
+            "user_facing_execution_permitted": {"type": "boolean"},
+            "requires_selection_record": {"type": "boolean"},
+            "notes": {"type": "string", "minLength": 1}
+          }
+        },
         "notes": {"type": "string"}
       },
       "allOf": [

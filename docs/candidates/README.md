@@ -43,6 +43,14 @@ A source page's license declaration is only the beginning of review. CTRT must d
 
 A candidate with pending license review cannot be selected for production distribution.
 
+## Real candidate registry
+
+[`real-registry.v0.1.0.json`](real-registry.v0.1.0.json) records candidates backed by an installable third-party distribution. It is separate from the frozen synthetic fixture registry.
+
+It currently holds one candidate, `vader.sentiment` (`vaderSentiment==3.3.2`), at `eligible_for_evaluation`. See [ADR-0063](../adr/0063-admit-vader-as-the-first-real-analyzer-candidate.md) and the [admission guide](../phase-1b-vader-candidate-admission.md).
+
+Real candidates additionally bind `package_binding`, `taxonomy`, `configuration_hash`, `evidence_localization`, and `execution_boundary`. Those fields are optional in the schema so fixture candidates remain valid unchanged.
+
 ## Initial registry
 
 [`initial-registry.v0.1.0.json`](initial-registry.v0.1.0.json) records the first technologies proposed for sentiment, emotion, toxicity, extraction, and optional transcript acquisition.
