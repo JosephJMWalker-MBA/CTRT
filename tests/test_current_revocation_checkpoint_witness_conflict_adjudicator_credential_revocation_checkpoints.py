@@ -44,7 +44,11 @@ revocation_fx = import_module(
     "test_current_revocation_checkpoint_witness_conflict_adjudicator_"
     "credential_revocation_ledger"
 )
-persist_revocation_corpus = vars(revocation_fx)[
+revocation_contract = import_module(
+    "ctrt.current_revocation_checkpoint_witness_conflict_adjudicator_"
+    "credential_revocation_ledger"
+)
+persist_revocation_corpus = vars(revocation_contract)[
     "persist_current_revocation_checkpoint_witness_conflict_adjudicator_"
     "credential_revocation_bound_corpus"
 ]
