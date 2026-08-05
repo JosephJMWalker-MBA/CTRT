@@ -1,7 +1,12 @@
-from ctrt import (
-    current_revocation_checkpoint_witness_conflict_adjudicator_credential_revocation_ledger as contract,
+from importlib import import_module
+
+contract = import_module(
+    "ctrt.current_revocation_checkpoint_witness_conflict_adjudicator_"
+    "credential_revocation_ledger"
 )
-from ctrt import revocation_gated_current_revocation_checkpoint_witness_conflict_runner as runner
+runner = import_module(
+    "ctrt.revocation_gated_current_revocation_checkpoint_witness_conflict_runner"
+)
 
 
 def test_contract_public_api_is_importable() -> None:
