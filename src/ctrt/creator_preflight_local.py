@@ -13,7 +13,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, replace
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import Any, cast
+from typing import cast
 
 from ctrt.artifact_store import FileSystemArtifactStore, StoredArtifactRef
 from ctrt.candidate_eligibility import CandidateRegistrySnapshot
@@ -51,7 +51,6 @@ from ctrt.experiments import (
 from ctrt.extraction_bound_runner import ExtractionExecutionWindow
 from ctrt.extraction_manifest import (
     ExtractedContentSnapshot,
-    ExtractionCorpusEntry,
     ExtractionManifestSnapshot,
     SourceArtifactSnapshot,
     extracted_content_artifact_id,
