@@ -52,6 +52,7 @@ persist_revocation_corpus = vars(revocation_contract)[
     "persist_current_revocation_checkpoint_witness_conflict_adjudicator_"
     "credential_revocation_bound_corpus"
 ]
+adjudication_fx = revocation_fx.credential_fx.adjudication_fx
 
 ROOT = Path(__file__).parents[1]
 POLICY_PATH = ROOT / "docs" / "candidates" / (
@@ -177,13 +178,13 @@ def prepare_checkpoint_store(
         plan=predecessor_plan,
         corpus=predecessor,
         predecessor_corpus=prepared[2],
-        adjudicator_registry=revocation_fx.adjudication_fx.conflict_adjudicator_registry(),
+        adjudicator_registry=adjudication_fx.conflict_adjudicator_registry(),
         issuer_registry=revocation_fx.credential_fx.issuer_registry(),
         credential_policy=revocation_fx.credential_fx.credential_policy(),
         revocation_policy=revocation_fx.revocation_policy(),
         ledger=revocation_fx.revocation_ledger(),
         attestations=(revocation_fx.credential_fx.credential(),),
-        adjudication=revocation_fx.adjudication_fx.conflict_adjudication(),
+        adjudication=adjudication_fx.conflict_adjudication(),
         events=(revocation_fx.suspension_event(),),
         evaluated_at="2026-08-03T19:58:46Z",
     )
