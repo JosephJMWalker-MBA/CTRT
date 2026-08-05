@@ -30,7 +30,6 @@ from ctrt.extraction_bound_runner import (
     ExtractionBoundExperimentError,
     ExtractionBoundExperimentRunner,
     ExtractionBoundRunnerStage,
-    ExtractionBoundRunnerStatus,
 )
 from ctrt.extraction_manifest import (
     ExtractedContentSnapshot,
