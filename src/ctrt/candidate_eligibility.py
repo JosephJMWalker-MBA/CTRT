@@ -239,6 +239,42 @@ def _candidate_from_document(document: Mapping[str, object]) -> CandidateExecuti
     )
 
 
+def candidate_authorization_reasons(
+    candidate: CandidateExecutionRecord,
+    *,
+    analyzer_id: str,
+    dimension_id: str,
+    implementation_revision: str,
+) -> tuple[str, ...]:
+    """Return why one candidate record does not authorize one analyzer identity.
+
+    These are the registry rules alone, independent of any experiment shape, so
+    a single-candidate research path applies exactly the same thresholds as the
+    multi-instrument comparison path rather than restating them.
+    """
+
+    reasons: list[str] = []
+    if candidate.capability_type is not CandidateCapability.ANALYZER:
+        reasons.append("candidate capability is not analyzer")
+    if candidate.status not in ELIGIBLE_DISPOSITIONS:
+        reasons.append(f"candidate disposition {candidate.status.value!r} is not executable")
+    if candidate.license_status is LicenseReviewStatus.BLOCKED:
+        reasons.append("candidate license review is blocked")
+    elif candidate.license_status not in EXECUTABLE_LICENSE_STATES:
+        reasons.append("candidate license review is not provisionally verified")
+    if analyzer_id not in candidate.authorized_analyzer_ids:
+        reasons.append("analyzer identity is not explicitly authorized by the candidate record")
+    if dimension_id not in candidate.dimensions:
+        reasons.append("instrument dimension is not declared by the candidate record")
+    if not candidate.pin_required:
+        reasons.append("candidate does not require immutable revision pinning")
+    if candidate.pinned_revision is None:
+        reasons.append("candidate has no pinned implementation revision")
+    elif implementation_revision != candidate.pinned_revision:
+        reasons.append("instrument implementation revision differs from the registry pin")
+    return tuple(reasons)
+
+
 def _instrument_reasons(
     instrument: InstrumentRevision,
     candidate: CandidateExecutionRecord | None,
@@ -249,25 +285,15 @@ def _instrument_reasons(
         reasons.append(f"dimension {instrument.dimension_id!r} is not declared by the plan")
     if candidate is None:
         return (f"candidate {instrument.candidate_id!r} is absent from the registry", *reasons)
-    if candidate.capability_type is not CandidateCapability.ANALYZER:
-        reasons.append("candidate capability is not analyzer")
-    if candidate.status not in ELIGIBLE_DISPOSITIONS:
-        reasons.append(f"candidate disposition {candidate.status.value!r} is not executable")
-    if candidate.license_status is LicenseReviewStatus.BLOCKED:
-        reasons.append("candidate license review is blocked")
-    elif candidate.license_status not in EXECUTABLE_LICENSE_STATES:
-        reasons.append("candidate license review is not provisionally verified")
-    if instrument.analyzer_id not in candidate.authorized_analyzer_ids:
-        reasons.append("analyzer identity is not explicitly authorized by the candidate record")
-    if instrument.dimension_id not in candidate.dimensions:
-        reasons.append("instrument dimension is not declared by the candidate record")
-    if not candidate.pin_required:
-        reasons.append("candidate does not require immutable revision pinning")
-    if candidate.pinned_revision is None:
-        reasons.append("candidate has no pinned implementation revision")
-    elif instrument.implementation_revision != candidate.pinned_revision:
-        reasons.append("instrument implementation revision differs from the registry pin")
-    return tuple(reasons)
+    return (
+        *reasons,
+        *candidate_authorization_reasons(
+            candidate,
+            analyzer_id=instrument.analyzer_id,
+            dimension_id=instrument.dimension_id,
+            implementation_revision=instrument.implementation_revision,
+        ),
+    )
 
 
 def validate_candidate_eligibility(

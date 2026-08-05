@@ -398,6 +398,29 @@ def validate_extraction_method_eligibility(
         raise ExtractionMethodEligibilityError(
             "experiment plan content order does not match the extraction corpus"
         )
+    return authorize_extraction_methods(
+        experiment_id=plan.experiment_id,
+        experiment_version=plan.experiment_version,
+        corpus=corpus,
+        registry=registry,
+        extractions=extractions,
+    )
+
+
+def authorize_extraction_methods(
+    *,
+    experiment_id: str,
+    experiment_version: str,
+    corpus: MethodBoundExtractionCorpusSnapshot,
+    registry: ExtractionMethodRegistrySnapshot,
+    extractions: tuple[ExtractionManifestSnapshot, ...],
+) -> ExtractionMethodEligibilityReport:
+    """Authorize extractions against one exact accepted registry, without a plan.
+
+    This carries the method rules themselves. A research-only single-candidate
+    path reuses it directly so it cannot drift from the experiment-plan gate.
+    """
+
     if corpus.method_registry_ref != registry.reference():
         raise ExtractionMethodEligibilityError(
             "extraction corpus method_registry_ref does not match the supplied registry"
@@ -451,8 +474,8 @@ def validate_extraction_method_eligibility(
         )
 
     return ExtractionMethodEligibilityReport(
-        experiment_id=plan.experiment_id,
-        experiment_version=plan.experiment_version,
+        experiment_id=experiment_id,
+        experiment_version=experiment_version,
         corpus_ref=corpus.reference(),
         method_registry_ref=registry.reference(),
         authorized_extractions=tuple(authorized),

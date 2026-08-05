@@ -1,0 +1,351 @@
+{
+  "corpus_id": "corpus.vader-behavioral-probes",
+  "corpus_version": "0.1.0",
+  "status": "frozen",
+  "purpose": "research_only_behavioral_characterization",
+  "provenance": {
+    "authorship": "repository_authored",
+    "author": "CTRT project",
+    "external_dataset": false,
+    "scraped_content": false,
+    "network_retrieval": false,
+    "notes": "Every probe below was written specifically for CTRT to exercise documented VADER implementation behavior. No text is copied from social media, published posts, or any external dataset, and nothing is retrieved at runtime."
+  },
+  "ground_truth": {
+    "human_labels_present": false,
+    "notes": "This corpus contains NO human sentiment annotations and NO correct-answer labels. Each probe description states what the item is designed to exercise. A probe description is a research-design statement about the item, not a claim about what the item's sentiment truly is."
+  },
+  "language": "en",
+  "categories": [
+    "plainly_positive",
+    "plainly_negative",
+    "neutral",
+    "mixed_polarity",
+    "contrastive_conjunction",
+    "negation",
+    "degree_modifier",
+    "capitalization_emphasis",
+    "punctuation_emphasis",
+    "emoticon_emoji",
+    "informal_shortform",
+    "context_dependent_risk",
+    "unsupported_language"
+  ],
+  "items": [
+    {
+      "position": 0,
+      "probe_id": "probe-001",
+      "text": "The update works well and the team is happy.",
+      "language": "en",
+      "categories": ["plainly_positive"],
+      "probes": "Wording that is conventionally positive without emphasis, negation, or contrast.",
+      "not_a_ground_truth_label": true
+    },
+    {
+      "position": 1,
+      "probe_id": "probe-002",
+      "text": "The rollout failed and the team is frustrated.",
+      "language": "en",
+      "categories": ["plainly_negative"],
+      "probes": "Wording that is conventionally negative without emphasis, negation, or contrast.",
+      "not_a_ground_truth_label": true
+    },
+    {
+      "position": 2,
+      "probe_id": "probe-003",
+      "text": "The report lists four sections and two appendices.",
+      "language": "en",
+      "categories": ["neutral"],
+      "probes": "Factual wording containing no token present in the shipped lexicon.",
+      "not_a_ground_truth_label": true
+    },
+    {
+      "position": 3,
+      "probe_id": "probe-004",
+      "text": "The design is elegant and the documentation is terrible.",
+      "language": "en",
+      "categories": ["mixed_polarity"],
+      "probes": "Positive and negative wording of comparable strength in one item, with no contrastive conjunction.",
+      "not_a_ground_truth_label": true
+    },
+    {
+      "position": 4,
+      "probe_id": "probe-005",
+      "text": "The interface is clean and the latency is bad.",
+      "language": "en",
+      "categories": ["mixed_polarity", "contrastive_conjunction"],
+      "probes": "Metamorphic base for the contrastive-conjunction pair, joining the clauses with 'and'.",
+      "not_a_ground_truth_label": true
+    },
+    {
+      "position": 5,
+      "probe_id": "probe-006",
+      "text": "The interface is clean, but the latency is bad.",
+      "language": "en",
+      "categories": ["contrastive_conjunction"],
+      "probes": "Metamorphic variant of probe-005 that replaces 'and' with the contrastive conjunction 'but'.",
+      "not_a_ground_truth_label": true
+    },
+    {
+      "position": 6,
+      "probe_id": "probe-007",
+      "text": "This release is good.",
+      "language": "en",
+      "categories": ["plainly_positive", "negation"],
+      "probes": "Metamorphic base for the negation pair.",
+      "not_a_ground_truth_label": true
+    },
+    {
+      "position": 7,
+      "probe_id": "probe-008",
+      "text": "This release is not good.",
+      "language": "en",
+      "categories": ["negation"],
+      "probes": "Metamorphic variant of probe-007 that inserts the negation token 'not'.",
+      "not_a_ground_truth_label": true
+    },
+    {
+      "position": 8,
+      "probe_id": "probe-009",
+      "text": "The result is good.",
+      "language": "en",
+      "categories": ["plainly_positive", "degree_modifier"],
+      "probes": "Metamorphic base for both degree-modifier pairs.",
+      "not_a_ground_truth_label": true
+    },
+    {
+      "position": 9,
+      "probe_id": "probe-010",
+      "text": "The result is extremely good.",
+      "language": "en",
+      "categories": ["degree_modifier"],
+      "probes": "Metamorphic variant of probe-009 adding the booster modifier 'extremely'.",
+      "not_a_ground_truth_label": true
+    },
+    {
+      "position": 10,
+      "probe_id": "probe-011",
+      "text": "The result is marginally good.",
+      "language": "en",
+      "categories": ["degree_modifier"],
+      "probes": "Metamorphic variant of probe-009 adding the dampener modifier 'marginally'.",
+      "not_a_ground_truth_label": true
+    },
+    {
+      "position": 11,
+      "probe_id": "probe-012",
+      "text": "This feature is great.",
+      "language": "en",
+      "categories": ["plainly_positive", "capitalization_emphasis"],
+      "probes": "Metamorphic base for the capitalization-emphasis pair.",
+      "not_a_ground_truth_label": true
+    },
+    {
+      "position": 12,
+      "probe_id": "probe-013",
+      "text": "This feature is GREAT.",
+      "language": "en",
+      "categories": ["capitalization_emphasis"],
+      "probes": "Metamorphic variant of probe-012 capitalizing the lexicon token for emphasis.",
+      "not_a_ground_truth_label": true
+    },
+    {
+      "position": 13,
+      "probe_id": "probe-014",
+      "text": "I like this change.",
+      "language": "en",
+      "categories": ["plainly_positive", "punctuation_emphasis"],
+      "probes": "Metamorphic base for the punctuation-emphasis pair.",
+      "not_a_ground_truth_label": true
+    },
+    {
+      "position": 14,
+      "probe_id": "probe-015",
+      "text": "I like this change!!!",
+      "language": "en",
+      "categories": ["punctuation_emphasis"],
+      "probes": "Metamorphic variant of probe-014 adding exclamation-point emphasis.",
+      "not_a_ground_truth_label": true
+    },
+    {
+      "position": 15,
+      "probe_id": "probe-016",
+      "text": "The migration finished :)",
+      "language": "en",
+      "categories": ["emoticon_emoji"],
+      "probes": "Short-form wording containing a Western emoticon present in the shipped lexicon.",
+      "not_a_ground_truth_label": true
+    },
+    {
+      "position": 16,
+      "probe_id": "probe-017",
+      "text": "Deploy is done 🎉",
+      "language": "en",
+      "categories": ["emoticon_emoji"],
+      "probes": "Short-form wording containing an emoji covered by the shipped emoji lexicon.",
+      "not_a_ground_truth_label": true
+    },
+    {
+      "position": 17,
+      "probe_id": "probe-018",
+      "text": "tbh the new build is kinda meh",
+      "language": "en",
+      "categories": ["informal_shortform"],
+      "probes": "Informal abbreviations and hedging typical of short-form writing.",
+      "not_a_ground_truth_label": true
+    },
+    {
+      "position": 18,
+      "probe_id": "probe-019",
+      "text": "this patch is fire ngl",
+      "language": "en",
+      "categories": ["informal_shortform", "context_dependent_risk"],
+      "probes": "Informal wording in which a token carries a recent approving sense that differs from its established lexicon entry. Recorded to observe how the implementation treats it, not to assert which sense is correct.",
+      "not_a_ground_truth_label": true
+    },
+    {
+      "position": 19,
+      "probe_id": "probe-020",
+      "text": "The crash rate is down.",
+      "language": "en",
+      "categories": ["context_dependent_risk"],
+      "probes": "Wording whose operational reading depends on domain context that is absent from the text itself.",
+      "not_a_ground_truth_label": true
+    },
+    {
+      "position": 20,
+      "probe_id": "probe-021",
+      "text": "Nothing about this launch was a disaster.",
+      "language": "en",
+      "categories": ["negation", "context_dependent_risk"],
+      "probes": "A negated negative construction where the negation token and the lexicon token are separated.",
+      "not_a_ground_truth_label": true
+    },
+    {
+      "position": 21,
+      "probe_id": "probe-022",
+      "text": "She wrote, \"this is terrible,\" and then explained why she disagreed.",
+      "language": "en",
+      "categories": ["context_dependent_risk"],
+      "probes": "Quoted speech attributed to another party and then disputed, exercising whether quotation is distinguished from assertion.",
+      "not_a_ground_truth_label": true
+    },
+    {
+      "position": 22,
+      "probe_id": "probe-023",
+      "text": "The build is scheduled to terminate at midnight.",
+      "language": "en",
+      "categories": ["neutral", "context_dependent_risk"],
+      "probes": "Domain vocabulary that reads as severe in general usage but is routine in a build context.",
+      "not_a_ground_truth_label": true
+    },
+    {
+      "position": 23,
+      "probe_id": "probe-024",
+      "text": "La mise a jour fonctionne bien et l'equipe est satisfaite.",
+      "language": "fr",
+      "categories": ["unsupported_language"],
+      "probes": "Declared non-English metadata, exercising the adapter's declared-domain abstention. Language is taken from this metadata and is never inferred from the text.",
+      "not_a_ground_truth_label": true
+    }
+  ],
+  "behavioral_expectations": [
+    {
+      "expectation_id": "expectation-contrastive-conjunction",
+      "kind": "metamorphic",
+      "base_probe_id": "probe-005",
+      "variant_probe_id": "probe-006",
+      "output_key": "compound",
+      "relation": "variant_not_greater_than_base",
+      "basis": "upstream_documented_rule",
+      "basis_detail": "The upstream project documents a contrastive-conjunction rule in which sentiment preceding 'but' is de-weighted and sentiment following it is up-weighted. The negative clause follows 'but' in probe-006.",
+      "statement": "Replacing 'and' with 'but' before the negative clause does not increase compound.",
+      "not_a_correctness_claim": true
+    },
+    {
+      "expectation_id": "expectation-negation",
+      "kind": "metamorphic",
+      "base_probe_id": "probe-007",
+      "variant_probe_id": "probe-008",
+      "output_key": "compound",
+      "relation": "variant_less_than_base",
+      "basis": "upstream_documented_rule",
+      "basis_detail": "The upstream implementation applies a negation scalar to lexicon tokens preceded by a negation term.",
+      "statement": "Inserting 'not' before the positive lexicon token decreases compound.",
+      "not_a_correctness_claim": true
+    },
+    {
+      "expectation_id": "expectation-degree-booster",
+      "kind": "metamorphic",
+      "base_probe_id": "probe-009",
+      "variant_probe_id": "probe-010",
+      "output_key": "compound",
+      "relation": "variant_not_less_than_base",
+      "basis": "upstream_documented_rule",
+      "basis_detail": "The upstream implementation applies a booster increment to intensity when a degree modifier such as 'extremely' precedes a lexicon token.",
+      "statement": "Adding the booster 'extremely' does not decrease compound.",
+      "not_a_correctness_claim": true
+    },
+    {
+      "expectation_id": "expectation-degree-dampener",
+      "kind": "metamorphic",
+      "base_probe_id": "probe-009",
+      "variant_probe_id": "probe-011",
+      "output_key": "compound",
+      "relation": "variant_not_greater_than_base",
+      "basis": "upstream_documented_rule",
+      "basis_detail": "The upstream implementation applies a dampener decrement to intensity when a degree modifier such as 'marginally' precedes a lexicon token.",
+      "statement": "Adding the dampener 'marginally' does not increase compound.",
+      "not_a_correctness_claim": true
+    },
+    {
+      "expectation_id": "expectation-capitalization-emphasis",
+      "kind": "metamorphic",
+      "base_probe_id": "probe-012",
+      "variant_probe_id": "probe-013",
+      "output_key": "compound",
+      "relation": "variant_not_less_than_base",
+      "basis": "upstream_documented_rule",
+      "basis_detail": "The upstream implementation applies a capitalization increment when a lexicon token appears in all capitals amid non-capitalized text.",
+      "statement": "Capitalizing the positive lexicon token does not decrease compound.",
+      "not_a_correctness_claim": true
+    },
+    {
+      "expectation_id": "expectation-punctuation-emphasis",
+      "kind": "metamorphic",
+      "base_probe_id": "probe-014",
+      "variant_probe_id": "probe-015",
+      "output_key": "compound",
+      "relation": "variant_not_less_than_base",
+      "basis": "upstream_documented_rule",
+      "basis_detail": "The upstream implementation increases intensity in proportion to trailing exclamation points.",
+      "statement": "Adding exclamation-point emphasis does not decrease compound.",
+      "not_a_correctness_claim": true
+    },
+    {
+      "expectation_id": "expectation-emoticon-in-lexicon",
+      "kind": "implementation",
+      "base_probe_id": "probe-016",
+      "variant_probe_id": null,
+      "output_key": "compound",
+      "relation": "nonzero",
+      "basis": "shipped_lexicon_contents",
+      "basis_detail": "Western emoticons are present as entries in the lexicon shipped inside the pinned distribution.",
+      "statement": "An item whose only lexicon token is an emoticon produces a nonzero compound.",
+      "not_a_correctness_claim": true
+    },
+    {
+      "expectation_id": "expectation-emoji-in-lexicon",
+      "kind": "implementation",
+      "base_probe_id": "probe-017",
+      "variant_probe_id": null,
+      "output_key": "compound",
+      "relation": "nonzero",
+      "basis": "shipped_lexicon_contents",
+      "basis_detail": "The pinned distribution ships an emoji lexicon that maps emoji to descriptive words before scoring.",
+      "statement": "An item containing a covered emoji produces a nonzero compound.",
+      "not_a_correctness_claim": true
+    }
+  ],
+  "created_at": "2026-08-05T21:00:00Z"
+}
