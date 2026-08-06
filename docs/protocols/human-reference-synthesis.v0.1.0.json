@@ -1,0 +1,164 @@
+{
+  "protocol_id": "protocol.human-reference-synthesis",
+  "protocol_version": "0.1.0",
+  "status": "frozen",
+  "purpose": "preregistered_descriptive_human_reference_synthesis",
+  "compatible_annotation_protocol_id": "protocol.human-reference-sentiment-valence",
+  "compatible_annotation_protocol_version": "0.1.0",
+  "compatible_corpus_id": "corpus.human-reference-sentiment",
+  "compatible_corpus_version": "0.1.0",
+  "dimension_id": "sentiment_valence",
+  "dimension_version": "0.1.0",
+  "statement": "Human-reference synthesis describes the judgments collected under a declared protocol. It does not convert those judgments into truth.",
+  "disagreement_statement": "Disagreement is a result to preserve. It is not automatically a defect requiring majority rule or adjudication.",
+  "minimum_reference_coverage": {
+    "minimum_distinct_annotators_per_item": 3,
+    "rationale": "Three distinct completed assignments is the smallest coverage at which an item can show a split rather than only a match or a mismatch. With two references every item is either identical or different, which cannot distinguish an isolated reading from a genuine division. Three is a pilot floor chosen to make disagreement visible, not a power calculation, and it supports no inferential claim.",
+    "below_threshold_status": "insufficient_reference_coverage",
+    "below_threshold_handling": "Items below the threshold are retained and reported with explicit insufficient_reference_coverage status. Missing responses are never estimated, imputed, or interpolated, and low-coverage items are never silently removed from the corpus-level record."
+  },
+  "input_eligibility": {
+    "accepts": "verified collection receipts only",
+    "must_bind_identically": [
+      "annotation protocol id",
+      "annotation protocol version",
+      "annotation protocol hash",
+      "evaluation corpus id",
+      "evaluation corpus version",
+      "evaluation corpus hash",
+      "response scale id and version",
+      "content identities and content hashes",
+      "source and extraction provenance"
+    ],
+    "rejects": [
+      "duplicate annotator IDs",
+      "annotator IDs outside the safe pseudonymous format",
+      "incompatible protocol or corpus references",
+      "incomplete assignment receipts",
+      "reordered or missing corpus membership",
+      "unresolved or branching supersession ancestry",
+      "responses not belonging to the exact assignment",
+      "tampered stored bytes",
+      "candidate or analyzer fields inside human-reference artifacts",
+      "any input that cannot be reverified from canonical storage",
+      "test-fixture collections in a production synthesis run"
+    ]
+  },
+  "annotator_identity": {
+    "pseudonymous_only": true,
+    "distinct_required": true,
+    "identity_mapping_stored": false,
+    "notes": "Synthesis reads locally chosen pseudonymous IDs only. It does not create, request, infer, or store any mapping from a pseudonymous ID to a real person. A pseudonymous ID may still be linkable if whoever distributed the study keeps such a mapping separately."
+  },
+  "supersession_treatment": {
+    "resolution": "exact_append_only_chain",
+    "rules": [
+      "The effective response is the final record of an unbroken append-only chain beginning at sequence zero.",
+      "Every record in the chain is preserved and reported, including every superseded record.",
+      "Each non-original record must name its exact immediate predecessor.",
+      "A chain with a branch, a gap, or a missing predecessor is rejected rather than repaired.",
+      "The effective record must match the response reference bound by the assignment completion.",
+      "No earlier response is ever deleted, hidden, or overwritten."
+    ]
+  },
+  "incomplete_assignments": {
+    "accepted": false,
+    "notes": "Only assignment completions with zero unanswered items are eligible. An incomplete assignment is rejected as an input rather than partially included."
+  },
+  "item_order_independence": {
+    "required": true,
+    "notes": "Each annotator receives a deterministic per-annotator permutation of the frozen corpus. Synthesis is computed per item identity and never depends on the order in which any annotator saw items. Receipts are ordered deterministically by pseudonymous annotator ID for reporting only."
+  },
+  "permitted_descriptive_measures": [
+    "count for every exact valence response option, including options with zero observations",
+    "abstention count with preserved abstention reasons",
+    "unanswered count",
+    "context-sufficiency counts across all options",
+    "perceived-ambiguity counts across all options",
+    "self-reported-certainty counts across all options and not-provided",
+    "rationale-presence count",
+    "supporting-span-presence count",
+    "number of distinct annotators",
+    "exact coverage status",
+    "pairwise exact-category concordance with preserved numerator and denominator, reported once with abstention as its own category and separately for non-abstaining pairs",
+    "ordinal-distance histogram over exact buckets 0 through 4 for non-abstaining response pairs",
+    "coverage and abstention lifecycle counts",
+    "immutable source response references"
+  ],
+  "prohibited_measures": [
+    "majority label",
+    "mode presented as an answer",
+    "median label",
+    "mean label",
+    "mean ordinal response",
+    "consensus label",
+    "adjudicated label",
+    "gold answer",
+    "correct label",
+    "one merged human score",
+    "annotator ranking",
+    "annotator quality score",
+    "candidate accuracy",
+    "candidate calibration",
+    "any candidate metric",
+    "Krippendorff's alpha",
+    "Cohen's kappa",
+    "Fleiss' kappa",
+    "any other named reliability coefficient",
+    "significance testing",
+    "inferential population claims"
+  ],
+  "abstention_treatment": {
+    "separate_category": true,
+    "numerically_encoded": false,
+    "reasons_preserved": true,
+    "notes": "Abstention is preserved as its own response category with its reasons intact. It is never assigned an ordinal position, never averaged into a distance, and never treated as missing data or as a lower-quality response."
+  },
+  "concordance_rules": {
+    "denominator_preserving": true,
+    "abstention_inclusive_reported_once": true,
+    "non_abstaining_reported_separately": true,
+    "accuracy_label_forbidden": true,
+    "ordinal_distance_buckets": [0, 1, 2, 3, 4],
+    "notes": "Pairwise concordance preserves both numerator and denominator so no rate is ever presented without its base. Ordinal positions are a serialization convenience used only to compute a distance between two non-abstaining categorical responses. They are not interval-scale truth, and no mean response label may be derived from them. A concordance result is a description of how two readers responded, never an accuracy measurement."
+  },
+  "required_provenance": [
+    "synthesis protocol identity, version, and hash",
+    "annotation protocol identity, version, and hash",
+    "evaluation corpus identity, version, and hash",
+    "every included assignment completion reference",
+    "every effective response reference",
+    "every superseded response reference in order",
+    "per-item content hashes",
+    "synthesis plan identity and hash",
+    "synthesis completion reference"
+  ],
+  "report_interpretation_boundaries": [
+    "This protocol permits descriptive human-human concordance. It does not establish correctness, population validity, or candidate fitness.",
+    "No section of a synthesis report may choose, mark, or imply a preferred human response.",
+    "Coverage and abstention counts are lifecycle information and are never a measure of annotation quality.",
+    "The participating annotators are not a sample of any population, and no result may be generalized beyond the exact readers who participated.",
+    "The human-readable report is derived presentation. The canonical stored artifacts remain controlling."
+  ],
+  "later_conditions_before_analyzer_evaluation": [
+    "an accepted adjudication protocol, if adjudication is ever wanted, that preserves rather than erases disagreement",
+    "an explicit methodology decision admitting any named reliability coefficient, with its assumptions about the ordinal scale stated",
+    "a declared empirical metric set and an analysis plan preregistered before any analyzer output is placed beside these judgments",
+    "a blinding procedure for the analyzer-comparison step itself",
+    "subgroup and identity-term bias analysis",
+    "a corpus and annotator pool large and varied enough to support the claims made from them",
+    "resolution of both open candidate licensing questions",
+    "a separate accepted, domain-bounded selection record"
+  ],
+  "non_claims": [
+    "Human-reference synthesis describes the judgments collected under a declared protocol. It does not convert those judgments into truth.",
+    "Disagreement is a result to preserve. It is not automatically a defect requiring majority rule or adjudication.",
+    "This protocol permits descriptive human-human concordance. It does not establish correctness, population validity, or candidate fitness.",
+    "This synthesis produces no majority, mode-as-answer, median, mean, consensus, adjudicated, gold, or correct label, and no merged human score.",
+    "This synthesis ranks no annotator and scores no annotator.",
+    "This synthesis does not run, name, import, compare against, evaluate, or select any analyzer candidate, and the candidate lifecycle is unchanged.",
+    "The participating annotators do not represent any population.",
+    "Self-reported annotator certainty is a statement about a person and is never analyzer confidence."
+  ],
+  "created_at": "2026-08-05T23:00:00Z"
+}
