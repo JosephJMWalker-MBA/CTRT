@@ -4,12 +4,12 @@ from dataclasses import replace
 from pathlib import Path
 
 import pytest
+from test_candidate_reference_evaluation import _request, _synthesis
 
 from ctrt.candidate_reference_evaluation import (
     CandidateReferenceEvaluationError,
     run_candidate_reference_evaluation,
 )
-from test_candidate_reference_evaluation import _request, _synthesis
 
 
 def test_included_population_cannot_be_removed_to_bypass_fixture_gate(

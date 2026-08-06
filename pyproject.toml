@@ -55,6 +55,7 @@ line-length = 100
 select = ["E", "F", "I", "UP", "B", "SIM"]
 
 [tool.ruff.lint.per-file-ignores]
+"src/ctrt/_candidate_reference_evaluation_lifecycle.py" = ["I001"]
 "tests/test_reviewer_credential_attestation.py" = ["I001"]
 "tests/test_checkpoint_witness_attestation.py" = ["I001", "F401", "UP035"]
 "tests/test_witness_conflict_adjudication.py" = ["I001", "F401", "UP035"]
