@@ -14,14 +14,12 @@ from pathlib import Path
 
 from ctrt.content_understanding_web import (
     DEFAULT_PORT as CONTENT_UNDERSTANDING_PORT,
-)
-from ctrt.content_understanding_web import (
     ContentUnderstandingWebApp,
     build_server as build_content_understanding_server,
     local_url as content_understanding_url,
 )
-from ctrt.creator_preflight_web import DEFAULT_PORT as CREATOR_PREFLIGHT_PORT
 from ctrt.creator_preflight_web import (
+    DEFAULT_PORT as CREATOR_PREFLIGHT_PORT,
     CreatorPreflightWebApp,
     build_server as build_creator_preflight_server,
     local_url as creator_preflight_url,
