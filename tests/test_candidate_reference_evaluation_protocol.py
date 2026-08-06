@@ -4,7 +4,7 @@ import copy
 import importlib.metadata
 import json
 import math
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from pathlib import Path
 
 import pytest
@@ -21,8 +21,8 @@ from ctrt.candidate_reference_evaluation_protocol import (
     REQUIRED_CANDIDATE_STATUS,
     REQUIRED_HUMAN_COVERAGE_STATUS,
     CandidateReferenceProtocolError,
-    DirectionBucket,
     DirectionalCorrespondence,
+    DirectionBucket,
     HumanDirectionalDistribution,
     load_candidate_reference_evaluation_protocol,
     load_default_evaluation_protocol,
@@ -231,11 +231,10 @@ def test_human_distribution_requires_all_exact_nonnegative_integer_counts(
     ),
 )
 def test_protocol_tampering_fails_closed(
-    mutator: object,
+    mutator: Callable[[dict[str, object]], None],
     message: str,
 ) -> None:
     document = copy.deepcopy(_document(DEFAULT_EVALUATION_PROTOCOL))
-    assert callable(mutator)
     mutator(document)
 
     with pytest.raises(CandidateReferenceProtocolError, match=message):
@@ -337,7 +336,7 @@ def test_protocol_declares_descriptions_not_selection_or_product_authorization()
     assert "candidate lifecycle advancement" in protocol.prohibited_measures
     assert "creator-facing authorization" in protocol.prohibited_measures
     assert "threshold tuning" in protocol.prohibited_measures
-    assert all("ground truth" not in item.lower() for item in protocol.purpose)
+    assert "ground truth" not in protocol.purpose.lower()
     assert any("not accuracy" in item for item in protocol.non_claims)
     assert any("does not advance" in item for item in protocol.non_claims)
 
