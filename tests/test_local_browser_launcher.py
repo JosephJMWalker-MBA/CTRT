@@ -102,20 +102,19 @@ def test_loopback_and_port_validation_fail_closed(tmp_path: Path) -> None:
         with pytest.raises(LocalBrowserLauncherError):
             validate_loopback_host(host)
 
-    for kwargs in (
-        {"port": -1},
-        {"port": 65_536},
-        {"creator_port": -1},
-        {"understanding_port": 65_536},
+    for port, creator_port, understanding_port in (
+        (-1, 0, 0),
+        (65_536, 0, 0),
+        (0, -1, 0),
+        (0, 0, 65_536),
     ):
         with pytest.raises(LocalBrowserLauncherError):
             build_workspace(
                 host="127.0.0.1",
-                port=0,
-                creator_port=0,
-                understanding_port=0,
+                port=port,
+                creator_port=creator_port,
+                understanding_port=understanding_port,
                 workspace_root=tmp_path,
-                **kwargs,
             )
 
 
