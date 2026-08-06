@@ -6,6 +6,7 @@ import threading
 import urllib.parse
 import urllib.request
 from collections.abc import Iterator, Mapping
+from contextlib import contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -45,23 +46,25 @@ DISAGREEING_CONTENT = "This plan is good, but the delay feels bad."
 AGREEING_CONTENT = "The opening is good and the ending is good."
 NO_SIGNAL_CONTENT = "A statement without the fixture vocabulary."
 
+# Affirmative verdict or profiling labels only. Required interpretation notices
+# explicitly deny several adjacent concepts, so bare-substring bans are invalid.
 FORBIDDEN_PATTERNS = (
-    r"overall score",
-    r"overall sentiment",
-    r"overall tone",
-    r"risk score",
+    r"overall score:",
+    r"overall sentiment:",
+    r"overall tone:",
+    r"risk score:",
     r"\bverdict:",
     r"\brecommendation:",
     r"we recommend",
-    r"safe / unsafe",
-    r"safe content",
-    r"unsafe content",
+    r"safe / unsafe:",
+    r"classification: safe",
+    r"classification: unsafe",
     r"should be blocked",
     r"should be restricted",
-    r"viewer profile",
-    r"child profile",
-    r"parent profile",
-    r"production-ready",
+    r"viewer profile:",
+    r"child profile:",
+    r"parent profile:",
+    r"production-ready:",
 )
 
 
@@ -233,10 +236,7 @@ def test_every_structured_view_element_is_preserved(tmp_path: Path) -> None:
 def test_disagreement_and_abstention_remain_separate_and_neutral(tmp_path: Path) -> None:
     disagreement = _visible_text(_post(_app(tmp_path)).body)
     abstention = _visible_text(
-        _post(
-            _app(tmp_path),
-            body=_form_body(content=NO_SIGNAL_CONTENT),
-        ).body
+        _post(_app(tmp_path), body=_form_body(content=NO_SIGNAL_CONTENT)).body
     )
 
     assert "strong-disagreement" in disagreement
@@ -250,12 +250,10 @@ def test_disagreement_and_abstention_remain_separate_and_neutral(tmp_path: Path)
 def test_outcome_does_not_change_presentation_classes(tmp_path: Path) -> None:
     disagreeing = _post(_app(tmp_path)).body
     agreeing = _post(
-        _app(tmp_path),
-        body=_form_body(content=AGREEING_CONTENT),
+        _app(tmp_path), body=_form_body(content=AGREEING_CONTENT)
     ).body
     abstaining = _post(
-        _app(tmp_path),
-        body=_form_body(content=NO_SIGNAL_CONTENT),
+        _app(tmp_path), body=_form_body(content=NO_SIGNAL_CONTENT)
     ).body
 
     assert _classes(disagreeing) == _classes(agreeing) == _classes(abstaining)
@@ -286,14 +284,9 @@ def test_user_supplied_html_is_escaped_in_form_and_result(tmp_path: Path) -> Non
 def test_invalid_and_oversized_submissions_fail_cleanly(tmp_path: Path) -> None:
     app = _app(tmp_path)
 
-    malformed = _post(app, body=b"not-a-form-field")
-    assert malformed.status == 400
-
-    wrong_type = _post(app, content_type="application/json")
-    assert wrong_type.status == 415
-
-    too_large = _post(app, body=b"x" * (MAX_REQUEST_BYTES + 1))
-    assert too_large.status == 413
+    assert _post(app, body=b"not-a-form-field").status == 400
+    assert _post(app, content_type="application/json").status == 415
+    assert _post(app, body=b"x" * (MAX_REQUEST_BYTES + 1)).status == 413
 
     empty = _post(app, body=_form_body(content=" ", purpose=" "))
     assert empty.status == 422
@@ -301,28 +294,25 @@ def test_invalid_and_oversized_submissions_fail_cleanly(tmp_path: Path) -> None:
     assert "A purpose is required." in empty.body
 
     long_content = _post(
-        app,
-        body=_form_body(content="x" * (MAX_CONTENT_CHARACTERS + 1)),
+        app, body=_form_body(content="x" * (MAX_CONTENT_CHARACTERS + 1))
     )
     assert long_content.status == 422
     assert "character limit" in long_content.body
 
     questions = "\n".join(f"Question {index}?" for index in range(MAX_QUESTIONS + 1))
-    too_many_questions = _post(app, body=_form_body(questions=questions))
-    assert too_many_questions.status == 422
-    assert "questions may be submitted" in too_many_questions.body
+    too_many = _post(app, body=_form_body(questions=questions))
+    assert too_many.status == 422
+    assert "questions may be submitted" in too_many.body
 
-    invalid_question = _post(app, body=_form_body(questions="This is not a question"))
-    assert invalid_question.status == 422
-    assert "question mark" in invalid_question.body
+    invalid = _post(app, body=_form_body(questions="This is not a question"))
+    assert invalid.status == 422
+    assert "question mark" in invalid.body
 
 
 def test_routing_and_methods_are_bounded(tmp_path: Path) -> None:
     app = _app(tmp_path)
 
-    missing = app.handle(WebRequest(method="GET", path="/other"))
-    assert missing.status == 404
-
+    assert app.handle(WebRequest(method="GET", path="/other")).status == 404
     unsupported = app.handle(WebRequest(method="PUT", path="/"))
     assert unsupported.status == 405
     assert dict(unsupported.headers)["Allow"] == "GET, POST"
@@ -339,19 +329,13 @@ def test_loopback_validation_rejects_hostnames_and_non_loopback() -> None:
             validate_loopback_host(host)
 
 
-def _running_server(
-    tmp_path: Path,
-) -> Iterator[tuple[str, object]]:
-    server = build_server(
-        host="127.0.0.1",
-        port=0,
-        app=_app(tmp_path),
-    )
+@contextmanager
+def _running_server(tmp_path: Path) -> Iterator[str]:
+    server = build_server(host="127.0.0.1", port=0, app=_app(tmp_path))
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     try:
-        port = int(server.server_address[1])
-        yield local_url("127.0.0.1", port), server
+        yield local_url("127.0.0.1", int(server.server_address[1]))
     finally:
         server.shutdown()
         server.server_close()
@@ -359,24 +343,18 @@ def _running_server(
 
 
 def test_real_loopback_server_serves_form(tmp_path: Path) -> None:
-    server_context = _running_server(tmp_path)
-    url, _server = next(server_context)
-    try:
+    with _running_server(tmp_path) as url:
         with urllib.request.urlopen(url, timeout=5) as response:
             body = response.read().decode("utf-8")
             assert response.status == 200
             assert response.headers["Cache-Control"] == "no-store"
             assert "Understand this content" in body
-    finally:
-        with pytest.raises(StopIteration):
-            next(server_context)
 
 
 def test_fixed_paths_and_notices_are_preserved() -> None:
     assert len(CONTENT_INSPECTION_PATHS) == 4
     assert len(CONTENT_UNDERSTANDING_NOTICES) == 5
-    form = render_content_form_html()
-    assert "CTRT helps inspect submitted content." in form
+    assert "CTRT helps inspect submitted content." in render_content_form_html()
 
 
 def test_module_exports_only_bounded_browser_surface() -> None:
