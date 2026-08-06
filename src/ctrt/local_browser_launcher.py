@@ -347,9 +347,7 @@ def build_workspace(
                 workspace=workspace_root / "creator-preflight"
             ),
         )
-        creator_url = creator_preflight_url(
-            validated, _server_port(creator_server)
-        )
+        creator_url = creator_preflight_url(creator_server)
         understanding_server = build_content_understanding_server(
             host=validated,
             port=understanding_port,
