@@ -343,12 +343,14 @@ def _running_server(tmp_path: Path) -> Iterator[str]:
 
 
 def test_real_loopback_server_serves_form(tmp_path: Path) -> None:
-    with _running_server(tmp_path) as url:
-        with urllib.request.urlopen(url, timeout=5) as response:
-            body = response.read().decode("utf-8")
-            assert response.status == 200
-            assert response.headers["Cache-Control"] == "no-store"
-            assert "Understand this content" in body
+    with (
+        _running_server(tmp_path) as url,
+        urllib.request.urlopen(url, timeout=5) as response,
+    ):
+        body = response.read().decode("utf-8")
+        assert response.status == 200
+        assert response.headers["Cache-Control"] == "no-store"
+        assert "Understand this content" in body
 
 
 def test_fixed_paths_and_notices_are_preserved() -> None:
