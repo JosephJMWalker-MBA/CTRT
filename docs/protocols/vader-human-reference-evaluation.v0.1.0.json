@@ -1,0 +1,170 @@
+{
+  "protocol_id": "protocol.vader-human-reference-evaluation",
+  "protocol_version": "0.1.0",
+  "status": "frozen",
+  "purpose": "preregistered_candidate_to_human_reference_descriptive_evaluation",
+  "statement": "This protocol places one exact admitted candidate output beside one exact verified human-reference synthesis. It describes correspondence and divergence without converting human judgments into truth or candidate behavior into correctness.",
+  "candidate_binding": {
+    "registry_id": "registry.real-candidates",
+    "registry_version": "0.1.0",
+    "candidate_id": "vader.sentiment",
+    "required_candidate_status": "eligible_for_evaluation",
+    "analyzer_id": "vader.sentiment.polarity",
+    "adapter_revision": "ctrt-vader-adapter@0.1.0",
+    "distribution": "vaderSentiment",
+    "distribution_version": "3.3.2",
+    "configuration_hash": "sha256:5340cf6874a87273383109a1c591c7f4f32b450c99ae71454927aad480b52e15",
+    "dimension_id": "sentiment_valence",
+    "dimension_version": "0.1.0",
+    "preserved_output_keys": ["neg", "neu", "pos", "compound"],
+    "directional_output_key": "compound",
+    "compound_is_confidence": false,
+    "user_facing_execution_permitted": false
+  },
+  "human_reference_binding": {
+    "annotation_protocol_id": "protocol.human-reference-sentiment-valence",
+    "annotation_protocol_version": "0.1.0",
+    "synthesis_protocol_id": "protocol.human-reference-synthesis",
+    "synthesis_protocol_version": "0.1.0",
+    "corpus_id": "corpus.human-reference-sentiment",
+    "corpus_version": "0.1.0",
+    "dimension_id": "sentiment_valence",
+    "dimension_version": "0.1.0",
+    "required_item_coverage_status": "meets_declared_minimum_coverage",
+    "full_original_distribution_required": true,
+    "abstention_preserved_separately": true
+  },
+  "preregistration_and_blinding": {
+    "protocol_frozen_before_candidate_outputs_are_paired_with_human_synthesis": true,
+    "threshold_tuning_after_observing_results_permitted": false,
+    "measure_selection_after_observing_results_permitted": false,
+    "human_collection_artifacts_may_contain_candidate_identity_or_output": false,
+    "candidate_execution_must_be_independent_of_human_responses": true,
+    "pairing_key": "exact frozen corpus item identity and content hash"
+  },
+  "directional_mapping": {
+    "candidate_mapping_basis": "upstream VADER typical compound thresholds, frozen without tuning",
+    "candidate_buckets": [
+      {
+        "bucket": "unfavorable",
+        "rule": "compound <= -0.05",
+        "lower_bound": -1.0,
+        "lower_inclusive": true,
+        "upper_bound": -0.05,
+        "upper_inclusive": true
+      },
+      {
+        "bucket": "neutral",
+        "rule": "-0.05 < compound < 0.05",
+        "lower_bound": -0.05,
+        "lower_inclusive": false,
+        "upper_bound": 0.05,
+        "upper_inclusive": false
+      },
+      {
+        "bucket": "favorable",
+        "rule": "compound >= 0.05",
+        "lower_bound": 0.05,
+        "lower_inclusive": true,
+        "upper_bound": 1.0,
+        "upper_inclusive": true
+      }
+    ],
+    "human_bucket_mapping": {
+      "strongly_unfavorable": "unfavorable",
+      "somewhat_unfavorable": "unfavorable",
+      "neither_clearly_favorable_nor_unfavorable": "neutral",
+      "somewhat_favorable": "favorable",
+      "strongly_favorable": "favorable",
+      "cannot_determine_responsibly": "abstention"
+    },
+    "mapping_non_claim": "The three-way mapping is a preregistered descriptive alignment convenience. It does not make the five human categories interval-scaled, choose a human answer, or establish that the VADER thresholds are correct for this corpus."
+  },
+  "item_eligibility": {
+    "retain_every_frozen_corpus_item": true,
+    "below_human_coverage_threshold_status": "insufficient_reference_coverage",
+    "candidate_abstention_status": "candidate_abstained",
+    "candidate_failure_status": "candidate_failed",
+    "content_hash_mismatch_handling": "reject_evaluation",
+    "missing_item_handling": "reject_evaluation",
+    "silent_item_exclusion_permitted": false
+  },
+  "permitted_descriptive_measures": [
+    "exact candidate result status per frozen item",
+    "all four preserved VADER outputs with their declared bounds",
+    "candidate directional bucket derived only from the frozen compound thresholds",
+    "full original six-option human valence distribution including zero-count options",
+    "derived human directional counts for unfavorable, neutral, favorable, and abstention while retaining the original distribution",
+    "per-item count of human responses in the same directional bucket as the candidate with numerator and denominator preserved",
+    "per-item count of human responses in each different directional bucket with counts preserved separately",
+    "per-item human abstention count preserved outside the directional denominator",
+    "corpus-level three-by-three candidate-direction by human-direction contingency counts",
+    "candidate abstention and failure counts preserved separately",
+    "human insufficient-coverage item count preserved separately",
+    "exact included and excluded item identities with reasons",
+    "immutable candidate, protocol, corpus, synthesis, result, and response references"
+  ],
+  "prohibited_measures": [
+    "accuracy",
+    "precision",
+    "recall",
+    "F1 score",
+    "specificity",
+    "sensitivity",
+    "area under a curve",
+    "correlation coefficient",
+    "mean absolute error",
+    "root mean squared error",
+    "calibration error",
+    "significance testing",
+    "confidence interval",
+    "majority human label",
+    "mode presented as an answer",
+    "median human label",
+    "mean human label",
+    "mean ordinal response",
+    "gold answer",
+    "correct label",
+    "adjudicated label",
+    "one merged human score",
+    "one aggregate candidate score",
+    "threshold tuning",
+    "candidate ranking",
+    "candidate selection",
+    "candidate lifecycle advancement",
+    "creator-facing authorization",
+    "population generalization"
+  ],
+  "required_provenance": [
+    "evaluation protocol identity, version, and hash",
+    "real-candidate registry identity, version, and hash",
+    "candidate identity, package version, adapter revision, and configuration hash",
+    "annotation protocol identity, version, and hash",
+    "human-reference synthesis protocol identity, version, and hash",
+    "evaluation corpus identity, version, and hash",
+    "verified human-reference synthesis completion reference",
+    "every evaluated candidate result reference",
+    "every item synthesis reference",
+    "exact item identities and content hashes",
+    "evaluation plan and completion references"
+  ],
+  "lifecycle_boundary": {
+    "candidate_status_before": "eligible_for_evaluation",
+    "candidate_status_after": "eligible_for_evaluation",
+    "selection_record_created": false,
+    "creator_facing_execution_permitted": false,
+    "license_status_changed": false,
+    "notes": "A completed evaluation describes this candidate on this exact pilot corpus and these exact participating readers only. It does not select the candidate, resolve licensing questions, authorize product use, or establish production readiness."
+  },
+  "non_claims": [
+    "Human-reference judgments are not ground truth, and candidate correspondence with them is not correctness.",
+    "A same-direction count is descriptive correspondence, not accuracy.",
+    "A different-direction count is descriptive divergence, not proof that either the candidate or a human response is wrong.",
+    "Human abstention, candidate abstention, candidate failure, and insufficient reference coverage remain separate outcomes.",
+    "The participating annotators and repository-authored pilot corpus do not represent any population.",
+    "The VADER compound value is not confidence, probability, calibration, or an overall CTRT score.",
+    "This protocol does not rank or select a candidate and does not advance the candidate lifecycle.",
+    "This protocol does not authorize creator-facing, reader-facing, moderation, restriction, or enforcement use."
+  ],
+  "created_at": "2026-08-06T02:50:00Z"
+}
