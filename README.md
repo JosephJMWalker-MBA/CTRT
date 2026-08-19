@@ -1,12 +1,21 @@
 # Content Tone & Revenue Transparency (CTRT)
 
-CTRT is an open, explainable framework for measuring characteristics of digital content through modular analysis models, preserved evidence, explicit uncertainty, and reproducible evaluation.
+CTRT is an open, explainable framework for measuring characteristics of digital content through modular analysis instruments, preserved evidence, explicit uncertainty, and reproducible evaluation.
 
 ## Current phase
 
-**Phase 0: Constitutional and Research Foundations** has closed its schema-impacting contract gaps. CTRT has begun **Phase 1A: the Content Analysis Workbench** with dependency-free synthetic execution, versioned experiment records, exact candidate eligibility, canonical artifact hashing, append-only local persistence, governed execution, frozen corpus and extraction provenance, extraction-method authorization, and independent extraction-quality evidence.
+**Phase 1A: the governed synthetic foundation** is complete as an architecture and constitutional-invariant checkpoint. CTRT is now in **Phase 1B: application and empirical evaluation**, building on that frozen foundation rather than replacing it.
 
-CTRT is not a censorship system and does not determine whether content should exist. It measures content items and reports the instruments, evidence, disagreement, confidence, and limitations behind each result.
+Merged Phase 1B work includes derived evidence views, local creator-preflight and content-understanding surfaces, admission of `vaderSentiment==3.3.2` as an optional real analyzer candidate at `eligible_for_evaluation`, blinded human-reference collection, descriptive human-reference synthesis, and a preregistered candidate-to-human-reference evaluation lifecycle.
+
+Those capabilities have deliberately different authorization boundaries:
+
+- the creator-preflight and content-understanding product doors still execute only the accepted synthetic analyzers through governed local provenance;
+- VADER is available only as an optional research candidate and is **not** selected for a domain, wired into the product doors, or authorized for creator-facing, reader-facing, moderation, restriction, or enforcement use;
+- the result-bearing candidate-to-human-reference lifecycle is implemented and can be exercised with explicitly marked synthetic test fixtures, but fixture evidence is structurally refused by the production entry point;
+- no committed synthetic-fixture run should be reported as an empirical human study, and genuine candidate-to-human-reference evidence still requires independent human-reference collections under the accepted protocol.
+
+CTRT is not a censorship system and does not determine whether content should exist. It measures content items and reports the instruments, evidence, disagreement, structured confidence evidence, abstention, and limitations behind each result.
 
 ## Initial research question
 
@@ -335,31 +344,23 @@ docs/adr/          Architecture and governance decisions
 
 ## Scope boundary
 
-The present logic and repository work may define:
+The present repository includes:
 
-- the CTRT Constitution;
-- a provisional measurement ontology;
-- versioned schemas and provider-neutral contracts;
-- architecture decision records;
-- candidate, method, policy, and dimension registries;
-- model-evaluation and benchmarking protocols;
-- dependency-free synthetic analyzers and workbench tests;
-- frozen experiment plans and append-only run records;
-- exact candidate and extraction-method eligibility gates;
-- deterministic canonical serialization and artifact hashing;
-- dependency-free append-only local artifact persistence;
-- fail-closed governed synthetic execution sessions;
-- exact-scope multi-content experiment completion;
-- frozen corpus manifests and exact runtime content binding;
-- canonical content and extraction-provenance artifacts;
-- independent extraction-quality evidence and governed abstention;
-- the Phase 1 workbench specification.
+- the CTRT Constitution and provisional measurement ontology;
+- versioned schemas, provider-neutral contracts, architecture decisions, and exact eligibility registries;
+- dependency-free synthetic analyzers, frozen experiment plans, append-only artifacts, canonical hashing, read-time reverification, and governed execution;
+- frozen corpus, source, extraction, quality, and evidence-provenance contracts;
+- the completed Phase 1A constitutional-invariant checkpoint and technical-report foundation;
+- derived evidence views plus local **Check before I publish** and **Understand this content** interaction surfaces over the accepted synthetic execution path;
+- an optional VADER 3.3.2 candidate, pinned and admitted only at `eligible_for_evaluation`;
+- blinded human-reference annotation and descriptive synthesis protocols that preserve disagreement, ambiguity, abstention, and corrections without manufacturing a gold label;
+- a preregistered VADER-to-human-reference evaluation protocol and implemented result-bearing research lifecycle that keeps correspondence separate from accuracy and refuses synthetic fixtures at the production entry point.
 
-This stage will not download or run transformer models or real extractors, tune aggregate scores, deploy infrastructure, or begin large-scale corpus evaluation.
+This stage does **not** authorize a real analyzer for the creator or reader product doors, a real extractor, an overall CTRT score, scalar confidence, moderation or enforcement decisions, consequential decision support, remote production deployment, or population-level validity claims. VADER remains a research candidate rather than a selected instrument.
 
 ## Development
 
-The package has no production runtime dependencies.
+The package has no core production runtime dependencies. The synthetic foundation and current local product doors run without VADER.
 
 ```bash
 python -m venv .venv
@@ -370,10 +371,18 @@ python -m mypy
 python -m pytest -q
 ```
 
+Install the admitted VADER candidate only when explicitly running its research path:
+
+```bash
+python -m pip install -e ".[dev,vader]"
+```
+
 ## Guiding principle
 
 **CTRT publishes inspectable measurements—not verdicts about content, creators, or audiences.**
 
 ## Status
 
-Phase 1A now has a complete governed synthetic path from frozen plan, exact stored source and extraction provenance, method authorization, and independent quality evidence through either verified abstention or authorized per-content analysis, canonical serialization, append-only persistence, receipt preservation, and linked completion reverification. No real candidate or extractor is executable, and no CTRT score is validated or suitable for consequential decision-making.
+Phase 1A provides the completed governed synthetic foundation: exact plans and candidate scope, source and extraction provenance, method authorization, quality evidence, append-only persistence, receipt preservation, constitutional invariants, and linked completion reverification. Phase 1B has added evidence-surfacing and local product-door layers, admitted VADER as an optional `eligible_for_evaluation` research candidate, and implemented blinded human-reference and preregistered candidate-to-reference evaluation machinery.
+
+The current repository does **not** establish an empirical VADER-vs-human accuracy result, candidate selection, production authorization, or an overall CTRT score. Synthetic-fixture evaluations remain explicitly non-empirical; genuine human-reference evidence must come from independently collected assignments under the accepted protocol. No real extractor is authorized, and no current CTRT output is presented as suitable for consequential decision-making.
