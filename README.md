@@ -126,8 +126,9 @@ See:
 
 - [ADR-0011: Append-only canonical artifact store](docs/adr/0011-append-only-canonical-artifact-store.md)
 - [Phase 1A Append-only Artifact Store](docs/phase-1a-append-only-artifact-store.md)
+- [SCITT Transparency Service research note](docs/scitt-transparency-service-research-note.md)
 
-This local store does not yet provide remote durability, signatures, access control, deletion, backup policy, or distributed consistency.
+This local store does not yet provide remote durability, signatures, access control, deletion, backup policy, or distributed consistency. SCITT is now recorded as prior art for future signed-statement registration and independently verifiable receipt semantics; no SCITT integration is currently implemented or authorized.
 
 ## Governed execution sessions
 
