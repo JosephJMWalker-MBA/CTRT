@@ -51,6 +51,10 @@ It currently holds one candidate, `vader.sentiment` (`vaderSentiment==3.3.2`), a
 
 Real candidates additionally bind `package_binding`, `taxonomy`, `configuration_hash`, `evidence_localization`, and `execution_boundary`. Those fields are optional in the schema so fixture candidates remain valid unchanged.
 
+## Exploratory decision-native candidate
+
+[Laya](laya-system-one-research-note.md) is now recorded as a **proposed research candidate only**. Its open local typed-decision interface is relevant to CTRT's workbench, but it has not passed candidate admission, revision pinning, calibration review, dimension binding, or the preregistered evaluation lifecycle. The note preserves both the architectural opportunity and the known evidence/fit cautions without changing any current authorization boundary.
+
 ## Initial registry
 
 [`initial-registry.v0.1.0.json`](initial-registry.v0.1.0.json) records the first technologies proposed for sentiment, emotion, toxicity, extraction, and optional transcript acquisition.
