@@ -154,6 +154,7 @@ See:
 - [ADR-0012: Governed execution sessions](docs/adr/0012-governed-execution-session.md)
 - [Phase 1A Governed Execution Session](docs/phase-1a-governed-execution-session.md)
 - [Verified receipt schema](schemas/governed-execution-receipt.schema.json)
+- [TRACE commitment-evidence prior-art note](docs/trace-commitment-evidence-prior-art.md)
 
 Each governed session remains intentionally limited to one content item and one shared dimension. Experiment-level orchestration composes these unchanged sessions rather than weakening their boundary.
 
