@@ -321,16 +321,20 @@ def test_production_entry_point_refuses_fixture_collections(tmp_path: Path) -> N
     human_workspace = tmp_path / "human"
     synthesis = _synthesis(human_workspace)
 
-    # Prove the production fixture check itself by calling the public production
-    # function with the optional candidate loader replaced by a deterministic adapter.
-    import ctrt.candidate_reference_evaluation as module
+    # Prove the production fixture check runs *before* the optional candidate
+    # dependency is loaded. The loader lives in the private lifecycle module, so
+    # it must be patched there; patching the public module resolves nothing and
+    # would leave this property unverified.
+    import ctrt._candidate_reference_evaluation_lifecycle as lifecycle
 
-    original = module.load_vader_sentiment_adapter
+    original = lifecycle.load_vader_sentiment_adapter
+    loaded: list[bool] = []
 
     def fail_if_loaded() -> VaderSentimentAdapter:
+        loaded.append(True)
         raise AssertionError("candidate dependency loaded before fixture rejection")
 
-    module.load_vader_sentiment_adapter = fail_if_loaded
+    lifecycle.load_vader_sentiment_adapter = fail_if_loaded
     try:
         with pytest.raises(
             CandidateReferenceEvaluationError,
@@ -341,7 +345,8 @@ def test_production_entry_point_refuses_fixture_collections(tmp_path: Path) -> N
                 synthesis=synthesis,
             )
     finally:
-        module.load_vader_sentiment_adapter = original
+        lifecycle.load_vader_sentiment_adapter = original
+    assert loaded == [], "the candidate dependency must never be loaded"
 
 
 def test_candidate_failure_remains_separate_from_human_reference(tmp_path: Path) -> None:
